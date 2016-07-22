@@ -1,0 +1,603 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+        <link href="/static/assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block headtabs %}
+        <li class="dropdown dropdown-fw active selected">
+                                   <a href="{{ url_for('index') }}" class="text-uppercase">
+                                      <i class="fa fa-globe"></i> S&H </a>
+                                      <ul class="dropdown-menu dropdown-menu-fw">
+                                      </ul>
+                                   </li>
+        <li class="dropdown dropdown-fw active selected">
+                                    <a href="/index" class="text-uppercase">
+                                        <i class="fa fa-cubes"></i> Rankings </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+                                <li class="dropdown dropdown-fw active open selected">
+                                    <a href="javascript:;" class="text-uppercase">
+                                        <i class="fa fa-map-o"></i> Indicadores </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+				<li class="dropdown dropdown-fw active selected">
+                                    <a href="/usuarios" class="text-uppercase">
+                                        <i class="fa fa-users"></i> Usuarios </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+				<li class="dropdown dropdown-fw active selected">
+                                    <a href="/reportes" class="text-uppercase">
+                                        <i class="fa fa-download"></i> Reportes </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+        <li class="dropdown dropdown-fw active selected">
+                                    <a href="/corrs" class="text-uppercase">
+                                    <i class="fa fa-th"></i> Correlaciones </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+        <li class="dropdown dropdown-fw active selected">
+                                    <a href="/ppublicas" class="text-uppercase">
+                                    <i class="fa fa-university"></i> Politicas Pub </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+{% endblock%}
+
+
+
+{% block content %}
+<div class="page-content">
+		<!-- BEGIN SELECTOR -->
+		<h3>
+			Desempeño Social histórico por Estado  en Medios Sociales
+		</h3>
+    <div class="row">
+    <div class="col-md-6">
+    <p style="text-align: justify">
+    En este apartado, usted podrá seleccionar la entidad 
+
+    federativa deseada, así como las categorías “General, Economía, Salud, 
+
+    Seguridad y Servicios”, así como el período de tiempo que desea 
+
+    analizar. En la gráfica “Desempeño histórico” podrá observar en 
+
+    comportamiento del indicador seleccionado, así como su relación con 
+
+    la media nacional. Este apartado le permite visualizar la actividad en 
+
+    los medios sociales de manera geográfica de acuerdo a su respectiva 
+
+    polaridad (positiva, negativa o neutral), así como las palabras clave 
+
+    más mencionadas en la entidad seleccionada.</p></div>
+  <div class="col-md-6"></div></div>
+		<div class="row">
+		<!-- BEGIN STATES SELECTOR -->
+					<div class="col-md-3">
+                                            <label for="select1-single-input-sm" class="control-label">Estado</label>
+                                            <select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                                <optgroup label="">
+                                                    <option value="">Seleccione una opcion</option>
+                                                </optgroup>
+                                                <optgroup label="Estados">
+						    {% for tup in estados %}
+                                                    <option value="{{ tup[0] }}">{{ tup[1] }}</option>
+                                               	    {% endfor %}
+						 </optgroup>
+                                            </select>
+                                        </div>
+		<!-- END STATES SELECTOR -->
+		<!-- BEGIN STATES SELECTOR -->
+					<div class="col-md-3">
+                                            <label for="select2-single-input-sm" class="control-label">Categoria</label>
+                                            <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                                 <optgroup label="">
+                                                    <option value="">Seleccione una opcion</option>
+                                                </optgroup>
+                                                <optgroup label="Categorias">
+                                                    <option value="general">General</option>
+						    {% for item in temas %}
+                                                    <option value="{{ item }}">{{ item|capitalize() }}</option>
+                                               	    {% endfor %}
+						 </optgroup>
+                                            </select>
+                                        </div>
+		<!-- END STATES SELECTOR -->
+		<div class="col-md-3">
+			<label for="select3-single-input-sm" class="control-label">Rango de fecha</label>
+                	<div class="input-group input-large date-picker input-daterange" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+                        <input id="d-from" type="text" class="form-control" name="from">
+                        <span class="input-group-addon"> to </span>
+                      	<input id= "d-to" type="text" class="form-control" name="to"> </div>
+                </div>
+		</div>
+		<br/>
+		<button id="search-button" class="btn btn-circle green btn-sm" type="button">
+		Ver resultados</button>
+			
+		<br/>
+    <hr/>
+    {% if estado %}
+    El siguiente análisis muestra el desempeño del  estado de <b id="state">{{ estado }}</b> en el periodo del 
+    {{ sdate }} a {{ ndate }} en la categoría: <b id="category">{{ tema }}</b>
+    {% endif %}
+    <br/><br/>
+		<!-- END SELECTORS -->
+		<div class="row">
+
+		<!-- Begin Interactive chart -->
+
+			<div class="col-md-10 portlet light portlet-fit bordered">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <span class="caption-subject font-dark sbold uppercase">
+                                          DESEMPEÑO HISTÓRICO</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div id="chart_2" class="chart"> </div>
+                                </div>
+                            </div>
+				
+		<!-- End interactive chart -->
+
+		<!-- BEGIN STACK CHART CONTROLS PORTLET-->
+		<div id="map-container" class="row" style="height:800px">
+		<div class="col-md-10" style="height:100%">
+      <b>Elija una categoria de sentimientos a visualizar:</b>
+      <select id="type" onchange="filterMarkers(this.value);">
+        <option value="">Seleccione una categoria</option>
+        <option value="positivo">Positivos</option>
+        <option value="negativo">Negativos</option>
+        <option value="neutral">Neutros</option>
+      </select><br/>
+      <br/>
+			<div id="map" style="height:100%"></div>
+		</div>
+		</div>
+		<!-- END STACK CHART CONTROLS PORTLET-->
+		<!-- Begin bar chart -->
+
+			    <div class="col-md-10 portlet light portlet-fit bordered">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <span class="caption-subject font-dark sbold uppercase">
+                                          Palabras claves <b id="palabras-claves"></b></span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div id="words_chart" class="chart"> </div>
+                                </div>
+                            </div>
+				
+		<! - End bar chart -->
+
+		</div>	
+</div>
+{% block bootbox %}
+{{ super() }}
+{% endblock %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+        <script src="/static/assets/global/plugins/flot/jquery.flot.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.resize.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.pie.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.stack.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.crosshair.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+	<!-- END PAGE LEVEL PLUGINS -->
+        <!-- BEGIN PAGE LEVEL SCRIPTS -->
+	<!--<script src="static/assets/pages/scripts/charts-flotcharts.min.js" type="text/javascript"/>-->
+        <script type="text/javascript">
+    	//var topics = [{% for topic in tpars %}"{{topic}}",{% endfor %}];
+
+	</script>
+	<script src="/static/assets/pages/scripts/components-select2.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-daterangepicker/moment.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/clockface/js/clockface.js" type="text/javascript"></script>
+	<script src="/static/assets/pages/scripts/components-my-date-time-pickers.js" type="text/javascript"></script>
+	<!-- END PAGE LEVEL SCRIPTS -->
+	<script>
+	jQuery(document).ready(function() {
+        	$("#search-button").on("click",function(){
+			var estado = $("#select1-single-input-sm").val();
+			var tema = $("#select2-single-input-sm").val();
+      var dfrom = $("#d-from").val();
+      var dto = $("#d-to").val();
+      dfrom = dfrom.replace("/","").replace("/","");
+      dto = dto.replace("/","").replace("/","");
+      if (dfrom != "" && dto != "")
+        window.location.href = '/mapas/'+tema+'-'+estado+'/'+dfrom+'/'+dto;
+			else
+        window.location.href = '/mapas/'+tema+'-'+estado;
+		});
+
+		ChartsFlotcharts.init();
+    		ChartsFlotcharts.initCharts();
+	});
+
+   //Interactive Chart
+	//########################################### flot chart
+	var ChartsFlotcharts = function() {
+
+    		return {
+        //main function to initiate the module
+
+        init: function() {
+
+            App.addResizeHandler(function() {
+            });
+
+        },
+
+        initCharts: function() {
+
+            if (!jQuery.plot) {
+                return;
+            }
+
+            var data = [];
+            var totalPoints = 250;
+
+            // random data generator for plot charts
+
+            function getRandomData() {
+                if (data.length > 0) data = data.slice(1);
+                // do a random walk
+                while (data.length < totalPoints) {
+                    var prev = data.length > 0 ? data[data.length - 1] : 50;
+                    var y = prev + Math.random() * 10 - 5;
+                    if (y < 0) y = 0;
+                    if (y > 100) y = 100;
+                    data.push(y);
+                }
+                // zip the generated y values with the x values
+                var res = [];
+                for (var i = 0; i < data.length; ++i) {
+                    res.push([i, data[i]]);
+                }
+
+                return res;
+            }
+
+
+            function chart2() {
+                if ($('#chart_2').size() != 1) {
+                    return;
+                }
+
+                function randValue() {
+                    return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
+                }
+               var pageviews = [
+                {% for valor in timeline_scores %}
+			[{{valor[0]}},{{valor[1]}}],
+		{% endfor %}
+		];
+              var mean = [
+                {% for valor in mean_timeline_positions %}
+			[{{valor[0]}},{{ valor[1] }}],
+		{% endfor %}
+		];
+
+              var plot = $.plot($("#chart_2"), [{
+                    data: pageviews,
+                    label: "Score",
+                    lines: {
+                        lineWidth: 1,
+                    },
+                    shadowSize: 3
+
+                },
+                {
+                    data: mean,
+                    label: "Media Nacional",
+                    lines: {
+                        lineWidth: 1,
+                    },
+                    shadowSize: 3
+
+                }
+		], {
+                    series: {
+                        lines: {
+                            show: true,
+                            lineWidth: 2,
+                            fill: true,
+                            fillColor: {
+                                colors: [{
+                                    opacity: 0.05
+                                }, {
+                                    opacity: 0.01
+                                }]
+                            }
+                        },
+                        points: {
+                            show: true,
+                            radius: 3,
+                            lineWidth: 1
+                        },
+                        shadowSize: 2
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: true,
+                        tickColor: "#eee",
+                        borderColor: "#eee",
+                        borderWidth: 1
+                    },
+                    colors: ["#52e136", "#d12610", "#37b7f3" ],
+                    xaxis: {
+                        ticks:[
+			{% for valor in timeline_scores %}
+			 	[{{valor[0]}},"{{valor[2]}}"],
+			{% endfor %}
+			],
+                        tickDecimals: 0,
+                        tickColor: "#eee",
+                    },
+                    yaxis: {
+                        ticks: 11,
+                        tickDecimals: 0,
+                        tickColor: "#eee",
+                    }
+                });
+
+
+                function showTooltip(x, y, contents) {
+                    $('<div id="tooltip">' + contents + '</div>').css({
+                        position: 'absolute',
+                        display: 'none',
+                        top: y + 5,
+                        left: x + 15,
+                        border: '1px solid #333',
+                        padding: '4px',
+                        color: '#fff',
+                        'border-radius': '3px',
+                        'background-color': '#333',
+                        opacity: 0.80
+                    }).appendTo("body").fadeIn(200);
+                }
+
+                var positions =[
+			              {% for valor in timeline_positions %}
+			 	              {{ valor[1] }},
+                    {% endfor %}
+                  ];
+                var previousPoint = null;
+                $("#chart_2").bind("plothover", function(event, pos, item) {
+                    $("#x").text(pos.x.toFixed(2));
+                    $("#y").text(pos.y.toFixed(2));
+
+                    if (item) {
+                        if (previousPoint != item.dataIndex) {
+                            previousPoint = item.dataIndex;
+
+                            $("#tooltip").remove();
+                            var x = item.datapoint[2].toFixed(2),
+                                y = item.datapoint[1].toFixed(2);
+
+                            showTooltip(item.pageX, item.pageY, item.series.label+" = "+y+", Position = "+positions[item.dataIndex]);
+                        }
+                    } else {
+                        $("#tooltip").remove();
+                        previousPoint = null;
+                    }
+                });
+            }
+
+	function initWordsChart(){
+		var o = [
+		{% for word in top_words %}
+			[{{word[0]}},{{word[2]}}],
+		{% endfor %}
+                ],
+                r = {
+                    series: {
+                        bars: {
+                            show: !0
+                        }
+                    },
+                    bars: {
+                        //horizontal: !0,
+                        barWidth: 0.5,
+                        lineWidth: 0.8,
+                        shadowSize: 0,
+                        align: "left"
+                    },
+                    grid: {
+                        tickColor: "#eee",
+                        borderColor: "#eee",
+                        borderWidth: 1
+                    },
+		    xaxis: {
+                        ticks:[
+			{% for word in top_words %}
+                        [{{word[0]}},"{{word[1]}}"],
+                	{% endfor %}
+			]
+		    }
+                };
+            0 !== $("#words_chart").size() && $.plot($("#words_chart"), [o], r)
+	};
+
+            //graph
+            chart2();
+	    initWordsChart();
+        }
+
+    };
+
+}();
+
+
+      var gmaps_markers = [];
+
+    	function initMap() {
+  			var customMapType = new google.maps.StyledMapType([
+      				{stylers: [
+          				{hue: '#890000'},
+          				{visibility: 'simplified'},
+          				{gamma: 0.5},
+          				{weight: 0.5}
+      				]},
+      				{
+      				  elementType: 'labels',
+        			  stylers: [{visibility: 'off'}]
+     				},
+      				{
+      				  featureType: 'water',
+      				  stylers: [{color: '#890000'}]
+      				}
+    				], {
+     				 name: 'Custom Style'
+  				});
+  			var customMapTypeId = 'custom_style';
+
+  			var map = new google.maps.Map(document.getElementById('map'), {
+    				zoom: 5,
+    				center: {lat: {{geo_center["lat"]}}, lng: {{geo_center["lon"]}}},
+    				mapTypeControlOptions: {
+      					mapTypeIds: [google.maps.MapTypeId.ROADMAP, customMapTypeId]}
+  				});
+
+  			map.mapTypes.set(customMapTypeId, customMapType);
+  			map.setMapTypeId(customMapTypeId);
+			google.maps.event.trigger(map, 'resize')
+
+
+			// markers
+
+			var negPin = new google.maps.MarkerImage("http://i.stack.imgur.com/cdiAE.png");
+			var posPin = new google.maps.MarkerImage("http://i.stack.imgur.com/rU427.png");
+			var neuPin = new google.maps.MarkerImage("http://i.stack.imgur.com/EVb1C.png");
+			var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+        		new google.maps.Size(40, 37),
+        		new google.maps.Point(0, 0),
+        		new google.maps.Point(12, 35));
+
+			{% for reg in geotweet %}
+			{% if reg[3]=="negativo" %}
+			var marker = new google.maps.Marker({
+                		position: new google.maps.LatLng({{reg[2]}},{{reg[1]}}), 
+                		map: map,
+                		icon: negPin,
+                		shadow: pinShadow,
+                    sent: "{{reg[3]}}"
+            		});
+
+			{% elif reg[3]=="positivo" %}
+			var marker = new google.maps.Marker({
+                                position: new google.maps.LatLng({{reg[2]}},{{reg[1]}}),
+                                map: map,
+                                icon: posPin,
+                                shadow: pinShadow,
+                                sent: "{{reg[3]}}"
+                        });
+			{% else %}
+			var marker = new google.maps.Marker({
+                                position: new google.maps.LatLng({{reg[2]}},{{reg[1]}}),
+                                map: map,
+                                icon: neuPin,
+                                shadow: pinShadow,
+                                sent: "{{reg[3]}}"
+                        });
+			{% endif %}
+      gmaps_markers.push(marker);
+      {% endfor %}
+	}
+
+filterMarkers = function (category) {
+      for (i = 0; i < gmaps_markers.length; i++) {
+                marker = gmaps_markers[i];
+                // If is same category or category not picked
+                if (marker.sent == category || category.length === 0) {
+                      marker.setVisible(true);
+                }
+                // Categories don't match
+                else {
+                      marker.setVisible(false);
+                }
+      }
+      var state = $("#state").text();
+      var tema = $("#category").text();
+
+      $.getJSON( "/api/getFrecTerms/"+state+"/"+tema+"/"+category, function( data ) {
+            var items = [];
+              $.each( data, function( key, val ) {
+                    items.push(val);
+                      });
+            if (category=="positivo")
+              $("#palabras-claves").text("positivas");
+            else if (category=="negativo")
+              $("#palabras-claves").text("negativas");
+            else if (category=="neutral")
+              $("#palabras-claves").text("neutrales");
+            var data = [];
+            var ticks = [];
+            for (item in items){
+              data.push([items[item][0],items[item][2]]);
+              ticks.push([items[item][0],items[item][1]]);
+            }
+            myInitWordsChart(data, ticks);
+ 	    });
+
+   function myInitWordsChart(data, ticks){
+		var o = data,
+                r = {
+                    series: {
+                        bars: {
+                            show: !0
+                        }
+                    },
+                    bars: {
+                        //horizontal: !0,
+                        barWidth: 0.5,
+                        lineWidth: 0.8,
+                        shadowSize: 0,
+                        align: "left"
+                    },
+                    grid: {
+                        tickColor: "#eee",
+                        borderColor: "#eee",
+                        borderWidth: 1
+                    },
+		    xaxis: {
+                        ticks:ticks
+		    }
+                };
+            0 !== $("#words_chart").size() && $.plot($("#words_chart"), [o], r)
+	};
+
+}
+
+
+
+	var h = window.innerHeight;
+	$("#map-container").height(h-100);
+	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCl0ylKhGv0p2sxB2kCkb3B3EL-5zXvOmY&signed_in=true&callback=initMap" async defer>
+    	</script>
+{% endblock %}
+

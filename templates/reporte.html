@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+        <link href="/static/assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block headtabs %}
+        <li class="dropdown dropdown-fw active selected">
+                                            <a href="{{ url_for('index') }}" class="text-uppercase">
+                                             <i class="fa fa-globe"></i> S&H </a>
+                                             <ul class="dropdown-menu dropdown-menu-fw">
+                                             </ul>
+                                          </li>
+        <li class="dropdown dropdown-fw  active selected">
+                                    <a href="/ranking" class="text-uppercase">
+                                        <i class="fa fa-cubes"></i> Rankings </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+         <li class="dropdown dropdown-fw active selected">
+                                <a href="/ppublicas" class="text-uppercase">
+                                <i class="fa fa-university"></i> Politicas Pub </a>
+                                <ul class="dropdown-menu dropdown-menu-fw">
+                                </ul>
+                                </li>
+         <li class="dropdown dropdown-fw active selected">
+                                <a href="/corrs" class="text-uppercase">
+                                <i class="fa fa-th"></i> Correlaciones </a>
+                                <ul class="dropdown-menu dropdown-menu-fw">
+                                </ul>
+                                </li>
+      <li class="dropdown dropdown-fw active open selected">
+                                    <a href="javascript:;" class="text-uppercase">
+                                        <i class="fa fa-download"></i> Reportes </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+				<li class="dropdown dropdown-fw active selected">
+                                    <a href="/usuarios" class="text-uppercase">
+                                        <i class="fa fa-users"></i> Usuarios </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+
+{% endblock%}
+
+
+
+{% block content %}
+<div class="page-content">
+		<!-- BEGIN SELECTOR -->
+		<h3>
+			Seleccione la entidad federativa deseada para generar el reporte
+    </h3><br/>
+    En este apartado el usuario tiene la opción de seleccionar la entidad federativa de su interés y obtener un reporte con todos<br/> los elementos analizados para dicha entidad federativa para el período de tiempo seleccionado. 
+    <br/><br/>
+    <div class="row">
+		<!-- BEGIN STATES SELECTOR -->
+					<div class="col-md-3">
+                                            <label for="select1-single-input-sm" class="control-label">Estado</label>
+                                            <select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                                <optgroup label="">
+                                                    <option value="">Seleccione una opcion</option>
+                                                </optgroup>-->
+                                                <optgroup label="Estados">
+						    {% for tuple in estados %}
+                                                    <option value="{{ tuple[0] }}">{{ tuple[1] }}</option>
+                                               	    {% endfor %}
+						 </optgroup>
+                                            </select>
+                                        </div>
+		<!-- END STATES SELECTOR -->
+		<!-- BEGIN CATEGORY SELECTOR
+					<div class="col-md-3">
+                                            <label for="select2-single-input-sm" class="control-label">Categoria</label>
+                                            <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                                <optgroup label="Ninguna">
+                                                    <option value="">Ninguna</option>
+                                                </optgroup>
+                                                <optgroup label="Categorias">
+						    {% for item in temas %}
+                                                    <option value="{{ item }}">{{ item|capitalize() }}</option>
+                                               	    {% endfor %}
+						 </optgroup>
+                                            </select>
+                                        </div>
+		END CATEGORY SELECTOR -->
+		<br/>
+		<button id="search-button" class="btn btn-circle green btn-sm" type="button">
+		Generar reportes</button>
+		</div>
+
+		<br/>
+		<hr>
+		<!-- END SELECTORS -->
+
+		<!-- BEGIN STACK CHART CONTROLS PORTLET-->
+		<div class="row">
+		{% if not exists_grep and not exists_rep %}
+			<h3>No existe ningun reporte que mostrar</h3>
+		{% elif exists_grep %}
+			<label for="select2-single-input-sm" class="control-label">Reportes Generales</label>
+			<ul>
+			{% for rep in exists_grep %}
+				<li><b> {{ rep[0] }} </b>
+				<a href="/reporte/{{ rep[1] }}" target="_blank">&nbsp;&nbsp;
+				<button type="button" class="btn btn-circle green btn-sm" type="button">Ver</button></a></li>
+			{% endfor %}
+			</ul>
+			<hr>
+		{% else %}
+			<label for="select2-single-input-sm" class="control-label">Reporte Estado/categoria</label>
+                        <a href="/reporte/basico">
+			<button type="button" class="btn btn-circle green btn-sm" type="button">
+                        Ver</button></a>
+			<hr>
+		{% endif %}
+		<div class="col-md-6">
+		</div>
+		</div>
+		<!-- END STACK CHART CONTROLS PORTLET-->	
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+        <script src="/static/assets/global/scripts/datatable.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.resize.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.pie.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.stack.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.crosshair.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+	<!-- END PAGE LEVEL PLUGINS -->
+        <!-- BEGIN PAGE LEVEL SCRIPTS -->
+	<!--<script src="static/assets/pages/scripts/charts-flotcharts.min.js" type="text/javascript"/>-->
+	<script src="/static/assets/pages/scripts/timeline.js" type="text/javascript"></script>
+        <script type="text/javascript">
+    	//var topics = [{% for topic in tpars %}"{{topic}}",{% endfor %}];
+
+	</script>
+	<script src="/static/assets/pages/scripts/components-select2.js" type="text/javascript"></script>
+  <script src="/static/js/bootbox.min.js"></script>
+  <!-- END PAGE LEVEL SCRIPTS -->
+	<script>
+	jQuery(document).ready(function() {
+        	$("#search-button").on("click",function(){
+			        var estado = $("#select1-single-input-sm").val();
+			        var tema = $("#select2-single-input-sm").val();
+			        window.location.href = '/reportes/'+estado;
+		      });
+		      {% with messages = get_flashed_messages() %}
+  			    {% if messages %}
+    				  {% for message in messages %}
+      					bootbox.alert("{{ message }}");
+    				  {% endfor %}
+  			    {% endif %}
+		      {% endwith %}
+    	});
+	</script>
+
+{% endblock %}
+

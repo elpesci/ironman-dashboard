@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title></title>
+      <script type='text/javascript' src='https://d3js.org/d3.v3.min.js'></script>
+        <script type='text/javascript' src="/static/correxplorer-org.js"></script>
+          <link rel="stylesheet" type="text/css" href="/static/correxplorer.css">
+          </head>
+
+          <body>
+          {% if estado %}
+              <input type="text"
+              value="/api/corrs/{{tipo}}/{{estado}}.csv"
+              id="file_path" style="visibility:hidden">
+              <input type="checkbox" id="transpose" style="visibility:hidden">
+              Ordenar por:
+              <select id="sort_func">
+              <option value="abs_value">Valor Absoluto</option>
+              <option value="value" selected="selected">Valor</option>
+              <option value="similarity">Similitud</option>
+              <option value="alphabetic">Alfabetico</option>
+              <option value="original">Original</option>
+              </select>
+              <input type='checkbox' id="keep_symmetry" checked="true" style="visibility:hidden">
+              <input type='text' id="zoom" value="1.0" style="visibility:hidden">
+              <img style="width:10%;float:right" src="/static/images/leyenda_corrs.png"/>
+              </p>
+              <div class="tooltip" style="opacity: 0.01"></div>
+          {% else %}
+
+          {% endif %}
+          </body>
+</html>
+

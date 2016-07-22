@@ -1,0 +1,745 @@
+---
+title: "Reporte SMCP"
+output: html_document
+params:
+  estado: !r as.character(estado)
+---
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(tm.plugin.webmining)
+library(XML)
+library(tm)
+library(tidyr)
+library(dplyr)
+library(RPostgreSQL)
+library(RMySQL)
+library(lubridate)
+library(stringr)
+library(RCurl)
+library(knitr)
+library(Rstem)
+library(irlba)
+library(Matrix)
+library(tm)
+library(ggplot2)
+library(rCharts)
+library(ggmap)
+library(mapproj)
+library(gridExtra)
+library(png)
+library(grid)
+library(rMaps)
+library(tmcn.word2vec)
+library(RTextTools)
+library(topicmodels)
+library(wordcloud)
+library(topicmodels)
+library(ggthemes)
+library(slam)
+library(reshape2)
+library(plotly)
+library(twitteR)
+library(textcat)
+categorias <- c('seguridad','servicios','salud','economia')
+lista_termino <- do.call(paste, expand.grid(categorias, estado))
+```
+
+#Análisis del estado __`r estado`__ 
+
+El siguiente análisis muestra un resumen detallado con respecto al desempeño del estado `r estado` en el periodo __`r Sys.Date()-7`__ a __`r Sys.Date()`__ y en las siguientes categorías:
+
+1. Salud
+2. Seguridad
+3. Economía
+4. Servicios
+
+###Ranking 
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+#Me necesito conectar con la tabla "tb4"
+source("/home/ubuntu/dashboard/reportes/utils_reporteTotal.r")
+rank <- Rank(estado)
+```
+
+
+La tabla de rankings del estado __`r estado`__ en la semana (`r Sys.Date()-7` - `r Sys.Date()`) es la siguiente:
+
+`r kable(rank)`
+
+
+###Noticias más relevantes 
+
+Las noticias más relevantes de la semana __`r Sys.Date()-7`__ a __`r Sys.Date()`__ se encuentran en la siguiente lista:
+
+
+####1. Noticias generales del estado `r estado`
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+## SECCIÓN DE NOTICIAS
+
+termino_gral <- paste(estado,'México')
+
+corpus_noticias_mex <- lapply(termino_gral, function(i) WebCorpus(GoogleNewsSource(params=list(hl = "spanish", q = i, ie ="utf-8", num = 40, gl = "MX", output = "rss"))))
+
+#funcion para filtrar elementos
+make_row <- function(elem) {
+    data.frame(timestamp=elem[[2]]$datetimestamp,
+               heading=elem[[2]]$heading,
+               description=elem[[2]]$description,
+               origin=elem[[2]]$origin,
+               stringsAsFactors=FALSE)
+}
+
+
+#en un for para hacer un data frame de las noticias
+agregado <- cbind(bind_rows(lapply(corpus_noticias_mex[[1]], make_row)),estado = estado) %>%
+    mutate(lang = lapply(heading, textcat)) %>% 
+    filter(lang != "scots", lang != "english", lang != "portuguese") %>%
+    select(-lang)
+
+agregado <- agregado %>%
+    separate(heading, into = c("heading", "newspaper"), sep = " - ") %>%
+    separate(timestamp, into = c("date_created", "shiza"), sep = " ") %>%
+    select(date_created,heading,newspaper,description,origin,estado)
+
+agregado <- agregado %>%
+    mutate(lang = lapply(agregado$heading, textcat)) %>%
+    filter(lang != "scots", lang != "english") %>%
+    select(-lang) %>%
+    head(10)
+
+
+kable(select(agregado, date_created, heading, newspaper, description))
+
+
+```
+
+
+####Términos más importantes en las noticias generales
+
+A continuación se muestran los términos más importantes generados en el cuerpo de las noticias. A través de la siguiente información podemos conocer cuales son los temas mas mencionados en las noticias referentes al estado `r estado`.
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+corp.com <- Corpus(VectorSource(agregado$description), readerControl = list(language ='spa'))
+corp.com.1 <- tm_map(corp.com, stripWhitespace)
+corp.com.2 <- tm_map(corp.com.1, tolower)
+corp.com.3 <- tm_map(corp.com.2,  function(x){
+  gsub('[-«»\\\',;:".!¡¿?\\(\\)]','',x)
+}) 
+mis_stops <- as.character(read.table("/home/ubuntu/dashboard/reportes/utils_reporte/espanol_stops.txt")[,1])
+corp.com.4 <- tm_map(corp.com.3, removeWords, mis_stops)
+corp.com.4 <- tm_map(corp.com.4, stripWhitespace)
+corp.4 <- tm_map(corp.com.4, function(x){
+  z <- strsplit(x, " +")[[1]]
+  #z.stem <- wordStem(z, language="spanish")
+  PlainTextDocument(paste(z, collapse=" "))
+})
+#hacemos la matriz de terminos documentos
+dtm <- TermDocumentMatrix(corp.4,
+                          control = list(bounds=list(global=c(1,Inf)), 
+                                         stopwords=FALSE,
+                                         weighting = function(x){ 
+                                           weightTfIdf(x, normalize = FALSE)
+                                         }))
+#terminos frecuentes
+freq.terms <- findFreqTerms(dtm, lowfreq = 2)
+term.freq <- rowSums(as.matrix(dtm))
+term.freq <- subset(term.freq, term.freq >= 2)
+df <- data.frame(term = names(term.freq), freq = term.freq)
+
+#top 20 
+df_20 <- head(arrange(df, desc(freq)),20)
+
+#aplicar la funcion de asociación de términos a los 20 más frecuentes
+relation_terms <- apply(df_20, 2, function(x) findAssocs(dtm, x, 0.25))
+
+#Pasarlo a una estructura en la que pueda visualizarlo como red
+term_assocs <- melt(relation_terms$term[1])
+colnames(term_assocs) <- c("asociacion", "categoria")
+term_assocs$termino <- row.names(term_assocs)
+rownames(term_assocs) <- NULL
+
+for(i in 2:length(relation_terms$term)){
+  sup <- melt(relation_terms$term[i])
+  colnames(sup) <- c("asociacion", "categoria")
+  sup$termino <- row.names(sup)
+  rownames(sup) <- NULL
+  term_assocs <- rbind(term_assocs, sup)
+}
+
+kable(df_20)
+
+ggplot(df_20, aes(x = reorder(term, freq), y = freq))  +
+  geom_bar(stat = "identity", fill = "darkgray") +
+  #theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(aes(yintercept=mean(df_20$freq)), color='red') +
+  labs(x="Término",y="Frecuencia") + ggtitle('Términos más frecuentes') + coord_flip()
+
+#gráfica con los valores agrupados por concepto y asociados por fuerza
+#term_assocs
+
+#a <- filter(term_assocs,asociacion > 0.35)
+#plot_ly(a, x = termino, y = asociacion, text = paste("Categoría: ", categoria),
+#        mode = "markers", size = asociacion)
+
+```
+
+
+####2. Noticias de `r lista_termino[1]`
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+## SECCIÓN DE NOTICIAS
+
+corpus_noticias_mex <- lapply(lista_termino[1], function(i) WebCorpus(GoogleNewsSource(params=list(hl = "spanish", q = i, ie ="utf-8", num = 40, gl = "MX", output = "rss"))))
+
+#funcion para filtrar elementos
+make_row <- function(elem) {
+    data.frame(timestamp=elem[[2]]$datetimestamp,
+               heading=elem[[2]]$heading,
+               description=elem[[2]]$description,
+               origin=elem[[2]]$origin,
+               stringsAsFactors=FALSE)
+}
+
+
+#en un for para hacer un data frame de las noticias
+agregado <- cbind(bind_rows(lapply(corpus_noticias_mex[[1]], make_row)),estado = estado) %>%
+    mutate(lang = lapply(heading, textcat)) %>% 
+    filter(lang != "scots", lang != "english", lang != "portuguese") %>%
+    select(-lang)
+
+agregado <- agregado %>%
+    separate(heading, into = c("heading", "newspaper"), sep = " - ") %>%
+    separate(timestamp, into = c("date_created", "shiza"), sep = " ") %>%
+    select(date_created,heading,newspaper,description,origin,estado)
+
+agregado <- agregado %>%
+    mutate(lang = lapply(agregado$heading, textcat)) %>%
+    filter(lang != "scots", lang != "english") %>%
+    select(-lang) %>%
+    head(10)
+
+
+kable(select(agregado, date_created, heading, newspaper, description))
+
+
+```
+
+
+####Términos más importantes relacionados a las noticias de `r lista_termino[1]`
+
+A continuación se muestran los términos más importantes generados en el cuerpo de las noticias relacionado a `r lista_termino[1]`. 
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+corp.com <- Corpus(VectorSource(agregado$description), readerControl = list(language ='spa'))
+corp.com.1 <- tm_map(corp.com, stripWhitespace)
+corp.com.2 <- tm_map(corp.com.1, tolower)
+corp.com.3 <- tm_map(corp.com.2,  function(x){
+  gsub('[-«»\\\',;:".!¡¿?\\(\\)]','',x)
+}) 
+mis_stops <- as.character(read.table("/home/ubuntu/dashboard/reportes/utils_reporte/espanol_stops.txt")[,1])
+corp.com.4 <- tm_map(corp.com.3, removeWords, mis_stops)
+corp.com.4 <- tm_map(corp.com.4, stripWhitespace)
+corp.4 <- tm_map(corp.com.4, function(x){
+  z <- strsplit(x, " +")[[1]]
+  #z.stem <- wordStem(z, language="spanish")
+  PlainTextDocument(paste(z, collapse=" "))
+})
+#hacemos la matriz de terminos documentos
+dtm <- TermDocumentMatrix(corp.4,
+                          control = list(bounds=list(global=c(1,Inf)), 
+                                         stopwords=FALSE,
+                                         weighting = function(x){ 
+                                           weightTfIdf(x, normalize = FALSE)
+                                         }))
+#terminos frecuentes
+freq.terms <- findFreqTerms(dtm, lowfreq = 2)
+term.freq <- rowSums(as.matrix(dtm))
+term.freq <- subset(term.freq, term.freq >= 2)
+df <- data.frame(term = names(term.freq), freq = term.freq)
+
+#top 20 
+df_20 <- head(arrange(df, desc(freq)),20)
+
+#aplicar la funcion de asociación de términos a los 20 más frecuentes
+relation_terms <- apply(df_20, 2, function(x) findAssocs(dtm, x, 0.25))
+
+#Pasarlo a una estructura en la que pueda visualizarlo como red
+term_assocs <- melt(relation_terms$term[1])
+colnames(term_assocs) <- c("asociacion", "categoria")
+term_assocs$termino <- row.names(term_assocs)
+rownames(term_assocs) <- NULL
+
+for(i in 2:length(relation_terms$term)){
+  sup <- melt(relation_terms$term[i])
+  colnames(sup) <- c("asociacion", "categoria")
+  sup$termino <- row.names(sup)
+  rownames(sup) <- NULL
+  term_assocs <- rbind(term_assocs, sup)
+}
+
+kable(df_20)
+
+ggplot(df_20, aes(x = reorder(term, freq), y = freq))  +
+  geom_bar(stat = "identity", fill = "darkgray") +
+  #theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(aes(yintercept=mean(df_20$freq)), color='red') +
+  labs(x="Término",y="Frecuencia") + ggtitle('Términos más frecuentes') + coord_flip()
+
+#gráfica con los valores agrupados por concepto y asociados por fuerza
+#term_assocs
+
+#a <- filter(term_assocs,asociacion > 0.35)
+#plot_ly(a, x = termino, y = asociacion, text = paste("Categoría: ", categoria),
+#        mode = "markers", size = asociacion)
+
+```
+
+
+####3. Noticias de `r lista_termino[2]`
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+## SECCIÓN DE NOTICIAS
+
+corpus_noticias_mex <- lapply(lista_termino[2], function(i) WebCorpus(GoogleNewsSource(params=list(hl = "spanish", q = i, ie ="utf-8", num = 40, gl = "MX", output = "rss"))))
+
+#funcion para filtrar elementos
+make_row <- function(elem) {
+    data.frame(timestamp=elem[[2]]$datetimestamp,
+               heading=elem[[2]]$heading,
+               description=elem[[2]]$description,
+               origin=elem[[2]]$origin,
+               stringsAsFactors=FALSE)
+}
+
+
+#en un for para hacer un data frame de las noticias
+agregado <- cbind(bind_rows(lapply(corpus_noticias_mex[[1]], make_row)),estado = estado) %>%
+    mutate(lang = lapply(heading, textcat)) %>% 
+    filter(lang != "scots", lang != "english", lang != "portuguese") %>%
+    select(-lang)
+
+agregado <- agregado %>%
+    separate(heading, into = c("heading", "newspaper"), sep = " - ") %>%
+    separate(timestamp, into = c("date_created", "shiza"), sep = " ") %>%
+    select(date_created,heading,newspaper,description,origin,estado)
+
+agregado <- agregado %>%
+    mutate(lang = lapply(agregado$heading, textcat)) %>%
+    filter(lang != "scots", lang != "english") %>%
+    select(-lang) %>%
+    head(10)
+
+
+kable(select(agregado, date_created, heading, newspaper, description))
+
+
+```
+
+
+####Términos más importantes relacionados a las noticias de `r lista_termino[2]`
+
+A continuación se muestran los términos más importantes generados en el cuerpo de las noticias relacionado a `r lista_termino[2]`. 
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+corp.com <- Corpus(VectorSource(agregado$description), readerControl = list(language ='spa'))
+corp.com.1 <- tm_map(corp.com, stripWhitespace)
+corp.com.2 <- tm_map(corp.com.1, tolower)
+corp.com.3 <- tm_map(corp.com.2,  function(x){
+  gsub('[-«»\\\',;:".!¡¿?\\(\\)]','',x)
+}) 
+mis_stops <- as.character(read.table("/home/ubuntu/dashboard/reportes/utils_reporte/espanol_stops.txt")[,1])
+corp.com.4 <- tm_map(corp.com.3, removeWords, mis_stops)
+corp.com.4 <- tm_map(corp.com.4, stripWhitespace)
+corp.4 <- tm_map(corp.com.4, function(x){
+  z <- strsplit(x, " +")[[1]]
+  #z.stem <- wordStem(z, language="spanish")
+  PlainTextDocument(paste(z, collapse=" "))
+})
+#hacemos la matriz de terminos documentos
+dtm <- TermDocumentMatrix(corp.4,
+                          control = list(bounds=list(global=c(1,Inf)), 
+                                         stopwords=FALSE,
+                                         weighting = function(x){ 
+                                           weightTfIdf(x, normalize = FALSE)
+                                         }))
+#terminos frecuentes
+freq.terms <- findFreqTerms(dtm, lowfreq = 2)
+term.freq <- rowSums(as.matrix(dtm))
+term.freq <- subset(term.freq, term.freq >= 2)
+df <- data.frame(term = names(term.freq), freq = term.freq)
+
+#top 20 
+df_20 <- head(arrange(df, desc(freq)),20)
+
+#aplicar la funcion de asociación de términos a los 20 más frecuentes
+relation_terms <- apply(df_20, 2, function(x) findAssocs(dtm, x, 0.25))
+
+#Pasarlo a una estructura en la que pueda visualizarlo como red
+term_assocs <- melt(relation_terms$term[1])
+colnames(term_assocs) <- c("asociacion", "categoria")
+term_assocs$termino <- row.names(term_assocs)
+rownames(term_assocs) <- NULL
+
+for(i in 2:length(relation_terms$term)){
+  sup <- melt(relation_terms$term[i])
+  colnames(sup) <- c("asociacion", "categoria")
+  sup$termino <- row.names(sup)
+  rownames(sup) <- NULL
+  term_assocs <- rbind(term_assocs, sup)
+}
+
+kable(df_20)
+
+ggplot(df_20, aes(x = reorder(term, freq), y = freq))  +
+  geom_bar(stat = "identity", fill = "darkgray") +
+  #theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(aes(yintercept=mean(df_20$freq)), color='red') +
+  labs(x="Término",y="Frecuencia") + ggtitle('Términos más frecuentes') + coord_flip()
+
+#gráfica con los valores agrupados por concepto y asociados por fuerza
+#term_assocs
+
+#a <- filter(term_assocs,asociacion > 0.35)
+#plot_ly(a, x = termino, y = asociacion, text = paste("Categoría: ", categoria),
+#        mode = "markers", size = asociacion)
+
+```
+
+
+####4. Noticias de `r lista_termino[3]`
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+## SECCIÓN DE NOTICIAS
+
+corpus_noticias_mex <- lapply(lista_termino[3], function(i) WebCorpus(GoogleNewsSource(params=list(hl = "spanish", q = i, ie ="utf-8", num = 40, gl = "MX", output = "rss"))))
+
+#funcion para filtrar elementos
+make_row <- function(elem) {
+    data.frame(timestamp=elem[[2]]$datetimestamp,
+               heading=elem[[2]]$heading,
+               description=elem[[2]]$description,
+               origin=elem[[2]]$origin,
+               stringsAsFactors=FALSE)
+}
+
+
+#en un for para hacer un data frame de las noticias
+agregado <- cbind(bind_rows(lapply(corpus_noticias_mex[[1]], make_row)),estado = estado) %>%
+    mutate(lang = lapply(heading, textcat)) %>% 
+    filter(lang != "scots", lang != "english", lang != "portuguese") %>%
+    select(-lang)
+
+agregado <- agregado %>%
+    separate(heading, into = c("heading", "newspaper"), sep = " - ") %>%
+    separate(timestamp, into = c("date_created", "shiza"), sep = " ") %>%
+    select(date_created,heading,newspaper,description,origin,estado)
+
+agregado <- agregado %>%
+    mutate(lang = lapply(agregado$heading, textcat)) %>%
+    filter(lang != "scots", lang != "english") %>%
+    select(-lang) %>%
+    head(10)
+
+
+kable(select(agregado, date_created, heading, newspaper, description))
+
+
+```
+
+
+####Términos más importantes relacionados a las noticias de `r lista_termino[3]`
+
+A continuación se muestran los términos más importantes generados en el cuerpo de las noticias relacionado a `r lista_termino[3]`. 
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+corp.com <- Corpus(VectorSource(agregado$description), readerControl = list(language ='spa'))
+corp.com.1 <- tm_map(corp.com, stripWhitespace)
+corp.com.2 <- tm_map(corp.com.1, tolower)
+corp.com.3 <- tm_map(corp.com.2,  function(x){
+  gsub('[-«»\\\',;:".!¡¿?\\(\\)]','',x)
+}) 
+mis_stops <- as.character(read.table("/home/ubuntu/dashboard/reportes/utils_reporte/espanol_stops.txt")[,1])
+corp.com.4 <- tm_map(corp.com.3, removeWords, mis_stops)
+corp.com.4 <- tm_map(corp.com.4, stripWhitespace)
+corp.4 <- tm_map(corp.com.4, function(x){
+  z <- strsplit(x, " +")[[1]]
+  #z.stem <- wordStem(z, language="spanish")
+  PlainTextDocument(paste(z, collapse=" "))
+})
+#hacemos la matriz de terminos documentos
+dtm <- TermDocumentMatrix(corp.4,
+                          control = list(bounds=list(global=c(1,Inf)), 
+                                         stopwords=FALSE,
+                                         weighting = function(x){ 
+                                           weightTfIdf(x, normalize = FALSE)
+                                         }))
+#terminos frecuentes
+freq.terms <- findFreqTerms(dtm, lowfreq = 2)
+term.freq <- rowSums(as.matrix(dtm))
+term.freq <- subset(term.freq, term.freq >= 2)
+df <- data.frame(term = names(term.freq), freq = term.freq)
+
+#top 20 
+df_20 <- head(arrange(df, desc(freq)),20)
+
+#aplicar la funcion de asociación de términos a los 20 más frecuentes
+relation_terms <- apply(df_20, 2, function(x) findAssocs(dtm, x, 0.25))
+
+#Pasarlo a una estructura en la que pueda visualizarlo como red
+term_assocs <- melt(relation_terms$term[1])
+colnames(term_assocs) <- c("asociacion", "categoria")
+term_assocs$termino <- row.names(term_assocs)
+rownames(term_assocs) <- NULL
+
+for(i in 2:length(relation_terms$term)){
+  sup <- melt(relation_terms$term[i])
+  colnames(sup) <- c("asociacion", "categoria")
+  sup$termino <- row.names(sup)
+  rownames(sup) <- NULL
+  term_assocs <- rbind(term_assocs, sup)
+}
+
+kable(df_20)
+
+ggplot(df_20, aes(x = reorder(term, freq), y = freq))  +
+  geom_bar(stat = "identity", fill = "darkgray") +
+  #theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(aes(yintercept=mean(df_20$freq)), color='red') +
+  labs(x="Término",y="Frecuencia") + ggtitle('Términos más frecuentes') + coord_flip()
+
+#gráfica con los valores agrupados por concepto y asociados por fuerza
+#term_assocs
+
+#a <- filter(term_assocs,asociacion > 0.35)
+#plot_ly(a, x = termino, y = asociacion, text = paste("Categoría: ", categoria),
+#        mode = "markers", size = asociacion)
+
+```
+
+
+
+####5. Noticias de `r lista_termino[4]`
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+## SECCIÓN DE NOTICIAS
+
+corpus_noticias_mex <- lapply(lista_termino[4], function(i) WebCorpus(GoogleNewsSource(params=list(hl = "spanish", q = i, ie ="utf-8", num = 40, gl = "MX", output = "rss"))))
+
+#funcion para filtrar elementos
+make_row <- function(elem) {
+    data.frame(timestamp=elem[[2]]$datetimestamp,
+               heading=elem[[2]]$heading,
+               description=elem[[2]]$description,
+               origin=elem[[2]]$origin,
+               stringsAsFactors=FALSE)
+}
+
+
+#en un for para hacer un data frame de las noticias
+agregado <- cbind(bind_rows(lapply(corpus_noticias_mex[[1]], make_row)),estado = estado) %>%
+    mutate(lang = lapply(heading, textcat)) %>% 
+    filter(lang != "scots", lang != "english", lang != "portuguese") %>%
+    select(-lang)
+
+agregado <- agregado %>%
+    separate(heading, into = c("heading", "newspaper"), sep = " - ") %>% 
+    separate(timestamp, into = c("date_created", "shiza"), sep = " ") %>% 
+    select(date_created,heading,newspaper,description,origin,estado)
+
+agregado <- agregado %>%
+    mutate(lang = lapply(agregado$heading, textcat)) %>%
+    filter(lang != "scots", lang != "english") %>%
+    select(-lang) %>%
+    head(10)
+
+
+kable(select(agregado, date_created, heading, newspaper, description))
+
+
+```
+
+
+####Términos más importantes relacionados a las noticias de `r lista_termino[4]`
+
+A continuación se muestran los términos más importantes generados en el cuerpo de las noticias relacionado a `r lista_termino[4]`. 
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+corp.com <- Corpus(VectorSource(agregado$description), readerControl = list(language ='spa'))
+corp.com.1 <- tm_map(corp.com, stripWhitespace)
+corp.com.2 <- tm_map(corp.com.1, tolower)
+corp.com.3 <- tm_map(corp.com.2,  function(x){
+  gsub('[-«»\\\',;:".!¡¿?\\(\\)]','',x)
+}) 
+mis_stops <- as.character(read.table("/home/ubuntu/dashboard/reportes/utils_reporte/espanol_stops.txt")[,1])
+corp.com.4 <- tm_map(corp.com.3, removeWords, mis_stops)
+corp.com.4 <- tm_map(corp.com.4, stripWhitespace)
+corp.4 <- tm_map(corp.com.4, function(x){
+  z <- strsplit(x, " +")[[1]]
+  #z.stem <- wordStem(z, language="spanish")
+  PlainTextDocument(paste(z, collapse=" "))
+})
+#hacemos la matriz de terminos documentos
+dtm <- TermDocumentMatrix(corp.4,
+                          control = list(bounds=list(global=c(1,Inf)), 
+                                         stopwords=FALSE,
+                                         weighting = function(x){ 
+                                           weightTfIdf(x, normalize = FALSE)
+                                         }))
+#terminos frecuentes
+freq.terms <- findFreqTerms(dtm, lowfreq = 2)
+term.freq <- rowSums(as.matrix(dtm))
+term.freq <- subset(term.freq, term.freq >= 2)
+df <- data.frame(term = names(term.freq), freq = term.freq)
+
+#top 20 
+df_20 <- head(arrange(df, desc(freq)),20)
+
+#aplicar la funcion de asociación de términos a los 20 más frecuentes
+relation_terms <- apply(df_20, 2, function(x) findAssocs(dtm, x, 0.25))
+
+#Pasarlo a una estructura en la que pueda visualizarlo como red
+term_assocs <- melt(relation_terms$term[1])
+colnames(term_assocs) <- c("asociacion", "categoria")
+term_assocs$termino <- row.names(term_assocs)
+rownames(term_assocs) <- NULL
+
+for(i in 2:length(relation_terms$term)){
+  sup <- melt(relation_terms$term[i])
+  colnames(sup) <- c("asociacion", "categoria")
+  sup$termino <- row.names(sup)
+  rownames(sup) <- NULL
+  term_assocs <- rbind(term_assocs, sup)
+}
+
+kable(df_20)
+
+ggplot(df_20, aes(x = reorder(term, freq), y = freq))  +
+  geom_bar(stat = "identity", fill = "darkgray") +
+  #theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(aes(yintercept=mean(df_20$freq)), color='red') +
+  labs(x="Término",y="Frecuencia") + ggtitle('Términos más frecuentes') + coord_flip()
+
+#gráfica con los valores agrupados por concepto y asociados por fuerza
+#term_assocs
+
+#a <- filter(term_assocs,asociacion > 0.35)
+#plot_ly(a, x = termino, y = asociacion, text = paste("Categoría: ", categoria),
+#        mode = "markers", size = asociacion)
+
+```
+
+###Desempeño del indicador 
+
+A continuación se muestra el desempeño del indicador correspondendientes al estado __`r estado`__ 
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+performance <- Performance(estado)
+
+#kable(performance)
+
+performancePlot <- ggplot(performance, aes(x=date_created, y=puntuacion,group=concepto,colour = concepto)) + geom_line()
+
+plot_ly(performancePlot)
+```
+
+
+Los temas más importantes en el estado __`r estado`__ son:
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+# df_20 <- tryCatch({getG_topWords(estado)},
+#       error = function(e){cat("ERROR :",conditionMessage(e), "\n")} 
+#     )
+
+df_20 <- TopWords(estado)
+
+#kable(df_20)
+      
+ggplot(df_20, aes(x = reorder(term, freq), y = freq, group=categoria,fill = categoria))  +
+  geom_bar(stat = "identity" ) +
+  scale_fill_brewer() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(aes(yintercept=mean(df_20$freq)), color='red') +
+  labs(x="Término",y="Frecuencia") + ggtitle('Términos más frecuentes') + coord_flip()
+ 
+# ggplot(df_20, aes(x = reorder(term, freq), y = freq, group = categoria)) +
+#   facet_wrap(~ categoria, nrow = 2) +
+#   geom_bar(stat = "identity", fill = "deepskyblue2") + 
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   scale_y_continuous(name="Dolares", labels = comma) +
+#   labs(x=" ",y="Cantidad en Millones de dólares") + ggtitle('Importaciones por region')
+# 
+
+```
+
+
+Las zonas con más actividad son:
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.width=10,fig.height=10}
+
+
+mapa_data <- tryCatch({Map(estado)
+               },
+      error = function(e){cat("ERROR :",conditionMessage(e), "\n")} 
+    )
+
+mapa_data <- mapa_data %>%
+  filter(polarizacion != 'neutral', categoria != 'NA')
+
+sample_data <- mapa_data[sample(1:nrow(mapa_data), size=round((dim(mapa_data)[1])*0.3,0), replace=FALSE),]
+
+lon_ref <- mapa_data[1,1]
+lat_ref <- mapa_data[1,2]
+map <- get_map(location = c(lon = lon_ref, lat = lat_ref), zoom = 11,
+  scale = "auto")
+
+map_2 <- ggmap(map) +
+  geom_point(data = mapa_data, aes(x=lon, y=lat, group=categoria,colour = polarizacion), alpha = I(0.50), size = 2.6) + scale_color_manual(values = c("red", "green3")) + 
+  facet_wrap(~ categoria, nrow = 2)
+map_2
+
+
+```
+
+
+
+###Tabla de correlación correspondiente al estado `r estado`
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.width=10,fig.height=10}
+
+cor_table <- corTable(estado)
+cor_table
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

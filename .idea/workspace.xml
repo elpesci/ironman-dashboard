@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="28dec021-4804-49d0-bd98-881ab77329da" name="Default" comment="" />
+    <ignored path="Dashboard Workspace.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="Dashboard Workspace" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="DatabaseManager.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/DatabaseManager.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="96" column="32" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="32" />
+              <folding>
+                <element signature="e#0#25#0" expanded="true" />
+                <element signature="e#140#295#0" expanded="false" />
+                <element signature="e#325#701#0" expanded="false" />
+                <element signature="e#728#745#0" expanded="false" />
+                <element signature="e#780#912#0" expanded="false" />
+                <element signature="e#953#994#0" expanded="false" />
+                <element signature="e#1037#1111#0" expanded="false" />
+                <element signature="e#1143#1169#0" expanded="false" />
+                <element signature="e#1202#1486#0" expanded="false" />
+                <element signature="e#1510#1572#0" expanded="false" />
+                <element signature="e#1698#1959#0" expanded="false" />
+                <element signature="e#1993#2271#0" expanded="false" />
+                <element signature="e#2315#2473#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1200">
+              <caret line="230" column="15" selection-start-line="230" selection-start-column="15" selection-end-line="230" selection-end-column="15" />
+              <folding>
+                <element signature="e#0#55#0" expanded="true" />
+                <element signature="e#965#1151#0" expanded="false" />
+                <element signature="e#1199#3124#0" expanded="false" />
+                <element signature="e#3236#3863#0" expanded="false" />
+                <element signature="e#3905#3958#0" expanded="false" />
+                <element signature="e#4050#4899#0" expanded="false" />
+                <element signature="e#5108#7926#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="formato_estados.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/formato_estados.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="data_utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/data_utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1470">
+              <caret line="524" column="116" selection-start-line="524" selection-start-column="13" selection-end-line="524" selection-end-column="116" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
+                <element signature="e#888#2172#0" expanded="false" />
+                <element signature="e#2260#3141#0" expanded="false" />
+                <element signature="e#3186#3622#0" expanded="false" />
+                <element signature="e#3710#3916#0" expanded="false" />
+                <element signature="e#3980#4696#0" expanded="false" />
+                <element signature="e#4725#5483#0" expanded="false" />
+                <element signature="e#5517#6339#0" expanded="false" />
+                <element signature="e#6369#6924#0" expanded="false" />
+                <element signature="e#6968#7407#0" expanded="false" />
+                <element signature="e#7492#8288#0" expanded="false" />
+                <element signature="e#8371#9615#0" expanded="false" />
+                <element signature="e#9656#10186#0" expanded="false" />
+                <element signature="e#10232#10768#0" expanded="false" />
+                <element signature="e#10837#11967#0" expanded="false" />
+                <element signature="e#12058#13237#0" expanded="false" />
+                <element signature="e#13362#14441#0" expanded="false" />
+                <element signature="e#14477#14510#0" expanded="false" />
+                <element signature="e#14610#14907#0" expanded="false" />
+                <element signature="e#15068#16456#0" expanded="false" />
+                <element signature="e#16540#17752#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="76" />
+    <option name="y" value="66" />
+    <option name="width" value="1247" />
+    <option name="height" value="721" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dashboard Workspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dashboard Workspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dashboard Workspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="Dashboard Workspace" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="Dashboard Workspace" />
+        <option name="myAddSourceRoots" value="true" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.app">
+    <configuration default="false" name="app" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="TheRRunConfigurationType" factoryName="R">
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_ARGS" value="" />
+      <option name="WORKING_DIRECTORY_PATH" value="" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Dashboard Workspace" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Python.app" />
+    </list>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Python.app" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="28dec021-4804-49d0-bd98-881ab77329da" name="Default" comment="" />
+      <created>1469033403080</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1469033403080</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="76" y="66" width="1247" height="721" extended-state="0" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18765037" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="The R Graphics" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Packages" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3287037" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/utils/DatabaseManager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="96" column="32" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#140#295#0" expanded="false" />
+            <element signature="e#325#701#0" expanded="false" />
+            <element signature="e#728#745#0" expanded="false" />
+            <element signature="e#780#912#0" expanded="false" />
+            <element signature="e#953#994#0" expanded="false" />
+            <element signature="e#1037#1111#0" expanded="false" />
+            <element signature="e#1143#1169#0" expanded="false" />
+            <element signature="e#1202#1486#0" expanded="false" />
+            <element signature="e#1510#1572#0" expanded="false" />
+            <element signature="e#1698#1959#0" expanded="false" />
+            <element signature="e#1993#2271#0" expanded="false" />
+            <element signature="e#2315#2473#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+            <element signature="e#965#1151#0" expanded="false" />
+            <element signature="e#1199#3124#0" expanded="false" />
+            <element signature="e#3236#3863#0" expanded="false" />
+            <element signature="e#3905#3958#0" expanded="false" />
+            <element signature="e#4050#4899#0" expanded="false" />
+            <element signature="e#5108#7926#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/formato_estados.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/data_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1470">
+          <caret line="524" column="116" selection-start-line="524" selection-start-column="13" selection-end-line="524" selection-end-column="116" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#888#2172#0" expanded="false" />
+            <element signature="e#2260#3141#0" expanded="false" />
+            <element signature="e#3186#3622#0" expanded="false" />
+            <element signature="e#3710#3916#0" expanded="false" />
+            <element signature="e#3980#4696#0" expanded="false" />
+            <element signature="e#4725#5483#0" expanded="false" />
+            <element signature="e#5517#6339#0" expanded="false" />
+            <element signature="e#6369#6924#0" expanded="false" />
+            <element signature="e#6968#7407#0" expanded="false" />
+            <element signature="e#7492#8288#0" expanded="false" />
+            <element signature="e#8371#9615#0" expanded="false" />
+            <element signature="e#9656#10186#0" expanded="false" />
+            <element signature="e#10232#10768#0" expanded="false" />
+            <element signature="e#10837#11967#0" expanded="false" />
+            <element signature="e#12058#13237#0" expanded="false" />
+            <element signature="e#13362#14441#0" expanded="false" />
+            <element signature="e#14477#14510#0" expanded="false" />
+            <element signature="e#14610#14907#0" expanded="false" />
+            <element signature="e#15068#16456#0" expanded="false" />
+            <element signature="e#16540#17752#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/DatabaseManager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="96" column="32" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#140#295#0" expanded="false" />
+            <element signature="e#325#701#0" expanded="false" />
+            <element signature="e#728#745#0" expanded="false" />
+            <element signature="e#780#912#0" expanded="false" />
+            <element signature="e#953#994#0" expanded="false" />
+            <element signature="e#1037#1111#0" expanded="false" />
+            <element signature="e#1143#1169#0" expanded="false" />
+            <element signature="e#1202#1486#0" expanded="false" />
+            <element signature="e#1510#1572#0" expanded="false" />
+            <element signature="e#1698#1959#0" expanded="false" />
+            <element signature="e#1993#2271#0" expanded="false" />
+            <element signature="e#2315#2473#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+            <element signature="e#965#1151#0" expanded="false" />
+            <element signature="e#1199#3124#0" expanded="false" />
+            <element signature="e#3236#3863#0" expanded="false" />
+            <element signature="e#3905#3958#0" expanded="false" />
+            <element signature="e#4050#4899#0" expanded="false" />
+            <element signature="e#5108#7926#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/formato_estados.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/data_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1470">
+          <caret line="524" column="116" selection-start-line="524" selection-start-column="13" selection-end-line="524" selection-end-column="116" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#888#2172#0" expanded="false" />
+            <element signature="e#2260#3141#0" expanded="false" />
+            <element signature="e#3186#3622#0" expanded="false" />
+            <element signature="e#3710#3916#0" expanded="false" />
+            <element signature="e#3980#4696#0" expanded="false" />
+            <element signature="e#4725#5483#0" expanded="false" />
+            <element signature="e#5517#6339#0" expanded="false" />
+            <element signature="e#6369#6924#0" expanded="false" />
+            <element signature="e#6968#7407#0" expanded="false" />
+            <element signature="e#7492#8288#0" expanded="false" />
+            <element signature="e#8371#9615#0" expanded="false" />
+            <element signature="e#9656#10186#0" expanded="false" />
+            <element signature="e#10232#10768#0" expanded="false" />
+            <element signature="e#10837#11967#0" expanded="false" />
+            <element signature="e#12058#13237#0" expanded="false" />
+            <element signature="e#13362#14441#0" expanded="false" />
+            <element signature="e#14477#14510#0" expanded="false" />
+            <element signature="e#14610#14907#0" expanded="false" />
+            <element signature="e#15068#16456#0" expanded="false" />
+            <element signature="e#16540#17752#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/DatabaseManager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#140#295#0" expanded="false" />
+            <element signature="e#325#701#0" expanded="false" />
+            <element signature="e#728#745#0" expanded="false" />
+            <element signature="e#780#912#0" expanded="false" />
+            <element signature="e#953#994#0" expanded="false" />
+            <element signature="e#1037#1111#0" expanded="false" />
+            <element signature="e#1143#1169#0" expanded="false" />
+            <element signature="e#1202#1486#0" expanded="false" />
+            <element signature="e#1510#1572#0" expanded="false" />
+            <element signature="e#1698#1959#0" expanded="false" />
+            <element signature="e#1993#2271#0" expanded="false" />
+            <element signature="e#2315#2473#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/data_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#888#2172#0" expanded="false" />
+            <element signature="e#2260#3141#0" expanded="false" />
+            <element signature="e#3186#3622#0" expanded="false" />
+            <element signature="e#3710#3916#0" expanded="false" />
+            <element signature="e#3980#4696#0" expanded="false" />
+            <element signature="e#4725#5483#0" expanded="false" />
+            <element signature="e#5517#6339#0" expanded="false" />
+            <element signature="e#6369#6924#0" expanded="false" />
+            <element signature="e#6968#7407#0" expanded="false" />
+            <element signature="e#7492#8288#0" expanded="false" />
+            <element signature="e#8371#9615#0" expanded="false" />
+            <element signature="e#9656#10186#0" expanded="false" />
+            <element signature="e#10232#10768#0" expanded="false" />
+            <element signature="e#10837#11967#0" expanded="false" />
+            <element signature="e#12058#13237#0" expanded="false" />
+            <element signature="e#13362#14441#0" expanded="false" />
+            <element signature="e#14477#14510#0" expanded="false" />
+            <element signature="e#14610#14907#0" expanded="false" />
+            <element signature="e#15068#16456#0" expanded="false" />
+            <element signature="e#16540#17752#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+            <element signature="e#965#1151#0" expanded="false" />
+            <element signature="e#1199#3124#0" expanded="false" />
+            <element signature="e#3236#3863#0" expanded="false" />
+            <element signature="e#3905#3958#0" expanded="false" />
+            <element signature="e#4050#4899#0" expanded="false" />
+            <element signature="e#5108#7926#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/reportes/utils_reporte/get_rank.r">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-224">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/reportes/utils_reporte/get_rank.r">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-149">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/formato_estados.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/data_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1470">
+          <caret line="524" column="116" selection-start-line="524" selection-start-column="13" selection-end-line="524" selection-end-column="116" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#888#2172#0" expanded="false" />
+            <element signature="e#2260#3141#0" expanded="false" />
+            <element signature="e#3186#3622#0" expanded="false" />
+            <element signature="e#3710#3916#0" expanded="false" />
+            <element signature="e#3980#4696#0" expanded="false" />
+            <element signature="e#4725#5483#0" expanded="false" />
+            <element signature="e#5517#6339#0" expanded="false" />
+            <element signature="e#6369#6924#0" expanded="false" />
+            <element signature="e#6968#7407#0" expanded="false" />
+            <element signature="e#7492#8288#0" expanded="false" />
+            <element signature="e#8371#9615#0" expanded="false" />
+            <element signature="e#9656#10186#0" expanded="false" />
+            <element signature="e#10232#10768#0" expanded="false" />
+            <element signature="e#10837#11967#0" expanded="false" />
+            <element signature="e#12058#13237#0" expanded="false" />
+            <element signature="e#13362#14441#0" expanded="false" />
+            <element signature="e#14477#14510#0" expanded="false" />
+            <element signature="e#14610#14907#0" expanded="false" />
+            <element signature="e#15068#16456#0" expanded="false" />
+            <element signature="e#16540#17752#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/DatabaseManager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="96" column="32" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#140#295#0" expanded="false" />
+            <element signature="e#325#701#0" expanded="false" />
+            <element signature="e#728#745#0" expanded="false" />
+            <element signature="e#780#912#0" expanded="false" />
+            <element signature="e#953#994#0" expanded="false" />
+            <element signature="e#1037#1111#0" expanded="false" />
+            <element signature="e#1143#1169#0" expanded="false" />
+            <element signature="e#1202#1486#0" expanded="false" />
+            <element signature="e#1510#1572#0" expanded="false" />
+            <element signature="e#1698#1959#0" expanded="false" />
+            <element signature="e#1993#2271#0" expanded="false" />
+            <element signature="e#2315#2473#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dropbox_corr_links.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1200">
+          <caret line="230" column="15" selection-start-line="230" selection-start-column="15" selection-end-line="230" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+            <element signature="e#965#1151#0" expanded="false" />
+            <element signature="e#1199#3124#0" expanded="false" />
+            <element signature="e#3236#3863#0" expanded="false" />
+            <element signature="e#3905#3958#0" expanded="false" />
+            <element signature="e#4050#4899#0" expanded="false" />
+            <element signature="e#5108#7926#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

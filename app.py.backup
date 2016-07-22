@@ -1,0 +1,272 @@
+from flask import Flask, flash, redirect, render_template, session, request, url_for
+from utils.data_utils import *
+from utils.rq_queues import create_general_report
+import csv
+from random import shuffle
+# from future import unicode_literals
+import sys
+reload(sys)
+import json
+import os
+import datetime
+import glob
+
+
+sys.setdefaultencoding("utf-8")
+
+app = Flask(__name__)
+app.secret_key = 'kuriki.kaka.ki...kuriki.kaka.ka'
+
+
+@app.route("/login", methods=["GET","POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", None)
+        password = request.form.get("password", None)
+        if username == None or password == None:
+            pass
+        if (username, password) == ("demo", "demo12345"):
+            session["username"]=username
+            return redirect("/index")
+        else:
+            flash("Nombre de usuario o password incorrecto")
+        return render_template("login.html")
+    else:
+        return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("username")
+    return redirect("/login")
+
+@app.route("/")
+@app.route("/<tpars>")
+@app.route("/index")
+@app.route("/index/")
+@app.route("/index/<tpars>")
+def index(tpars=None):
+    if not session.has_key("username"):return redirect("/login")
+    if tpars == "favicon.ico":
+        return redirect(url_for('static', filename='favicon.ico'))
+    reader = csv.reader(open("./utils/formato_estados.csv"))
+    _ = reader.next()
+    estados = dict([(row[0],row[1]) for row in reader])
+    estados = estados.keys()
+    estados.sort()
+    # print estados
+    alltopics = ("economia", "salud", "seguridad", "servicios")
+    notopic = False
+    if not tpars:
+        notopic = True
+        tpars = ["economia", "salud", "seguridad", "servicios"]
+    else:
+        #tpars = tpars.split("-")
+        #tpars.pop(-1)
+        tpars = [tpars]
+
+    sentiments = get_rows_tb3_date_range()
+    data_sentiments = {}
+    for state in sentiments:
+        if notopic:
+            general = {'neg': 0, 'neu': 0, 'pos': 0}
+            for key in tpars:
+                general['neg'] = general['neg']+sentiments[state][key]['neg']
+                general['neu'] = general['neu']+sentiments[state][key]['neu']
+                general['pos'] = general['pos']+sentiments[state][key]['pos']
+            data_sentiments[state] = dict([("general", general)])
+        else:
+            data_sentiments[state] = dict([(key, sentiments[state][key]) for key in tpars])
+
+    if notopic:
+        rsearch = ["general"]
+    else: rsearch = tpars
+
+    scores, ranks = get_rows_tb4_date_range()
+    data_scores, data_ranks = {}, {}
+    for state in scores:
+        data_scores[state] = dict([(key, scores[state][key]) for key in rsearch])
+    for state in ranks:
+        data_ranks[state] = dict([(key, int(ranks[state][key])) for key in rsearch])
+
+    ## hand coded stuff
+    data_sentiments["GUER"]=data_sentiments["GUERRERO"];data_sentiments.pop("GUERRERO")
+    data_sentiments["SIN"]=data_sentiments["SINALOA"];data_sentiments.pop("SINALOA")
+
+    ##
+    return render_template("index.html", alltopics=alltopics, tpars=tpars, rsearch=rsearch,
+                            data=None, estados=estados,
+                            data_sentiments=data_sentiments, data_scores=data_scores,
+                            data_ranks=data_ranks, temas=alltopics)
+
+import operator
+
+@app.route("/noticias")
+@app.route("/noticias/<pars>")
+def noticias(pars=None):
+    if not session.has_key("username"):return redirect("/login")
+    if pars == "favicon.ico":
+        return redirect(url_for('static', filename='favicon.ico'))
+    reader = csv.reader(open("./utils/formato_estados.csv"))
+    _ = reader.next()
+    estados = [(row[0],row[1]) for row in reader]
+    temas = ["seguridad", "servicios", "salud", "economia"]
+
+    try:
+        tema, estado = tuple(pars.split("-"))
+    except:
+        tema, estado = "general", None
+    destados = dict(estados)
+    if not tema or not estado:
+        noticias = get_news_data()
+    else: # both are given
+        noticias = get_news_data(tema, destados[estado])
+    if not estado:pass
+    else: estado=destados[estado]; tema=tema.capitalize()
+
+    scores, ranks = get_ranked_news()
+    data_scores, data_ranks = {}, {}
+    for state in scores:
+        data_scores[state] = scores[state][tema.lower()]
+    data_scores = sorted(data_scores.items(), key=operator.itemgetter(1), reverse=True)
+    for state in ranks:
+        data_ranks[state] = int(ranks[state][tema.lower()])
+    data_ranks = sorted(data_ranks.items(), key=operator.itemgetter(1))
+    rank_data = []
+    for i in range(len(data_ranks)):
+        rank_data.append((data_ranks[i][0],data_ranks[i][1],data_scores[i][1]))
+    return render_template("noticias.html",noticias=noticias, \
+            tema=tema, estado=estado, topic=tema.lower(),\
+            temas=temas, estados=estados, rank_data=rank_data)
+
+@app.route("/mapas")
+@app.route("/mapas/<pars>")
+@app.route("/mapas/<pars>/<dfrom>/<dto>")
+def mapas(pars=None,dfrom=None,dto=None):
+    if not session.has_key("username"):return redirect("/login")
+    if "favicon.ico" in request.url:
+        return redirect(url_for('static', filename='favicon.ico'))
+    reader = csv.reader(open("./utils/formato_estados.csv"))
+    _ = reader.next()
+    estados = [(row[0],row[1]) for row in reader]
+    temas = ["seguridad", "servicios", "salud", "economia"]
+
+    try:
+        tema, estado = tuple(pars.split("-"))
+    except:
+        tema, estado = None, None
+    destados = dict(estados)
+    if not tema or not estado:
+        geotweet = []
+        timeline_scores = []
+        top_words = []
+        geo_center = {"lon":-99.14651,"lat":19.41125}
+    else: # both are given
+        # scores
+        # timeline_scores = get_last_scores_state(estado)
+        if not dfrom or not dto:
+            timeline_scores = get_last_scores_state_category(destados[estado],tema)
+            # tweets
+            geotweet,geo_center = get_geolocated_tweets_data(estado)
+            # palabras frecuentes
+            top_words = get_frec_terms(destados[estado],tema)
+        else:
+            timeline_scores = get_last_scores_state_category(destados[estado],tema,dfrom,dto)
+            # tweets
+            geotweet,geo_center = get_geolocated_tweets_data(estado,dfrom,dto)
+            # palabras frecuentes
+            top_words = get_frec_terms(destados[estado],tema,dfrom,dto)
+        timeline_scores = [(item[0], item[1], item[2].split("-")[-1]) for item in timeline_scores]
+        geo_center = {"lon":-99.14651,"lat":19.41125}
+    if not estado:pass
+    else: estadoid=estado;estado=destados[estado]; tema=tema.capitalize()
+
+    return render_template("mapas.html",geotweet=geotweet, top_words=top_words, \
+            tema=tema, geo_center=geo_center, estado=estado, \
+            temas=temas, estados=estados,timeline_scores=timeline_scores)
+
+@app.route("/usuarios")
+@app.route("/usuarios/<pars>")
+def usuarios(pars=None):
+    if not session.has_key("username"):return redirect("/login")
+    reader = csv.reader(open("./utils/formato_estados.csv"))
+    _ = reader.next()
+    estados = [(row[0],row[1]) for row in reader]
+    temas = ["seguridad", "servicios", "salud", "economia"]
+
+    try:
+        tema, estado = tuple(pars.split("-"))
+    except:
+        tema, estado = None, None
+    destados = dict(estados)
+    if not tema or not estado:
+        top_users = []
+    else: # both are given
+        # users
+        top_users = get_top_users(destados[estado],tema)
+    if not estado:pass
+    else: estadoid=estado;estado=destados[estado]; tema=tema.capitalize()
+
+    return render_template("usuarios.html", top_users=top_users, \
+            tema=tema, estado=estado, \
+            temas=temas, estados=estados)
+
+@app.route("/reportes")
+@app.route("/reportes/<pars>")
+def reporte(pars=None):
+    if not session.has_key("username"):return redirect("/login")
+    reader = csv.reader(open("./utils/formato_estados.csv"))
+    _ = reader.next()
+    estados = [(row[0],row[1]) for row in reader]
+    temas = ["seguridad", "servicios", "salud", "economia"]
+    destados = dict(estados)
+    tema, estado = None, None
+    # -----------------------
+    if not pars:
+        flash("Debe seleccionar un estado.","error")
+    elif "-" not in pars.strip("-"):
+        estado = pars.strip("-")
+        create_general_report(estado, destados)
+        flash("Reporte general en proceso: %s"%destados[estado],"info")
+    else: # '-' in pars
+        tema, estado = tuple(pars.split("-"))
+        # create_report(destados[estado], tema)
+        flash("Reporte general en proceso para: %s/%s"%(destados[estado],tema),"info")
+    # checking reports
+    timestamp = str(datetime.datetime.now()).split()[0]
+    exists_gral_report = glob.glob('./utils/R/reporte_*_{0}.html'.format(timestamp))
+    exists_gral_report = [(destados[item], item) for item in exists_gral_report]
+    print exists_gral_report
+    exists_report = False 
+    
+    return render_template("reporte.html", exists_grep=exists_gral_report, \
+            temas=temas, estados=estados)
+    
+
+######################################
+################# API ################
+######################################
+
+@app.route("/api/score/states/<estado>/<tema>")
+def score_states(estado=None,tema=None):
+    if not session.has_key("username"):return "[/* No active session */]"
+    reader = csv.reader(open("./utils/formato_estados.csv"))
+    _ = reader.next()
+    estados = dict([(row[0],row[1]) for row in reader])
+    
+    return json.dumps(get_state_timeline(estados[estado], tema))
+
+
+
+######## REPORTES
+
+@app.route("/reporte/<estado>")
+@app.route("/reporte/<estado>/<tipo>")
+def ver_reporte(tipo=None):
+    return "Not working yet mate :("
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0",	port=5000)
+    
+
+
+

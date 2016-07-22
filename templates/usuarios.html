@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+        <link href="/static/assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block headtabs %}
+         <li class="dropdown dropdown-fw active selected">
+                                 <a href="{{ url_for('index') }}" class="text-uppercase">
+                                 <i class="fa fa-globe"></i> S&H </a>
+                                 <ul class="dropdown-menu dropdown-menu-fw">
+                                 </ul>
+                                </li>
+        <li class="dropdown dropdown-fw  active selected">
+                                    <a href="/ranking" class="text-uppercase">
+                                        <i class="fa fa-cubes"></i> Rankings </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+        <li class="dropdown dropdown-fw active selected">
+                                <a href="/ppublicas" class="text-uppercase">
+                                <i class="fa fa-university"></i> Politicas Pub </a>
+                                <ul class="dropdown-menu dropdown-menu-fw">
+                                </ul>
+                                </li>
+	        <li class="dropdown dropdown-fw active selected">
+                                <a href="/corrs" class="text-uppercase">
+                                <i class="fa fa-th"></i> Correlaciones </a>
+                                <ul class="dropdown-menu dropdown-menu-fw">
+                                </ul>
+                                </li>
+				<li class="dropdown dropdown-fw active selected">
+                                    <a href="/reportes" class="text-uppercase">
+                                        <i class="fa fa-download"></i> Reportes </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+			 <li class="dropdown dropdown-fw active open selected">
+                                    <a href="javascript:;" class="text-uppercase">
+                                        <i class="fa fa-users"></i> Usuarios </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                    </ul>
+                                </li>
+{% endblock%}
+
+
+
+{% block content %}
+<div class="page-content">
+		<!-- BEGIN SELECTOR -->
+		<h3>
+			Detalle de Usuarios Activos en Medios Sociales por Estado
+		</h3>
+    <div class="row">
+      <div class="col-md-12">
+      En este apartado, usted podrá seleccionar la entidad
+
+      federativa deseada, así como las categorías “General, Economía, Salud, 
+
+      Seguridad y Servicios”, para cada categoría se presentan los usuarios 
+
+      con mayor actividad, en donde se describe el número de seguidores, 
+
+      las interacciones que han tenido sus comentaros, así como la 
+
+      relevancia o impacto de sus comentarios, en donde impacto se refiere al producto de los seguidores con las interacciones en escala logarítmica.
+      </div>
+      <div class="col-md-6">
+      </div>
+    </div>
+		<div class="row">
+		<!-- BEGIN STATES SELECTOR -->
+					<div class="col-md-3">
+                                            <label for="select1-single-input-sm" class="control-label">Estado</label>
+                                            <select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                                <optgroup label="">
+                                                    <option value="">Seleccione una opcion</option>
+                                                </optgroup>
+                                                <optgroup label="Estados">
+						    {% for tup in estados %}
+                                                    <option value="{{ tup[0] }}">{{ tup[1] }}</option>
+                                               	    {% endfor %}
+						 </optgroup>
+                                            </select>
+                                        </div>
+		<!-- END STATES SELECTOR -->
+		<!-- BEGIN STATES SELECTOR -->
+					<div class="col-md-3">
+                                            <label for="select2-single-input-sm" class="control-label">Categoria</label>
+                                            <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                                <optgroup label="">
+                                                    <option value="">Seleccione una opcion</option>
+                                                </optgroup>
+                                                <optgroup label="Categorias">
+                                            <option value="general">General</option>
+						    {% for item in temas %}
+                                                    <option value="{{ item }}">{{ item|capitalize() }}</option>
+                                               	    {% endfor %}
+						 </optgroup>
+                                            </select>
+                                        </div>
+		<!-- END STATES SELECTOR -->
+		<br/>
+		<button id="search-button" class="btn btn-circle green btn-sm" type="button">
+		Ver resultados</button>
+		</div>
+			
+		<br/>
+		<!-- END SELECTORS -->
+		<div class="row">
+
+		<!-- Begin Interactive chart -->
+
+			<div class="col-md-10 portlet light portlet-fit bordered">
+                        <div class="portlet-title">
+                                    <div class="caption">
+                                        <span class="caption-subject font-dark sbold uppercase">
+					Top Usuarios mas activos
+					{% if estado and tema %}
+						, estado: {{estado}}, tema: {{tema}}
+					{% endif %}
+					</span>
+                                    </div>
+                        </div>	
+			<div class="portlet-body">
+				<div class="table-scrollable table-scrollable-borderless">
+                                        <table class="table table-hover table-light">
+                                            <thead>
+                                                <tr class="uppercase">
+                                                    <th colspan="2"> Usuario </th>
+                                                    <th> Seguidores </th>
+                                                    <th> Interacciones </th>
+						    <th> Impacto </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+						{% for item in top_users %}
+						<tr>
+						<td class="fit">
+                                                    <img class="user-pic rounded" src="{{ item[1]["profile_image_url"] }}"> </td>
+                                                <td>
+                                                    <a href="http://twitter.com/{{ item[1]["screen_name"] }}" class="primary-link" target="_blank">{{ item[1]["name"] }}</a>
+                                                </td>
+                                                <td> {{ item[1]["followers_count"] }}</td>
+                                                <td> {{ item[2] }} </td>
+						<td>
+                                                    <span class="bold theme-font">{{ item[3] }}</span>
+                                                </td>
+                                               </tr>
+					       {% endfor %}
+                                        </tbody></table>
+                                    </div>
+				</div>
+			</div>
+
+		<! - End interactive chart -->
+    {% block bootbox %}
+      {{ super() }}
+    {% endblock%}
+		</div>	
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+        <script src="/static/assets/global/plugins/flot/jquery.flot.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.resize.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.pie.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.stack.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.crosshair.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+	<!-- END PAGE LEVEL PLUGINS -->
+        <!-- BEGIN PAGE LEVEL SCRIPTS -->
+	<!--<script src="static/assets/pages/scripts/charts-flotcharts.min.js" type="text/javascript"/>-->
+	<script src="/static/assets/pages/scripts/components-select2.js" type="text/javascript"></script>
+	<!-- END PAGE LEVEL SCRIPTS -->
+	<script>
+        jQuery(document).ready(function() {
+                $("#search-button").on("click",function(){
+                        var estado = $("#select1-single-input-sm").val();
+                        var tema = $("#select2-single-input-sm").val();
+                        window.location.href = '/usuarios/'+tema+'-'+estado;
+
+                });
+        });
+        </script>
+{% endblock %}
+
