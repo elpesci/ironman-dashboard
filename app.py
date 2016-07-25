@@ -1,6 +1,6 @@
 from flask import Flask, make_response, flash, redirect
 from flask import render_template, session, request, url_for
-from data_utils import *
+from utils import *
 from rq_queues import create_general_report
 import csv
 from random import shuffle
@@ -11,7 +11,7 @@ import json
 import os
 import datetime
 import glob
-from dropbox_corr_links import get_corrs_from_api
+# from dropbox_corr_links import get_corrs_from_api
 import StringIO
 from collections import defaultdict
 import operator
