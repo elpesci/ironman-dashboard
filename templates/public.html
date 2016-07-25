@@ -58,7 +58,7 @@
 		</h3>
     <p>
     El siguiente análisis muestra el desempeño social de los gobiernos tanto en medios sociales como en noticias durante el periodo
-    <b>{{ sdate }}</b> a <b>{{ ndate }}</b>(7 dias) y muestra la califcaci&oacute;n emitida por entidad federativa para las categorías: Presidente de la Republica,
+    <b>{{ sdate }}</b> a <b>{{ ndate }}</b> (7 dias) y muestra la califcaci&oacute;n emitida por entidad federativa para las categorías: Presidente de la Republica,
     Gobernador, Diputados y Senadores, Seguridad, Economía, Servicios P&uacute;blicos y Gobierno en general.
     </p>
 		<div class="row">
@@ -145,26 +145,26 @@
                              {% endif %}
                              ">
                                <td class="span6" style="max-width:1000px"> {{ t[0] }} </td>
-                               <td> {{ t[1][0] }} </td>
-                               <td> {{ t[1][1] }} </td>
-                               <td> {{ t[1][2] }} </td>
-                               <td> {{ t[1][3] }} </td>
-                               <td> {{ t[1][4] }} </td>
-                               <td> {{ t[1][5] }} </td>
-                               <td> {{ t[1][6] }} </td>
-                               <td> {{ t[1][7] }} </td>
+                               <td> {{ '%.2f'%(t[1][0]) }} </td>
+                               <td> {{ '%.2f'%(t[1][1]) }} </td>
+                               <td> {{ '%.2f'%(t[1][2]) }} </td>
+                               <td> {{ '%.2f'%(t[1][3]) }} </td>
+                               <td> {{ '%.2f'%(t[1][4]) }} </td>
+                               <td> {{ '%.2f'%(t[1][5]) }} </td>
+                               <td> {{ '%.2f'%(t[1][6]) }} </td>
+                               <td> {{ '%.2f'%(t[1][7]) }} </td>
                            </tr>
                         {% endfor %}
                         <tr class="danger">
                           <td>  <i hidden>z</i>Promedio Nacional </td>
-                            <td>  {{ proms[0] }}  </td>
-                            <td>  {{ proms[1] }}  </td>
-                            <td>  {{ proms[2] }}  </td>
-                            <td>  {{ proms[3] }}  </td>
-                            <td>  {{ proms[4] }}  </td>
-                            <td>  {{ proms[5] }}  </td>
-                            <td>  {{ proms[6] }}  </td>
-                            <td>  {{ proms[7] }}  </td>
+                            <td>  {{ '%.2f'%(proms[0]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[1]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[2]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[3]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[4]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[5]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[6]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[7]) }}  </td>
                         </tr>
                   </tbody>
              </table>
