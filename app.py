@@ -1,6 +1,6 @@
 from flask import Flask, make_response, flash, redirect
 from flask import render_template, session, request, url_for
-from data_utils import *
+from utils import *
 from rq_queues import create_general_report
 import csv
 from random import shuffle
@@ -11,7 +11,7 @@ import json
 import os
 import datetime
 import glob
-from dropbox_corr_links import get_corrs_from_api
+# from dropbox_corr_links import get_corrs_from_api
 import StringIO
 from collections import defaultdict
 import operator
@@ -221,20 +221,20 @@ def index(pars=None):
     reader = csv.reader(open("./utils/formato_estados.csv"))
     _ = reader.next()
     estados = [(row[0],row[1]) for row in reader]
-    temas = ["seguridad", "servicios", "salud", "economia"]
 
-    try:
-        tema, estado = tuple(pars.split("-"))
-    except:
-        tema, estado = "general", None
     destados = dict(estados)
     scores = []
     keys = destados.values()
     keys.sort()
     for key in keys:
-        temp  = get_public_scores_state(key)
+        temp  = list(get_public_scores_state(key)[0]) # Cast values in tuple as list
         # promedio por entidad federativa
-        temp[-1] = int(sum(temp[:-1])*100/len(temp[:-1]))/100.0
+        total_kpi = 0
+        for index in xrange(len(temp)):
+            total_kpi += temp[index]
+        average = total_kpi / len(temp)
+        temp.insert(len(temp), average)
+        # promedio por entidad federativa
         scores.append((key,temp))
     ndate = datetime.datetime.now()
     sdate = ndate-datetime.timedelta(days=7)
@@ -242,12 +242,14 @@ def index(pars=None):
     ndate = ndate.strftime("%Y-%m-%d")
     sdate = sdate.strftime("%Y-%m-%d")
     proms = [0,0,0,0,0,0,0,0,0]
-    for t in scores:
-        for i in xrange(len(t[1])):
-            proms[i]+=t[1][i]
-    for i in xrange(len(t[1])):
-        proms[i]/=len(scores)
-        proms[i] = int(proms[i]*100)/100.0
+
+
+    for state_score_values in scores:
+        for kpi in xrange(len(state_score_values[1])):
+            proms[kpi] += state_score_values[1][kpi]
+
+    for index in xrange(len(proms)):
+        proms[index] /= len(scores)
 
     return render_template("public.html", scores=scores, \
             estados=estados, ndate=ndate, sdate=sdate, destados=destados, \

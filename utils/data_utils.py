@@ -514,46 +514,19 @@ def get_last_ranks_state_category_pp(statename,category,dfrom=None,dto=None):
 
 def get_public_scores_state(statename,dfrom=None,dto=None):
     if not dfrom or not dto:
-        sdate=get_days_ago(8)
-        edate=get_days_ago(1)
+        sdate = get_days_ago(7)
+        edate = get_days_ago(1)
         sdate = datetime_to_str(sdate)
         edate = datetime_to_str(edate)
     else:
         sdate = dfrom
         edate = dto
+
     pg = PGDatabaseManager()
-    query = "select estado, score_presidente, score_gobernador, score_legislativo, score_gobierno from public.tb4_pp"
-    rows = pg.get_rows_with_date_range(query,sdate,edate)
-    timeline = [0,0,0,0,0,0,0,0]
-    counter = 0
-    for row in rows:
-        if row[0] != statename: continue
-        counter+=1
-        for i in xrange(len(row)-1):
-            timeline[i]+=row[i+1]
-    try:
-        for i in xrange(len(row)-1):
-            timeline[i] = int((timeline[i]/counter)*100.0)/100.0
-    except ZeroDivisionError:
-        for i in xrange(len(row)-1):
-            timeline[i] = 0.0
-    overflow = len(row)-1
-    # ---->>> overflow
-    query = "select estado, score_seguridad, score_servicios, score_economia, score_salud from public.tb4"
-    rows = pg.get_rows_with_date_range(query,sdate,edate)
-    counter = 0
-    for row in rows:
-        if row[0] != statename: continue
-        counter+=1
-        for i in xrange(len(row)-1):
-            timeline[overflow+i]+=row[i+1]
-    try:
-        for i in xrange(len(row)-1):
-            timeline[overflow+i] = int((timeline[overflow+i]/counter)*100.0)/100.0
-    except ZeroDivisionError:
-        for i in xrange(len(row)-1):
-            timeline[overflow+i] = 0.0
-    return timeline
+    query = "select avg(score_presidente) as score_presidente, avg(score_gobernador) as score_gobernador, avg(score_gobierno) as score_gobierno, avg(score_legislativo) as score_legislativo, avg(score_seguridad) as score_seguridad, avg(score_servicios) as score_servicios, avg(score_economia) as score_economia from public.tbl4"
+    rawScoresRow = pg.get_rows_public_score_by_state(query, statename, sdate, edate)
+
+    return rawScoresRow
 
 
 def get_ppublic_hashtags(tema,estado,date):
@@ -617,9 +590,6 @@ from public.tbl_rank_news
 order by ano desc, semana desc
 limit 128"""
     return pg.get_rows(query)
-
-
-
 
 
 ##########################################################|||||||>
