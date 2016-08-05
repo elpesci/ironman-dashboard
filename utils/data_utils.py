@@ -324,6 +324,40 @@ limit 64;"""
     return data
 
 
+def get_general_ranking_score(category=None):
+    defaultCat = "general" if (category == None) else category
+
+    query = """SELECT
+  act.estado as estado,
+  act."rank_%s" AS rank_semana_actual,
+  act."score_%s" AS score_semana_actual,
+  ant."rank_%s" AS rank_semana_ant,
+  ant."score_%s" AS score_semana_ant,
+  ant."rank_%s" - act."rank_%s" as var_ranking,
+  ((act."score_%s" - ant."score_%s")/ant."score_%s") * 100 as ptg_var_score
+FROM
+  public.tbl_rank_general as act
+INNER JOIN
+  public.tbl_rank_general as ant
+ON
+  ant.ano = act.ano AND ant.semana = CAST(CAST(act.semana as int) - 1 as text) AND ant.estado = act.estado
+WHERE
+  CAST(act.ano as int) = (select * from EXTRACT(YEAR from now()))
+AND
+  CAST(act.semana as int) = (select * from EXTRACT(WEEK from now())) - 1
+ORDER BY estado;"""%(defaultCat, defaultCat,defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat)
+
+    pg = PGDatabaseManager()
+    rows = pg.get_rows(query)
+
+    data = {}
+    for item in rows:
+        data[item[0]] = {"rank_semana_actual": item[1], "score_semana_actual": item[2], "rank_semana_ant":item[3], "score_semana_ant":item[4], "var_ranking":item[5], "ptg_var_score":item[6]}
+    data = sorted(data.iteritems(), key=lambda x: x[0]) # Ordenando por estado
+
+    return data
+
+
 def get_geolocated_tweets_data(stateid, dfrom=None,dto=None):
     if stateid=="GUER":stateid="GUERRERO"
     if stateid=="SIN":stateid="SINALOA"
