@@ -256,57 +256,61 @@ def index(pars=None):
             proms=proms)
 
 
-@app.route("/ranking")
-@app.route("/ranking/")
-@app.route("/ranking/<pars>")
+@app.route("/ranking", methods=['GET', 'POST'])
+@app.route("/ranking/", methods=['GET', 'POST'])
+@app.route("/ranking/<pars>", methods=['GET', 'POST'])
 def ranking(pars=None):
     if not session.get("username",None):return redirect("/login")
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
+
     reader = csv.reader(open("./utils/formato_estados.csv"))
     _ = reader.next()
     estados = [(row[0],row[1]) for row in reader]
-    temas = ["seguridad", "servicios", "salud", "economia"]
+
+    tema = ''
+    error = ''
 
     try:
-        tema, estado = tuple(pars.split("-"))
-    except:
-        tema, estado = "general", None
-    destados = dict(estados)
-    if not tema: # or not estado:
-        scores = get_general_sr()
-        last_scores = get_general_sr_last()
-    else: # both are given
-        scores = get_general_sr(tema)
-        last_scores = get_general_sr_last(tema)
-    for i in xrange(len(scores)):
-        scores[i][1]["last_score"] = last_scores[i][1]["score"]
-        scores[i][1]["last_rank"] = last_scores[i][1]["rank"]
+        if request.method == 'POST':
+            try:
+                tema, estado = request.form['ddlCategoria'], None
+            except:
+                tema, estado = "general", None
+        else:
+            tema, estado = "general", None
 
-    if not estado:pass
-    else: estado=destados[estado]; tema=tema.capitalize()
-    """
-    scores, ranks = get_ranked_news()
-    data_scores, data_ranks = {}, {}
-    for state in scores:
-        data_scores[state] = scores[state][tema.lower()]
-    data_scores = sorted(data_scores.items(), key=operator.itemgetter(1), reverse=True)
-    for state in ranks:
-        data_ranks[state] = int(ranks[state][tema.lower()])
-    data_ranks = sorted(data_ranks.items(), key=operator.itemgetter(1))
-    rank_data = []
-    for i in range(len(data_ranks)):
-        rank_data.append((data_ranks[i][0],data_ranks[i][1],data_scores[i][1]))
-    """
-    ndate = datetime.datetime.now()
-    d = datetime.timedelta(days=7)
-    sdate = ndate-d
-    ndate = ndate.strftime("%Y-%m-%d")
-    sdate = sdate.strftime("%Y-%m-%d")
-    return render_template("ranking_combinado.html", scores=scores, \
-            tema=tema, estado=estado, topic=tema.lower(), \
-            temas=temas, estados=estados, ndate=ndate, sdate=sdate,\
-            last_scores=last_scores, int=int)
+        temas = ["seguridad", "servicios", "salud", "economia", \
+            "presidente", "gobernador", \
+            "gobierno", "obra.publica", \
+            "pavimentacion", "recoleccion.basura", "servicio.agua", \
+            "transporte.publico", "legislativo", "judicial"]
+
+        destados = dict(estados)
+
+        data = list(get_general_ranking_score(tema))
+
+        if not estado:
+            pass
+        else:
+            estado = destados[estado]; tema = tema.capitalize()
+
+        ndate = datetime.datetime.now()
+        d = datetime.timedelta(days=7)
+        sdate = ndate - d
+        ndate = ndate.strftime("%Y-%m-%d")
+        sdate = sdate.strftime("%Y-%m-%d")
+
+        return render_template("ranking_combinado.html", rankings=data, \
+                               tema=tema, estado=estado, topic=tema.lower(), \
+                               temas=temas, estados=estados, ndate=ndate, sdate=sdate, \
+                               int=int, error=error)
+    except Exception as e:
+        #flash(e)
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
+
 
 @app.route("/noticias")
 @app.route("/noticias/<pars>")
