@@ -6,6 +6,8 @@ from twitter import *
 import math
 from tweepy import TweepError
 import operator
+from utils.Utilities import Constants
+from utils.Utilities import Utilities
 
 def string_to_date(st):
     datepars = [int(v) for v in st.split("-")]
@@ -29,6 +31,40 @@ def get_days_ago(days,ctime=datetime.datetime.now()):
 def bool_or_int(d):
     if not d: return 0
     else: return int(d)
+
+
+def get_polarizacion_rows_by_category(category = None):
+    data = {}
+
+    if category and category != Constants.general_ranking_category():
+        filtering_categories = "'" + str(category) + "'"
+    else:
+        filtering_categories = Utilities.array_to_csv(Constants.ranking_categories_in_general_rank())
+
+    query = """select source.estado, avg(source.positivo) as positivo, avg(source.negativo) as negativo
+from	(
+	select	pol."estado.2" as estado
+		,pol.categoria
+		,sum(pol.positivo) AS positivo
+		,sum(pol.negativo) AS negativo
+	from	tb3 pol
+	where	EXTRACT(WEEK from pol.date_created) = EXTRACT(WEEK from now()) - 1
+	and	pol.categoria in ({0})
+	group by pol."estado.2", pol.categoria
+	order by pol."estado.2", pol.categoria
+) as source
+group by source.estado;""".format(filtering_categories)
+
+    pg = PGDatabaseManager()
+    rows = pg.get_rows(query)
+
+    for item in rows:
+        data[item[0]] = {"positivo":item[1],"negativo":item[2],"total":item[1]+item[2]}
+
+    # Ordenando por total de mayor a menor
+    data = sorted(data.iteritems(), key=lambda x: x[1]["total"], reverse=True)
+
+    return data
 
 def get_rows_tb3_date_range(sdate=get_week_ago(),edate=datetime.datetime.now()):
     sdate = datetime_to_str(sdate)
@@ -97,11 +133,11 @@ def get_state_timeline(estado, tema):
     query = "select * from public.tb4 where date_created == 'None'" # dummy case
     if tema == "general":
         query = """select date_created, score
-from public.tb4
+from public.tbl4
 where estado = '{0}'""".format(estado)
     else:
         query = """select date_created, score_{1}
-from public.tb4
+from public.tbl4
 where estado = '{0}'""".format(estado, tema)
 
     pg = PGDatabaseManager()
@@ -323,39 +359,73 @@ limit 64;"""
         data.append((item[0], {"score":item[1],"rank":item[2]}))
     return data
 
+def generate_ranking_query(table_name = None, ranking_category = None):
+    defaultCat = Constants.default_ranking_category() if (ranking_category == None) else ranking_category
+    defaultTable = Constants.ranking_combinado_table_name() if(table_name == None) else table_name
 
-def get_general_ranking_score(category=None):
-    defaultCat = "general" if (category == None) else category
+    query = """SELECT act.estado as estado,
+      act."rank_%s" AS rank_semana_actual,
+      act."score_%s" AS score_semana_actual,
+      ant."rank_%s" AS rank_semana_ant,
+      ant."score_%s" AS score_semana_ant,
+      ant."rank_%s" - act."rank_%s" as var_ranking,
+      ((act."score_%s" - ant."score_%s")/ant."score_%s") * 100 as ptg_var_score
+    FROM
+      %s as act
+    INNER JOIN
+      %s as ant
+    ON
+      CAST(ant.ano as int) = CAST(act.ano as int) AND CAST(ant.semana as int) = (CAST(act.semana as int) - 1) AND ant.estado = act.estado
+    WHERE
+      CAST(act.ano as int) = (select * from EXTRACT(YEAR from now()))
+    AND
+      CAST(act.semana as int) = (select * from EXTRACT(WEEK from now())) - 1
+    ORDER BY estado;"""%(defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultTable, defaultTable)
 
-    query = """SELECT
-  act.estado as estado,
-  act."rank_%s" AS rank_semana_actual,
-  act."score_%s" AS score_semana_actual,
-  ant."rank_%s" AS rank_semana_ant,
-  ant."score_%s" AS score_semana_ant,
-  ant."rank_%s" - act."rank_%s" as var_ranking,
-  ((act."score_%s" - ant."score_%s")/ant."score_%s") * 100 as ptg_var_score
-FROM
-  public.tbl_rank_general as act
-INNER JOIN
-  public.tbl_rank_general as ant
-ON
-  ant.ano = act.ano AND ant.semana = CAST(CAST(act.semana as int) - 1 as text) AND ant.estado = act.estado
-WHERE
-  CAST(act.ano as int) = (select * from EXTRACT(YEAR from now()))
-AND
-  CAST(act.semana as int) = (select * from EXTRACT(WEEK from now())) - 1
-ORDER BY estado;"""%(defaultCat, defaultCat,defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat)
+    return query
 
+def get_rankings_data(query):
     pg = PGDatabaseManager()
     rows = pg.get_rows(query)
 
     data = {}
     for item in rows:
-        data[item[0]] = {"rank_semana_actual": item[1], "score_semana_actual": item[2], "rank_semana_ant":item[3], "score_semana_ant":item[4], "var_ranking":item[5], "ptg_var_score":item[6]}
-    data = sorted(data.iteritems(), key=lambda x: x[0]) # Ordenando por estado
+        data[item[0]] = {"rank_semana_actual": item[1], "score_semana_actual": item[2], "rank_semana_ant": item[3],
+                         "score_semana_ant": item[4], "var_ranking": item[5], "ptg_var_score": item[6]}
+    data = sorted(data.iteritems(), key=lambda x: x[0])  # Ordenando por estado
 
     return data
+
+def get_ranking_combinado_values_by_category(category = None):
+    target_category = Constants.default_ranking_category() if (category == None) else category
+    target_table = Constants.ranking_combinado_table_name()
+
+    query = generate_ranking_query(target_table, target_category)
+
+    rankings = get_rankings_data(query)
+
+    return rankings
+
+def get_ranking_social_values_by_category(category = None):
+    target_category = Constants.default_ranking_category() if (category == None) else category
+    target_table = Constants.ranking_social_table_name()
+
+    query = generate_ranking_query(target_table, target_category)
+
+    rankings = get_rankings_data(query)
+
+    return rankings
+
+def get_ranking_noticias_values_by_category(category = None):
+    target_category = Constants.default_ranking_category() if (category == None) else category
+    target_table = Constants.ranking_noticias_table_name()
+
+    query = generate_ranking_query(target_table, target_category)
+
+    rankings = get_rankings_data(query)
+
+    return rankings
+
 
 
 def get_geolocated_tweets_data(stateid, dfrom=None,dto=None):

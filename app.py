@@ -15,11 +15,11 @@ from dropbox_corr_links import get_corrs_from_api
 import StringIO
 from collections import defaultdict
 import operator
+from utils.Utilities import Constants
 
 from models import *
 
 sys.setdefaultencoding("utf-8")
-
 
 app = Flask(__name__)
 
@@ -52,7 +52,7 @@ def before_request():
             return
         else:
             flash(invitado_message,"error")
-            return redirect(url_for('index'))
+            # return redirect(url_for('index'))
     elif request.endpoint == "usuarios":
         params = request.url.strip('/').split('/')[-1]
         if params == "usuarios":
@@ -144,70 +144,51 @@ def payment():
     form = PaymentForm(request.form)
     return render_template('payment.html', form=form)
 
-@app.route("/score")
-@app.route("/score/<tpars>")
+@app.route("/score", methods=['GET', 'POST'])
+@app.route("/score/<tpars>, methods=['GET', 'POST']")
 def score(tpars=None):
     if not session.has_key("username"):return redirect("/login")
     if tpars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = dict([(row[0],row[1]) for row in reader])
-    estados = estados.keys()
-    estados.sort()
-    # print estados
-    alltopics = ("economia", "salud", "seguridad", "servicios")
-    notopic = False
-    if not tpars or tpars=="general":
-        notopic = True
-        tpars = ["economia", "salud", "seguridad", "servicios"]
-    else:
-        tpars = [tpars]
 
-    sentiments = get_rows_tb3_date_range()
-    data_sentiments = {}
-    for state in sentiments:
-        if notopic:
-            general = {'neg': 0, 'neu': 0, 'pos': 0}
-            for key in tpars:
-                general['neg'] = general['neg']+sentiments[state][key]['neg']
-                general['neu'] = general['neu']+sentiments[state][key]['neu']
-                general['pos'] = general['pos']+sentiments[state][key]['pos']
-            data_sentiments[state] = dict([("general", general)])
+
+    if not tpars or tpars == Constants.general_ranking_category():
+        rsearch = Constants.ranking_categories_in_general_rank() # ["general"]
+    else:
+        rsearch = tpars
+
+    try:
+        reader = csv.reader(open("./utils/formato_estados.csv"))
+        _ = reader.next()
+        estados = dict([(row[0], row[1]) for row in reader])
+        estados = estados.keys()
+        estados.sort()
+
+        if request.method == 'POST':
+            try:
+                tema = request.form['ddlCategoria']
+            except:
+                tema = Constants.general_ranking_category()
         else:
-            data_sentiments[state] = dict([(key, sentiments[state][key]) for key in tpars])
-    if notopic:
-        rsearch = ["general"]
-    else: rsearch = tpars
+            tema = Constants.general_ranking_category()
 
-    scores, ranks = get_rows_tb4_date_range()
-    last_scores , last_ranks = get_rows_tb4_date_range(get_days_ago(14),get_days_ago(7))
-    data_scores, data_ranks = {}, {}
-    last_data_scores, last_data_ranks = {}, {}
-    for state in scores:
-        data_scores[state] = dict([(key, scores[state][key]) for key in rsearch])
-        last_data_scores[state] = dict([(key, last_scores[state][key]) for key in rsearch])
-    for state in ranks:
-        data_ranks[state] = dict([(key, int(ranks[state][key])) for key in rsearch])
-        last_data_ranks[state] = dict([(key, int(last_ranks[state][key])) for key in rsearch])
+        data = list(get_ranking_social_values_by_category(tema))
 
-    ## hand coded stuff
-    if notopic:
-        data_sentiments = sorted(data_sentiments.items(), \
-                key=lambda x: x[1]['general']['neu'], reverse=True)
-    else:
-        data_sentiments = sorted(data_sentiments.items(), \
-                key=lambda x: x[1][tpars[0]]["neu"], reverse=True)
-    ndate = datetime.datetime.now()
-    d = datetime.timedelta(days=7)
-    sdate = ndate-d
-    ndate = ndate.strftime("%Y-%m-%d")
-    sdate = sdate.strftime("%Y-%m-%d")
-    return render_template("index.html", alltopics=alltopics, tpars=tpars, rsearch=rsearch,
-                            data=None, estados=estados, int=int,
-                            data_sentiments=data_sentiments, data_scores=data_scores,
-                            data_ranks=data_ranks, temas=alltopics, sdate=sdate, ndate=ndate,
-                            last_data_scores=last_data_scores, last_data_ranks=last_data_ranks)
+        data_sentiments_revisited = list(get_polarizacion_rows_by_category(tema))
+
+
+        temas = Constants.ranking_categories()
+        error = ''
+
+        return render_template("index.html", estados=estados, rsearch=rsearch,
+                               category=tema, categories=temas,
+                               rank_score_values=data,
+                               sentiments_rev=data_sentiments_revisited)
+
+    except Exception as e:
+        #flash(e)
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 @app.route("/")
 @app.route("/<pars>")
@@ -268,6 +249,7 @@ def ranking(pars=None):
     _ = reader.next()
     estados = [(row[0],row[1]) for row in reader]
 
+    tema_default = Constants.general_ranking_category()
     tema = ''
     error = ''
 
@@ -276,19 +258,15 @@ def ranking(pars=None):
             try:
                 tema, estado = request.form['ddlCategoria'], None
             except:
-                tema, estado = "general", None
+                tema, estado = tema_default, None
         else:
-            tema, estado = "general", None
+            tema, estado = tema_default, None
 
-        temas = ["seguridad", "servicios", "salud", "economia", \
-            "presidente", "gobernador", \
-            "gobierno", "obra.publica", \
-            "pavimentacion", "recoleccion.basura", "servicio.agua", \
-            "transporte.publico", "legislativo", "judicial"]
+        temas = Constants.ranking_categories()
 
         destados = dict(estados)
 
-        data = list(get_general_ranking_score(tema))
+        data = list(get_ranking_combinado_values_by_category(tema))
 
         if not estado:
             pass
@@ -309,7 +287,6 @@ def ranking(pars=None):
         #flash(e)
         error = e
         return render_template("mensaje_sistema.html", message=error)
-
 
 
 @app.route("/noticias")

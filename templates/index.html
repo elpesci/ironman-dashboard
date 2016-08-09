@@ -5,7 +5,6 @@
         <link href="/static/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
         <link href="/static/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
         <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
-
 {% endblock %}
 
 {% block headtabs %}
@@ -85,22 +84,24 @@
                 </h3>
                 <p>
                 El siguiente análisis muestra el desempeño estatal en la semana anterior (lunes a domingo anteriores) en la categoría:
-                <b>{{ rsearch[0] | capitalize() }}</b>. Analizados únicamente en los medios
+                <b>{{ category.replace(".", " ") | capitalize() }}</b>. Analizados únicamente en los medios
                 sociales.<br/>
                 </p>
                 <div class="row">
                 <!-- BEGIN CATEGORY SELECTOR -->
-                                        <div class="col-md-3">
-                                            <label for="select2-single-input-sm" class="control-label">Categoria</label>
-                                            <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                                                <optgroup label="Categorias">
-                                                    <option value="general" >General</option>
-                                                    {% for item in temas %}
-                                                    <option value="{{ item }}">{{ item|capitalize() }}</option>
-                                                    {% endfor %}
-                                                 </optgroup>
-                                            </select>
-                                        </div>
+                    <div class="col-md-3">
+                        <form id="frmCategorias" name="frmCategorias" method="post">
+                        <label for="ddlCategoria" class="control-label">Categoria</label>
+                        <select id="ddlCategoria" name="ddlCategoria" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                            <optgroup label="Categorias">
+                                <option value="general" {% if category == 'general' %} selected {% endif %}>General</option>
+                                {% for item in categories %}
+                                <option value="{{ item }}" {% if item == category %} selected {% endif %}>{{ item.replace(".", " ") |capitalize() }}</option>
+                                {% endfor %}
+                             </optgroup>
+                        </select>
+                        </form>
+                    </div>
                 <!-- END CATEGORY SELECTOR -->
                 <br/>
                 <button id="search-button" class="btn btn-circle green btn-sm" type="button">
@@ -110,7 +111,7 @@
                 <br/>
                 <!-- END SELECTORS -->
 		<hr/>
-		{% for topic in rsearch %}
+
 		<div class="row">
 
 		<div class="col-md-12">
@@ -136,74 +137,71 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_{{topic}}">
+
+                                    <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_{{category}}">
                                         <thead>
                                             <tr>
-                                                <th> Estado </th>
-                                                <th> Ranking Semana Actual </th>
-                                                <th> Score Semana Actual </th>
-                                                <th> Ranking Semana Anterior</th>
-                                                <th> Score Semana Anterior</th>
-                                                <th> Cambio Ranking </th>
-                                                <th> Cambio Score </th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Estado </th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Ranking Semana Actual </th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Score Semana Actual </th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Ranking Semana Anterior</th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Score Semana Anterior</th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Cambio Ranking </th>
+                                                <th style="min-width:50px;background:#416CAF;color:white"> Cambio Score </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-					    {% for state in data_ranks%}
+                                        {% for estado in rank_score_values %}
                                             <tr class="odd gradeX">
-                                                <td style="min-width:50px;max-width:none"> 
-                                                  {{state}} </td>
-                                                <td>
-                                                    {{data_ranks[state][topic]}}
+                                                <td class="span6" style="max-width:1000px">{{ estado[0] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['rank_semana_actual'] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['score_semana_actual'] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['rank_semana_ant'] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['score_semana_ant'] }}</td>
+                                                <td style="text-align:center">
+                                                    {% if estado[1]['var_ranking'] > 0 %}
+                                                        <i class="fa fa-chevron-up" style="color:green"></i>&nbsp;
+                                                    {% elif estado[1]['var_ranking'] < 0%}
+                                                        <i class="fa fa-chevron-down" style="color:red"></i>&nbsp;
+                                                    {% else %}
+                                                        <i class="fa fa-chevron-right" style="color:green"></i>
+                                                        <i class="fa fa-chevron-left" style="color:green"></i>&nbsp;
+                                                    {% endif %}
+                                                    {{ estado[1]['var_ranking'] }}
                                                 </td>
-                                                <td> {{data_scores[state][topic]}} 
-                                                </td>
-                                                <td> {{last_data_ranks[state][topic]}}</td>
-                                                <td>{{last_data_scores[state][topic]}}</td>
-                                                <td>
-                                                   {% if
-              last_data_ranks[state][topic]-data_ranks[state][topic] > 0
-                                                  %}
-               <i class="fa fa-chevron-up" style="color:green"></i>
-               {% else %}
-                <i class="fa fa-chevron-down" style="color:red"></i>
-               {% endif %}&nbsp;&nbsp;
-                                                  {{
-             last_data_ranks[state][topic]-data_ranks[state][topic]
-                                                  }}
-                                                </td>
-                                                 <td>
-                                                    {% if
-    ((data_scores[state][topic]-last_data_scores[state][topic])/data_scores[state][topic])*100 > 0
-                                                  %}
-               <i class="fa fa-chevron-up" style="color:green"></i>
-               {% else %}
-                <i class="fa fa-chevron-down" style="color:red"></i>
-               {% endif %}&nbsp;&nbsp;
-                                                  {{
-            int(((data_scores[state][topic]-last_data_scores[state][topic])/last_data_scores[state][topic])*100)
-                                                  }}%
+                                                <td style="text-align:center">
+                                                    {% if estado[1]['ptg_var_score'] > 0 %}
+                                                        <i class="fa fa-chevron-up" style="color:green"></i>&nbsp;
+                                                    {% elif estado[1]['ptg_var_score'] < 0%}
+                                                        <i class="fa fa-chevron-down" style="color:red"></i>&nbsp;
+                                                    {% else %}
+                                                        <i class="fa fa-chevron-right" style="color:green"></i>
+                                                        <i class="fa fa-chevron-left" style="color:green"></i>&nbsp;
+                                                    {% endif %}
+                                                    {{ '%.2f'%(estado[1]['ptg_var_score']) }}&nbsp;%
                                                 </td>
                                             </tr>
-                                            {% endfor %}
-					</tbody>
+                                        {% endfor %}
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
                             <!-- END EXAMPLE TABLE PORTLET-->
 
 				<div class="row">
-					<div id="timeline-container" style="height: 400px; min-width: 310px"></div>
+					<div id="timeline-container" style="">
+                        <div id="load" class="center"><img src="/static/assets/global/img/loading_blue_32x32.gif" />
+                            &nbsp;
+                            Generando gr&aacute;fica, por favor espere ...
+                        </div>
+                    </div>
 				</div>
 
 			<br/>
-			<br/>
-
-                       </div>
-                    </div>
-
+        </div> <!-- col-md-12 -->
+        </div> <!-- row -->
 		<div class="row">
-		<!-- BEGIN STACK CHART CONTROLS PORTLET-->
+		<!-- BEGIN STACK CHART CONTROLS PORTLET: POLARIDAD -->
                             <div class="portlet light portlet-fit bordered">
                                 <div class="portlet-title">
                                     <div class="caption">
@@ -223,14 +221,13 @@
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <div id="chart_{{topic}}" style="height:350px;"> </div>
-                                    <div class="btn-toolbar margin-top-20 margin-bottom-20">
-                                    </div>
+                                    <div id="chart_{{category}}" style="height:350px;"> </div>
+                                    <div class="btn-toolbar margin-top-20 margin-bottom-20"></div>
                                 </div>
                             </div>
-                <!-- END STACK CHART CONTROLS PORTLET-->	
-                </div>
-		{% endfor %}
+        <!-- END STACK CHART CONTROLS PORTLET: POLARIDAD -->
+        </div>
+
     <b>Notas:</b><br/>
     1. La categoría “Servicios” incluye: salud, recolección de basura, servicio de agua y transporte público.
     <br/>2. La categoría “Obra Pública” incluye: Pavimentación y construcción de obras públicas en general
@@ -281,20 +278,14 @@ var ChartsFlotcharts = function() {
 
             function a(topic,data) {
                 function e(topic) {
-                    $.plot($("#chart_"+topic), [{
+                    $.plot($("#chart_"+topic), [
+                    {
                         label: "Positivo",
                         data: t,
                         lines: {
                             lineWidth: 1
                         },
-			color: "green",
-                        shadowSize: 0
-                    }, {
-                        label: "Neutro",
-                        data: r,
-                        lines: {
-                            lineWidth: 1
-                        },
+			            color: "green",
                         shadowSize: 0
                     }, {
                         label: "Negativo",
@@ -302,7 +293,7 @@ var ChartsFlotcharts = function() {
                         lines: {
                             lineWidth: 1
                         },
-			color: "red",
+			            color: "red",
                         shadowSize: 0
                     }], {
                         series: {
@@ -326,27 +317,24 @@ var ChartsFlotcharts = function() {
                             borderColor: "#eee",
                             borderWidth: 1
                         },
-			xaxis: {
-           			 mode: "categories",
-				ticks:ticks,
-            			tickLength: 0, 
-        		}
+			            xaxis: {
+           			        mode: "categories",
+				            ticks:ticks,
+            			    tickLength: 0,
+        		        }
                     })
                 }
                 if (1 == $("#chart_"+topic).size()) {
 		    
                     t = [];
-		    r = [];
-		    o = [];	
-		ticks = []
-		for (k in data.t){
-			ticks.push([parseInt(k),data.t[k][0]]);
-		}
-		for (i in data.t) t.push([i, data.t[i][1]])
-		for (i in data.t) r.push([i, data.r[i][1]])
-		for (i in data.t) o.push([i, data.o[i][1]])
-		    //for (var r = [], i = 0; 10 >= i; i += 1) r.push([i, parseInt(30 * Math.random())]);
-                    //for (var o = [], i = 0; 10 >= i; i += 1) o.push([i, parseInt(30 * Math.random())]);
+		            o = [];
+		            ticks = []
+                    for (k in data.t){
+                        ticks.push([parseInt(k),data.t[k][0]]);
+                    }
+                    for (i in data.t) t.push([i, data.t[i][1]])
+                    for (i in data.t) o.push([i, data.o[i][1]])
+
                     var a = 0,
                         s = !0,
                         n = !1,
@@ -357,57 +345,58 @@ var ChartsFlotcharts = function() {
             if (jQuery.plot) {
                 var s = [],
                     n = 250;
-		var topics = [{% for topic in rsearch %}"{{topic}}",{% endfor %}];
-		var data = [
-		{% for topic in rsearch %}
-		{
-		t:[{% for state in data_sentiments %}
-                                ["{{state[0]}}", {{state[1][topic]["pos"]}}],
-                        {% endfor %}],
-                r:[{% for state in data_sentiments %}
-                                ["{{state[0]}}", {{state[1][topic]["neu"]}}],
-                        {% endfor %}],
-                o:[{% for state in data_sentiments %}
-                                ["{{state[0]}}", {{state[1][topic]["neg"]}}],
-                        {% endfor %}]
-		},
-		{% endfor %}
-		]
-                for (topic in topics){
-			if(topics[topic]!="")
-				a(topics[topic],data[topic]);
-		}
-		
+                var data = [
+                    {
+                            t:[{% for state in sentiments_rev %}
+                                            ["{{state[0]}}", {{state[1]["positivo"]}}],
+                              {% endfor %}],
+                            o:[{% for state in sentiments_rev %}
+                                            ["{{state[0]}}", {{state[1]["negativo"]}}],
+                              {% endfor %}]
+                    },
+                ]
+                //
+                a('{{category}}',data[0]);
             }
         }
     }
 }();
 jQuery(document).ready(function() {
+
+    $("#search-button").on("click", function() {
+        $("#frmCategorias").submit();
+    });
+
     ChartsFlotcharts.init(), ChartsFlotcharts.initCharts()
 });
 	</script>
         <script type="text/javascript">
 var TableDatatablesManaged = function() {
     var e = function(topic) {
-            var e = $("#sample_"+topic);
+            var e = $("#sample_"+'{{category}}');
             e.dataTable({
                 language: {
-                    aria: {
-                        sortAscending: ": activate to sort column ascending",
-                        sortDescending: ": activate to sort column descending"
+                    "sProcessing":     "Procesando...",
+                    "sLengthMenu":     "Mostrar _MENU_ registros",
+                    "sZeroRecords":    "No se encontraron resultados",
+                    "sEmptyTable":     "Ningún dato disponible en esta tabla",
+                    "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix":    "",
+                    "sSearch":         "Buscar:",
+                    "sUrl":            "",
+                    "sInfoThousands":  ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":     "Último",
+                        "sNext":     "Siguiente",
+                        "sPrevious": "Anterior"
                     },
-                    emptyTable: "No data available in table",
-                    info: "Showing _START_ to _END_ of _TOTAL_ records",
-                    infoEmpty: "No records found",
-                    infoFiltered: "(filtered1 from _MAX_ total records)",
-                    lengthMenu: "Show _MENU_",
-                    search: "Search:",
-                    zeroRecords: "No matching records found",
-                    paginate: {
-                        previous: "Prev",
-                        next: "Next",
-                        last: "Last",
-                        first: "First"
+                    "oAria": {
+                        "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
                     }
                 },
                 bStateSave: !0,
@@ -416,10 +405,6 @@ var TableDatatablesManaged = function() {
                     orderable: !1,
                     searchable: !1
                 }],
-                lengthMenu: [
-                    [5, 15, 20, -1],
-                    [5, 15, 20, "All"]
-                ],
                 pageLength: -1,
                 pagingType: "bootstrap_full_number",
                 columnDefs: [{
@@ -431,7 +416,8 @@ var TableDatatablesManaged = function() {
                 }],
                 order: [
                     [1, "asc"]
-                ]
+                ],
+               "paging": false,
             });
             jQuery("#sample_"+topic+"_wrapper");
             e.find(".group-checkable").change(function() {
@@ -443,19 +429,10 @@ var TableDatatablesManaged = function() {
             }), e.on("change", "tbody tr .checkboxes", function() {
                 $(this).parents("tr").toggleClass("active")
             })
-        }
-    //    };
-    //return {
-    //    init: function() {
-    var topics = [{% for topic in rsearch %}"{{topic}}",{% endfor %}];
-    jQuery().dataTable;
-    for(topic in topics){
-	if (topics[topic] != "") 
-	jQuery().dataTable && (e(topics[topic]))
     }
-    //    }
-    //}
-    //}
+
+	jQuery().dataTable && (e('{{category}}'))
+
 };
 App.isAngularJsApp() === !1 && jQuery(document).ready(function() {
     TableDatatablesManaged();
@@ -463,22 +440,13 @@ App.isAngularJsApp() === !1 && jQuery(document).ready(function() {
 	</script>
 	<script src="/static/assets/pages/scripts/components-select2.js" type="text/javascript"></script>
         <!-- END PAGE LEVEL SCRIPTS -->
-        <script>
-        jQuery(document).ready(function() {
-                $("#search-button").on("click",function(){
-                        var tema = $("#select2-single-input-sm").val();
-                        window.location.href = '/score/'+tema;
-
-                });
-        });
-        </script>
         <script src="https://code.highcharts.com/stock/highstock.js"></script>
         <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 
 <script>
 	<!-- Timeline Extended Script -->	
 
-    		function createChart() {
+        function createChart() {
 
         		$('#timeline-container').highcharts('StockChart', {
 
@@ -518,13 +486,13 @@ App.isAngularJsApp() === !1 && jQuery(document).ready(function() {
         {% for code in estados %}
           "{{ code }}",
         {% endfor %}
-     ];
+        ];
 
         var seriesOptions = [];
         var seriesCounter = 0 ;
         $.each(names, function (i, name) {
 
-            $.getJSON('/api/score/states/'+name+'/{{ rsearch[0] }}',    function (data) {
+            $.getJSON('/api/score/states/'+name+'/{{category}}', function (data) {
             		seriesOptions[i] = {
                 		name: name,
                 		data: data
@@ -536,8 +504,8 @@ App.isAngularJsApp() === !1 && jQuery(document).ready(function() {
             		if (seriesCounter === names.length) {
                 		createChart();
             		}
-        		});
-    		});
+            });
+        });
 	</script>
 {% endblock %}
 
