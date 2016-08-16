@@ -289,15 +289,18 @@ def ranking(pars=None):
         return render_template("mensaje_sistema.html", message=error)
 
 
-@app.route("/noticias")
-@app.route("/noticias/<pars>")
+@app.route("/noticias", methods=['GET', 'POST'])
+@app.route("/noticias/<pars>", methods=['GET', 'POST'])
 def noticias(pars=None):
     if not session.has_key("username"):return redirect("/login")
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = [(row[0],row[1]) for row in reader]
+
+    temas = Constants.ranking_categories()
+    error = ''
+
+    """
+    # Legacy
     temas = ["seguridad", "servicios", "salud", "economia"]
 
     try:
@@ -341,9 +344,36 @@ def noticias(pars=None):
             temas=temas, estados=estados, rank_data=rank_data,\
             sdate=sdate, ndate=ndate, last_rank_data=last_rank_data,\
             xrange=xrange, len=len, int=int)
+    """
 
+    try:
+        reader = csv.reader(open("./utils/formato_estados.csv"))
+        _ = reader.next()
+        estados = [(row[0],row[1]) for row in reader]
+        estados.sort()
 
+        if request.method == 'POST':
+            try:
+                tema = request.form['ddlCategoria']
+            except:
+                tema = Constants.general_ranking_category()
+        else:
+            tema = Constants.general_ranking_category()
 
+        data = list(get_ranking_noticias_values_by_category(tema))
+
+        ndate = datetime.datetime.now()
+        sdate = ndate-datetime.timedelta(days=7)
+        ndate = ndate-datetime.timedelta(days=1)
+        ndate = ndate.strftime("%Y-%m-%d")
+        sdate = sdate.strftime("%Y-%m-%d")
+
+        return render_template("noticias.html", rankings=data,\
+            tema=tema, topic=tema.lower(), temas=temas, estados=estados)
+    except Exception as e:
+        # flash(e)
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 @app.route("/_indicadores")
 @app.route("/_indicadores/<pars>")
