@@ -78,7 +78,7 @@
 {% block content %}
 <div class="page-content">
 		<!-- BEGIN SELECTOR -->
-		<h3>
+		<h3 style="text-align: center;">
 			Índice de Desempeño Social Combinado (Medios Sociales y Noticias) 
 		</h3>
     <p>
@@ -199,8 +199,14 @@
                   </tbody>
              </table>
           </div>
+          </div>
           <div class="row">
-               <div id="timeline-container" style="height: 400px; min-width: 310px"></div>
+               <div id="timeline-container" style="height: 400px; min-width: 310px">
+                    <div id="load" class="center"><img src="/static/assets/global/img/loading_blue_32x32.gif" />
+                        &nbsp;
+                        Generando gr&aacute;fica, por favor espere ...
+                    </div>
+               </div>
           </div>
       </div>
       <!-- END EXAMPLE TABLE PORTLET-->
@@ -273,7 +279,6 @@
         });
 
         $("#search-button").on("click",function(){
-			//var tema = $("#ddlCategoria").val();
 			$("#frmCategorias").submit();
 		});
     });

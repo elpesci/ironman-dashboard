@@ -180,9 +180,9 @@ def score(tpars=None):
         temas = Constants.ranking_categories()
         error = ''
 
-        return render_template("index.html", estados=estados, rsearch=rsearch,
-                               category=tema, categories=temas,
-                               rank_score_values=data,
+        return render_template("index.html", estados=estados, rsearch=rsearch, \
+                               category=tema, categories=temas, \
+                               rank_score_values=data, \
                                sentiments_rev=data_sentiments_revisited)
 
     except Exception as e:
@@ -299,53 +299,6 @@ def noticias(pars=None):
     temas = Constants.ranking_categories()
     error = ''
 
-    """
-    # Legacy
-    temas = ["seguridad", "servicios", "salud", "economia"]
-
-    try:
-        tema, estado = tuple(pars.split("-"))
-    except:
-        tema, estado = "general", None
-    destados = dict(estados)
-    if not tema or not estado:
-        noticias = get_news_data()
-    else: # both are given
-        noticias = get_news_data(tema, destados[estado])
-    if not estado:pass
-    else: estado=destados[estado]; tema=tema.capitalize()
-
-    scores, ranks = get_ranked_news()
-    last_scores, last_ranks = get_ranked_news_last()
-    data_scores, data_ranks = {}, {}
-    last_data_scores, last_data_ranks = {}, {}
-    for state in scores:
-        data_scores[state] = scores[state][tema.lower()]
-        last_data_scores[state] = last_scores[state][tema.lower()]
-    data_scores = sorted(data_scores.items(), key=operator.itemgetter(1), reverse=True)
-    for state in ranks:
-        data_ranks[state] = int(ranks[state][tema.lower()])
-        last_data_ranks[state] = int(last_ranks[state][tema.lower()])
-    data_ranks = sorted(data_ranks.items(), key=operator.itemgetter(1))
-    rank_data = []
-    last_rank_data = []
-    for i in range(len(data_ranks)):
-        rank_data.append((data_ranks[i][0],data_ranks[i][1],data_scores[i][1]))
-        last_rank_data.append((data_ranks[i][0],\
-                last_data_ranks[data_ranks[i][0]],\
-                last_data_scores[data_ranks[i][0]]))
-    ndate = datetime.datetime.now()
-    sdate = ndate-datetime.timedelta(days=7)
-    ndate = ndate-datetime.timedelta(days=1)
-    ndate = ndate.strftime("%Y-%m-%d")
-    sdate = sdate.strftime("%Y-%m-%d")
-    return render_template("noticias.html",noticias=noticias, \
-            tema=tema, estado=estado, topic=tema.lower(),\
-            temas=temas, estados=estados, rank_data=rank_data,\
-            sdate=sdate, ndate=ndate, last_rank_data=last_rank_data,\
-            xrange=xrange, len=len, int=int)
-    """
-
     try:
         reader = csv.reader(open("./utils/formato_estados.csv"))
         _ = reader.next()
@@ -362,14 +315,14 @@ def noticias(pars=None):
 
         data = list(get_ranking_noticias_values_by_category(tema))
 
-        ndate = datetime.datetime.now()
-        sdate = ndate-datetime.timedelta(days=7)
-        ndate = ndate-datetime.timedelta(days=1)
+        sdate = Utilities.last_week_start_date()
+        ndate = Utilities.last_week_end_date()
         ndate = ndate.strftime("%Y-%m-%d")
         sdate = sdate.strftime("%Y-%m-%d")
 
         return render_template("noticias.html", rankings=data,\
-            tema=tema, topic=tema.lower(), temas=temas, estados=estados)
+            tema=tema, topic=tema.lower(), temas=temas, estados=estados, sdate=sdate, ndate=ndate)
+
     except Exception as e:
         # flash(e)
         error = e
