@@ -136,7 +136,7 @@ def get_state_timeline(estado, tema):
 from public.tbl4
 where estado = '{0}'""".format(estado)
     else:
-        query = """select date_created, score_{1}
+        query = """select date_created, "score_{1}"
 from public.tbl4
 where estado = '{0}'""".format(estado, tema)
 

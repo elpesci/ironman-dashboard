@@ -1,3 +1,5 @@
+import datetime
+
 class Constants:
 
     @staticmethod
@@ -39,3 +41,18 @@ class Utilities:
         result = "'" + "','".join(array) + "'"
 
         return  result
+
+    @staticmethod
+    def last_week_start_date():
+        today = datetime.date.today()
+
+        start_date = today - datetime.timedelta(days=today.weekday(), weeks=1)
+
+        return start_date
+
+    @staticmethod
+    def last_week_end_date():
+        end_date = Utilities.last_week_start_date() + datetime.timedelta(days=6)
+
+        return end_date
+
