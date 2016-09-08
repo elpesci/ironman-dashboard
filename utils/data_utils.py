@@ -153,29 +153,27 @@ def get_timeline_date_range(sdate=get_days_ago(7),edate=datetime.datetime.now())
 
 import random
 
-def get_news_data(tema=None, estado=None):
+def get_news_data(tema=None, estado=None, max_noticias=10):
     """
     Data structure:
     (date_created, heading, newspaper, description, origin, categoria, estado1, estado2, estado3)
     """
     pg = PGDatabaseManager()
-    if not estado or estado.lower()=="general":
-        query = "select * from public.tb_news order by date_created desc limit 100"
-        cursor = pg.conn.cursor()
-        cursor.execute(query)
-        res = cursor.fetchall()
-        #return [random.choice(res) for i in range(10)]
+    if not estado or tema.lower()==Constants.default_ranking_category():
         return []
     else:
-        query = """
-select * from public.tb_news
-where categoria='%s'
-and "estado.1" like '%s'
+        data = {}
+        query = """select date_created, heading, newspaper, description, origin
+from public.tb_news
+where categoria = '{0}'
+and "estado.1" = '{1}'
 order by date_created desc
-limit 10"""%(tema, estado)
+limit {2}""".format(tema, estado, max_noticias)
         cursor = pg.conn.cursor()
         cursor.execute(query)
-        return cursor.fetchall()
+        rows = cursor.fetchall()
+
+        return rows
 
 def get_ranked_news():
     pg = PGDatabaseManager()
@@ -363,24 +361,26 @@ def generate_ranking_query(table_name = None, ranking_category = None):
     defaultCat = Constants.default_ranking_category() if (ranking_category == None) else ranking_category
     defaultTable = Constants.ranking_combinado_table_name() if(table_name == None) else table_name
 
+
+
     query = """SELECT act.estado as estado,
-      act."rank_%s" AS rank_semana_actual,
-      act."score_%s" AS score_semana_actual,
-      ant."rank_%s" AS rank_semana_ant,
-      ant."score_%s" AS score_semana_ant,
-      ant."rank_%s" - act."rank_%s" as var_ranking,
-      ((act."score_%s" - ant."score_%s")/ant."score_%s") * 100 as ptg_var_score
+      act."rank_{1}" AS rank_semana_actual,
+      act."score_{1}" AS score_semana_actual,
+      ant."rank_{1}" AS rank_semana_ant,
+      ant."score_{1}" AS score_semana_ant,
+      ant."rank_{1}" - act."rank_{1}" as var_ranking,
+      ((act."score_{1}" - ant."score_{1}")/ant."score_{1}") * 100 as ptg_var_score
     FROM
-      %s as act
+      {0} as act
     INNER JOIN
-      %s as ant
+      {0} as ant
     ON
       CAST(ant.ano as int) = CAST(act.ano as int) AND CAST(ant.semana as int) = (CAST(act.semana as int) - 1) AND ant.estado = act.estado
     WHERE
       CAST(act.ano as int) = (select * from EXTRACT(YEAR from now()))
     AND
       CAST(act.semana as int) = (select * from EXTRACT(WEEK from now())) - 1
-    ORDER BY estado;"""%(defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultCat, defaultTable, defaultTable)
+    ORDER BY estado;""".format(defaultTable, defaultCat)
 
     return query
 
@@ -695,6 +695,41 @@ order by ano desc, semana desc
 limit 128"""
     return pg.get_rows(query)
 
+
+def get_ppublicas_score_variation_by_state_category(statename, category, dcurrentweekstart, dcurrentweekend, dlastweekstart, dlastweekend):
+    if(category):
+        category_field_name = "_" + category
+    else:
+        category_field_name = ""
+
+    pg = PGDatabaseManager()
+    query = """select 	crnt_week."score{0}" as current_week_score,
+		last_week."score{0}" as last_week_score,
+		((crnt_week."score{0}" - last_week."score{0}")/last_week."score{0}") * 100 as ptg_var_score
+from (
+	select	round(avg(tbl4."score{0}")::numeric, 2) as "score{0}", cast('{1}' as text) as estado
+	from	public.tbl4 as tbl4
+	where	estado = '{1}'
+	and	date_created >= '{2}' and date_created <= '{3}'
+) as crnt_week
+inner join
+(
+	select round(avg(tbl4."score{0}")::numeric, 2) as "score{0}", cast('{1}' as text) as estado
+	from	public.tbl4 as tbl4
+	where estado = '{1}'
+	and date_created >= '{4}' and date_created <= '{5}'
+) as last_week
+on crnt_week.estado = last_week.estado""".format(category_field_name, statename, dcurrentweekstart, dcurrentweekend, dlastweekstart, dlastweekend)
+
+    cursor = pg.get_conn().cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    cursor.close()
+    del cursor
+
+    result = {'score_ptg_var': rows[0][2], 'score_last_week': rows[0][1], 'score_current_week': rows[0][0]}
+
+    return result
 
 ##########################################################|||||||>
 

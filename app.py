@@ -562,18 +562,16 @@ def corrsexp(tipo=None,pars=None):
 @app.route("/ppublicas/<pars>/<dfrom>/<dto>")
 def ppublicas(pars=None,dfrom=None,dto=None):
     if not session.has_key("username"):return redirect("/login")
+
     if "favicon.ico" in request.url:
         return redirect(url_for('static', filename='favicon.ico'))
+
     reader = csv.reader(open("./utils/formato_estados.csv"))
     _ = reader.next()
+
     estados = [(row[0],row[1]) for row in reader]
     destados = dict(estados)
-    temas = [ \
-            "seguridad","servicios","salud","economia", \
-            "presidente", "gobernador", \
-            "gobierno", "obra.publica", \
-            "pavimentacion", "recoleccion.basura", "servicio.agua", \
-            "transporte.publico","legislativo", "judicial"]
+    temas = Constants.ranking_categories()
 
     if pars and len(pars.split("-"))==2:
         tema, estado = tuple(pars.split("-"))
@@ -581,10 +579,21 @@ def ppublicas(pars=None,dfrom=None,dto=None):
         tema, estado = "general", pars.strip("-")
     else: tema, estado = None, None
 
-    if not tema or not estado:
+    if (tema == Constants.default_ranking_category()):
+        tema = ""
+
+    if not tema and not estado:
+        show_search_results = False
         noticias = get_news_data()
+        dict_category_score_var_data = {'score_ptg_var': 0, 'score_last_week': 0, 'score_current_week': 0}
     else: # both are given
+        show_search_results = True
         noticias = get_news_data(tema, destados[estado])
+        this_week_start_date = datetime_to_str(get_days_ago(7))
+        this_week_end_date = datetime_to_str(get_days_ago(1))
+        last_week_start_date = datetime_to_str(get_days_ago(14))
+        last_week_end_date = datetime_to_str(get_days_ago(8))
+        dict_category_score_var_data = get_ppublicas_score_variation_by_state_category(destados[estado], tema, this_week_start_date, this_week_end_date, last_week_start_date, last_week_end_date)
 
     destados = dict(estados)
     sdate_anterior = None
@@ -653,7 +662,8 @@ def ppublicas(pars=None,dfrom=None,dto=None):
             sdate=sdate, ndate=ndate, timeline_positions=timeline_positions,\
             mean_timeline_positions=mean_timeline_positions, \
             mean_timeline_scores=mean_timeline_scores, \
-            score_anterior=score_anterior, rank_anterior=rank_anterior)
+            score_anterior=score_anterior, rank_anterior=rank_anterior, show_search_results=show_search_results, \
+            score_var_dict=dict_category_score_var_data)
 
 
 

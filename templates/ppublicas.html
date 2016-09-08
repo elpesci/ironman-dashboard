@@ -72,34 +72,34 @@
 		<div class="row">
 		<!-- BEGIN STATES SELECTOR -->
 					<div class="col-md-3">
-                                            <label for="select1-single-input-sm" class="control-label">Estado</label>
-                                            <select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                                                <optgroup label="">
-                                                    <option value="">Seleccione una opcion</option>
-                                                </optgroup>
-                                                <optgroup label="Estados">
-						    {% for tup in estados %}
-                                                    <option value="{{ tup[0] }}">{{ tup[1] }}</option>
-                                               	    {% endfor %}
+                        <label for="select1-single-input-sm" class="control-label">Estado</label>
+                        <select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                            <optgroup label="">
+                                <option value="">Seleccione una opci&oacute;n</option>
+                            </optgroup>
+                            <optgroup label="Estados">
+						        {% for tup in estados %}
+                                <option value="{{ tup[0] }}" {% if estado == tup[1] %} selected {% endif %}>{{ tup[1] }}</option>
+                                {% endfor %}
 						 </optgroup>
-                                            </select>
-                                        </div>
+                        </select>
+                    </div>
 		<!-- END STATES SELECTOR -->
     <!-- BEGIN CATS SELECTOR -->
 					<div class="col-md-3">
-                                            <label for="select2-single-input-sm" class="control-label">Categoria</label>
-                                            <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                                                 <optgroup label="">
-                                                    <option value="">Seleccione una opcion</option>
-                                                </optgroup>
-                                                <optgroup label="Categorias">
-                                                    <option value="general">General</option>
-						    {% for item in temas %}
-                                                    <option value="{{ item }}">{{ " ".join(item.capitalize().split(".")) }}</option>
-                                               	    {% endfor %}
-						 </optgroup>
-                                            </select>
-                                      </div>
+                        <label for="select2-single-input-sm" class="control-label">Categoria</label>
+                        <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                             <optgroup label="">
+                                <option value="">Seleccione una opci&oacute;n</option>
+                            </optgroup>
+                            <optgroup label="Categorias">
+                                <option value="general" {% if tema == 'general' %} selected {% endif %}>General</option>
+                                {% for item in temas %}
+                                <option value="{{ item }}" {% if item.capitalize().replace(" ", ".") == tema %} selected {% endif %}>{{ " ".join(item.capitalize().split(".")) }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
     <!-- END CATS SELECTOR -->
 		<!-- <div class="col-md-3">
 			<label for="select3-single-input-sm" class="control-label">Rango de fecha</label>
@@ -111,12 +111,14 @@
     </div> -->
 		<br/>
 		<button id="search-button" class="btn btn-circle green btn-sm" type="button">
-		Ver resultados</button>
+		Buscar
+        </button>
 
-    <a href="/export/ppublicas" target="_blank">
-    <button class="btn btn-circle blue btn-sm" type="button" style="float:right">
-    Exportar datos
-    </button></a>
+    <a href="/export/ppublicas" target="_blank"{% if(not show_search_results) %} style="display:none;"{%endif%}>
+        <button class="btn btn-circle blue btn-sm" type="button" style="float:right">
+            Exportar datos
+        </button>
+    </a>
 		<br/>
     <hr/>
     {% if estado %}
@@ -125,7 +127,7 @@
     {% endif %}
     <br/><br/>
 		<!-- END SELECTORS -->
-		<div class="row">
+		<div class="row"{% if(not show_search_results) %} style="display:none;"{%endif%}>
 
 		<!-- Begin Interactive chart -->
     <div class="col-md-12">
@@ -138,35 +140,20 @@
               <th>Score Actual</th>
               <th>Score Semana Anterior</th>
               <th>Cambio Porcentual Score</th>
-              <th>Ranking Actual</th>
-              <th>Ranking Semana Anterior</th>
-              <th>Cambio Porcentural Ranking</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td></td>
-              <td>{{ int(score*100)/100 }}</td>
-              <td>{{ int(score_anterior*100)/100 }}</td>
+              <td>{{ '%.2f'%(score_var_dict['score_current_week']) }}</td>
+              <td>{{ '%.2f'%(score_var_dict['score_last_week']) }}</td>
               <td>
-                {% if (score-score_anterior) > 0 %}
-                <i class="fa fa-chevron-up" style="color:green"></i>
-                {% elif (score-score_anterior) < 0 %}
-                <i class="fa fa-chevron-down" style="color:red"></i>
+                {% if (score_var_dict['score_current_week'] - score_var_dict['score_last_week']) > 0 %}
+                    <i class="fa fa-chevron-up" style="color:green"></i>
                 {% else %}
+                   <i class="fa fa-chevron-down" style="color:red"></i>
                 {% endif %}&nbsp;&nbsp;
-                {{ int(((score-score_anterior)/(1+score_anterior))*100)/100.0 }}
-              </td>
-              <td>{{ rank }}</td>
-              <td>{{ rank_anterior }}</td>
-              <td>
-                {% if (rank-rank_anterior) > 0 %}
-                <i class="fa fa-chevron-up" style="color:green"></i>
-                {% elif (rank-rank_anterior) < 0 %}
-                <i class="fa fa-chevron-down" style="color:red"></i>
-                {% else %}
-                {% endif %}&nbsp;&nbsp;
-                {{ rank-rank_anterior }}
+                {{ '%.2f'%(score_var_dict['score_ptg_var']) }} %
               </td>
             </tr>
           </tbody>
@@ -252,7 +239,7 @@
                          <div class="timeline-body-head">
                            <div class="timeline-body-head-caption">
                              <a href="{{ noticia[4] }}" class="timeline-body-title font-blue-madison" target="_blank">{{ noticia[1] }}</a>
-                             <span class="timeline-body-time font-grey-cascade">Publicada por {{ noticia[2] }}, en: {{ noticia[0] }}</span>
+                             <div class="timeline-publishing-details font-grey-cascade">Publicada por {{ noticia[2] }} ({{ noticia[0] }})</div>
                            </div>
                            <div class="timeline-body-head-actions">
                              <!--<div class="btn-group">
@@ -278,7 +265,7 @@
                            </div>
                          </div>
                          <div class="timeline-body-content">
-                           <span class="font-black-cascade">.
+                           <span class="font-black-cascade">
                              {{ noticia[3] }}
                            </span>
                          </div>

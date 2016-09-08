@@ -1,4 +1,5 @@
 import datetime
+import re
 
 class Constants:
 
@@ -56,3 +57,16 @@ class Utilities:
 
         return end_date
 
+    @staticmethod
+    def to_utf8_html_encoding(tagged_text):
+        converted_text = tagged_text
+
+        reg_exp = re.compile(r"<[a-fA-F0-9]{2}>", re.IGNORECASE)
+        tags = re.findall(reg_exp, tagged_text)
+
+        if(len(tags) > 0):
+            for replaceable_tag in tags:
+                html_encoded_char = str(replaceable_tag).upper().replace("<", "&#x").replace(">", ";")
+                converted_text = converted_text.replace(str(replaceable_tag), html_encoded_char)
+
+        return converted_text
