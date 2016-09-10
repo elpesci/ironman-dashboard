@@ -87,15 +87,14 @@
 		<!-- END STATES SELECTOR -->
     <!-- BEGIN CATS SELECTOR -->
 					<div class="col-md-3">
-                        <label for="select2-single-input-sm" class="control-label">Categoria</label>
+                        <label for="select2-single-input-sm" class="control-label">Categor&iacute;a</label>
                         <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
                              <optgroup label="">
                                 <option value="">Seleccione una opci&oacute;n</option>
                             </optgroup>
-                            <optgroup label="Categorias">
-                                <option value="general" {% if tema == 'general' %} selected {% endif %}>General</option>
-                                {% for item in temas %}
-                                <option value="{{ item }}" {% if item.capitalize().replace(" ", ".") == tema %} selected {% endif %}>{{ " ".join(item.capitalize().split(".")) }}</option>
+                            <optgroup label="Categor&iacute;as">
+                                {% for key, value in categorias.iteritems(): %}
+                                    <option value="{{ key }}" {% if tema == key %} selected {% endif %}>{{ value|safe }}</option>
                                 {% endfor %}
                             </optgroup>
                         </select>
@@ -123,7 +122,7 @@
     <hr/>
     {% if estado %}
     El siguiente análisis muestra el desempeño del  estado de <b id="state">{{ estado }}</b> en el periodo del 
-    {{ sdate }} a {{ ndate }} en la categoría: <b id="category">{{ " ".join(tema.upper().split(".")) }}</b>
+    {{ sdate }} a {{ ndate }} en la categoría: <b id="category">{{ category_label|safe }}</b>
     {% endif %}
     <br/><br/>
 		<!-- END SELECTORS -->

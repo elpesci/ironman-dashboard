@@ -15,6 +15,7 @@ from dropbox_corr_links import get_corrs_from_api
 import StringIO
 from collections import defaultdict
 import operator
+from sortedcontainers import SortedDict
 from utils.Utilities import Constants
 
 from models import *
@@ -571,7 +572,7 @@ def ppublicas(pars=None,dfrom=None,dto=None):
 
     estados = [(row[0],row[1]) for row in reader]
     destados = dict(estados)
-    temas = Constants.ranking_categories()
+    temas = SortedDict(Constants.categories_dict())
 
     if pars and len(pars.split("-"))==2:
         tema, estado = tuple(pars.split("-"))
@@ -655,15 +656,17 @@ def ppublicas(pars=None,dfrom=None,dto=None):
             ndate=dto[-4:]+"-"+dto[:2]+"-"+dto[2:4]
         timeline_scores = [(item[0], item[1], item[2].split("-")[-1]) for item in timeline_scores]
     if not estado:pass
-    else: estadoid=estado;estado=destados[estado]; tema=tema.capitalize()
+    else: estadoid=estado;estado=destados[estado]
+
     return render_template("ppublicas.html", int=int, noticias=noticias, destados=destados, \
             tema=tema, estado=estado, score=score, rank=rank, \
-            temas=temas, estados=estados, timeline_scores=timeline_scores, \
+            categorias=temas, estados=estados, timeline_scores=timeline_scores, \
             sdate=sdate, ndate=ndate, timeline_positions=timeline_positions,\
             mean_timeline_positions=mean_timeline_positions, \
             mean_timeline_scores=mean_timeline_scores, \
             score_anterior=score_anterior, rank_anterior=rank_anterior, show_search_results=show_search_results, \
-            score_var_dict=dict_category_score_var_data)
+            score_var_dict=dict_category_score_var_data, \
+            category_label = Utilities.get_category_label(tema))
 
 
 
@@ -746,23 +749,24 @@ def ppublicas_values(tema=None,estado=None,dia=None):
 ######## EXPORTS
 import StringIO, csv
 
+
 @app.route("/export/ppublicas")
 def export_ppublicas():
     si = StringIO.StringIO()
     cw = csv.writer(si)
     headers = ("Date", "Estado", "Score", "Rank", "Score Gobernador", "Rank Gobernador", \
-            "Score Presidente", "Rank Presidente", "Score Gobierno", "Rank Gobierno", \
-            "Score Obra Publica", "Rank Obra Publica", "Score Pavimentacion", "Rank Pavimentacion", \
-            "Score Recoleccion Basura", "Rank Recoleccion Basura", "Score Servicio Agua", \
-            "Rank Servicio Agua", "Score Transporte Publico", "Rank Transporte Publico", \
-            "Score Legislativo", "Rank Legislativo", "Score Judicial", "Rank Judicial")
+               "Score Presidente", "Rank Presidente", "Score Gobierno", "Rank Gobierno", \
+               "Score Obra Publica", "Rank Obra Publica", "Score Pavimentacion", "Rank Pavimentacion", \
+               "Score Recoleccion Basura", "Rank Recoleccion Basura", "Score Servicio Agua", \
+               "Rank Servicio Agua", "Score Transporte Publico", "Rank Transporte Publico", \
+               "Score Legislativo", "Rank Legislativo", "Score Judicial", "Rank Judicial")
     cw.writerows([headers])
     cw.writerows(export_data_pp())
     output = make_response(si.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas.csv"
     output.headers["Content-type"] = "text/csv"
-    return output
 
+    return output
 @app.route("/export/rcombinado")
 def export_rankings():
     si = StringIO.StringIO()

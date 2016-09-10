@@ -35,6 +35,16 @@ class Constants:
     def ranking_social_table_name():
         return "tbl_rank_tw"
 
+    @staticmethod
+    def categories_dict():
+        cd = dict([('economia', "Econom&iacute;a"), ('gobernador', "Gobernador"), ('gobierno', "Gobierno"), \
+                   ('judicial', "Jueces"), ('legislativo', "Diputados y Senadores"), ('obra.publica', "Obra p&uacute;blica"), \
+                   ('pavimentacion', "Pavimentaci&oacute;n"), ('presidente', "Presidente"), \
+                   ('recoleccion.basura', "Recolecci&oacute;n de basura"), ('salud', "Salud"), ('seguridad', "Seguridad"), \
+                   ('servicio.agua', "Servicio de agua"), ('servicios', "Servicios"), ('transporte.publico', "Transporte p&uacute;blico")
+                   ])
+        return cd
+
 class Utilities:
 
     @staticmethod
@@ -70,3 +80,15 @@ class Utilities:
                 converted_text = converted_text.replace(str(replaceable_tag), html_encoded_char)
 
         return converted_text
+
+    @staticmethod
+    def get_category_label(category_key):
+        categries_dict = Constants.categories_dict()
+        category_label = ""
+
+        for item in categries_dict.keys():
+            if item == category_key:
+                category_label = categries_dict[category_key]
+                continue
+
+        return category_label
