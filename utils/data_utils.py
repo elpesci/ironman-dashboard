@@ -6,8 +6,7 @@ from twitter import *
 import math
 from tweepy import TweepError
 import operator
-from utils.Utilities import Constants
-from utils.Utilities import Utilities
+from Utilities import *
 
 def string_to_date(st):
     datepars = [int(v) for v in st.split("-")]
