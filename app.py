@@ -1,7 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from flask import Flask, make_response, flash, redirect
 from flask import render_template, session, request, url_for
-from data_utils import *
-from rq_queues import create_general_report
+from utils.data_utils import *
+from utils.rq_queues import create_general_report
 import csv
 from random import shuffle
 # from future import unicode_literals
@@ -263,7 +265,7 @@ def ranking(pars=None):
         else:
             tema, estado = tema_default, None
 
-        temas = Constants.ranking_categories()
+        temas = Constants.ranking_categories()    #Constants.state_performance_categories_dict()
 
         destados = dict(estados)
 
@@ -750,23 +752,39 @@ def ppublicas_values(tema=None,estado=None,dia=None):
 import StringIO, csv
 
 
-@app.route("/export/ppublicas")
+@app.route("/export/ppublicas", methods=['GET', 'POST'])
 def export_ppublicas():
-    si = StringIO.StringIO()
-    cw = csv.writer(si)
-    headers = ("Date", "Estado", "Score", "Rank", "Score Gobernador", "Rank Gobernador", \
-               "Score Presidente", "Rank Presidente", "Score Gobierno", "Rank Gobierno", \
-               "Score Obra Publica", "Rank Obra Publica", "Score Pavimentacion", "Rank Pavimentacion", \
-               "Score Recoleccion Basura", "Rank Recoleccion Basura", "Score Servicio Agua", \
-               "Rank Servicio Agua", "Score Transporte Publico", "Rank Transporte Publico", \
-               "Score Legislativo", "Rank Legislativo", "Score Judicial", "Rank Judicial")
-    cw.writerows([headers])
-    cw.writerows(export_data_pp())
-    output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas.csv"
-    output.headers["Content-type"] = "text/csv"
+    if not session.has_key("username"):return redirect("/login")
 
-    return output
+    export_form = ExportPoliticasPublicasForm(request.form)
+
+    try:
+        if request.method == 'POST' and export_form.validate():
+            filtering_state = Utilities.get_state_label(export_form.data['estado'])
+            filtering_category = export_form.data['categoria']
+            period_start_date = datepickerstring_to_date(export_form.data['periodo'].split("-")[0].strip())
+            period_end_date = datepickerstring_to_date(export_form.data['periodo'].split("-")[1].strip())
+
+            data_to_export = filter_data_politicas_publicas_export(filtering_state, filtering_category, period_start_date, period_end_date)
+
+            headers = Utilities.get_exportpp_csv_columns_header(filtering_category)
+            si = StringIO.StringIO()
+            cw = csv.writer(si)
+            cw.writerows([headers])
+            cw.writerows(data_to_export)
+
+            output = make_response(si.getvalue())
+            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}.xsl".format(Utilities.get_category_label(filtering_category))
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+            return output    # returning the attachment
+
+        return render_template("ppublicas_export_filters.html", form=export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
 @app.route("/export/rcombinado")
 def export_rankings():
     si = StringIO.StringIO()

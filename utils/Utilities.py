@@ -1,5 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import datetime
 import re
+import csv
+from sortedcontainers import SortedDict
 
 class Constants:
 
@@ -37,12 +41,41 @@ class Constants:
 
     @staticmethod
     def categories_dict():
-        cd = dict([('economia', "Econom&iacute;a"), ('gobernador', "Gobernador"), ('gobierno', "Gobierno"), \
-                   ('judicial', "Jueces"), ('legislativo', "Diputados y Senadores"), ('obra.publica', "Obra p&uacute;blica"), \
-                   ('pavimentacion', "Pavimentaci&oacute;n"), ('presidente', "Presidente"), \
-                   ('recoleccion.basura', "Recolecci&oacute;n de basura"), ('salud', "Salud"), ('seguridad', "Seguridad"), \
-                   ('servicio.agua', "Servicio de agua"), ('servicios', "Servicios"), ('transporte.publico', "Transporte p&uacute;blico")
-                   ])
+        cd = [('economia', "Economía"),
+              ('gobernador', "Gobernador"),
+              ('gobierno', "Gobierno"),
+              ('judicial', "Jueces"),
+              ('legislativo', "Diputados y Senadores"),
+              ('obra.publica', "Obra pública"),
+              ('pavimentacion', "Pavimentación"),
+              ('presidente', "Presidente"),
+              ('recoleccion.basura', "Recolección de basura"),
+              ('salud', "Salud"),
+              ('seguridad', "Seguridad"),
+              ('servicio.agua', "Servicio de agua"),
+              ('servicios', "Servicios"),
+              ('transporte.publico', "Transporte público")]
+        return cd
+
+    @staticmethod
+    def states_dict():
+        reader = csv.reader(open("./utils/formato_estados.csv"))
+        _ = reader.next()
+
+        estados = [(row[0], row[1]) for row in reader]
+
+        return estados
+
+    @staticmethod
+    def state_performance_categories_dict():
+        cd = [('gobernador', "Gobernador"),
+              ('obra.publica', "Obra pública"),
+              ('pavimentacion', "Pavimentación"),
+              ('recoleccion.basura', "Recolección de basura"),
+              ('salud', "Salud"),
+              ('seguridad', "Seguridad"),
+              ('servicio.agua', "Servicio de agua"),
+              ('transporte.publico', "Transporte público")]
         return cd
 
 class Utilities:
@@ -83,7 +116,7 @@ class Utilities:
 
     @staticmethod
     def get_category_label(category_key):
-        categries_dict = Constants.categories_dict()
+        categries_dict = dict(Constants.categories_dict())
         category_label = ""
 
         for item in categries_dict.keys():
@@ -92,3 +125,29 @@ class Utilities:
                 continue
 
         return category_label
+
+    @staticmethod
+    def get_state_label(state_key):
+        states_dict = dict(Constants.states_dict())
+        state_label = ""
+
+        for item in states_dict.keys():
+            if item == state_key:
+                state_label = states_dict[state_key]
+                continue
+
+        return state_label
+
+    @staticmethod
+    def get_exportpp_csv_columns_header(category):
+        score_header_label = "Score"
+        rank_header_label = "Rank"
+
+        if category:
+            cat_label = Utilities.get_category_label(category)
+            score_header_label = " ".join([score_header_label, cat_label])
+            rank_header_label = " ".join([rank_header_label, cat_label])
+
+        headers = ("Fecha", "Estado", score_header_label, rank_header_label)
+
+        return headers

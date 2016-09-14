@@ -113,7 +113,7 @@
 		Buscar
         </button>
 
-    <a href="/export/ppublicas" target="_blank"{% if(not show_search_results) %} style="display:none;"{%endif%}>
+    <a href="/export/ppublicas" target="_blank">
         <button class="btn btn-circle blue btn-sm" type="button" style="float:right">
             Exportar datos
         </button>
@@ -221,7 +221,7 @@
                    <i class="icon-microphone font-green"></i>
                    <span class="caption-subject bold font-green uppercase"> Noticias </span>
                    {% if tema and estado %}
-                     <span class="caption-helper"> Mostrando estado: {{ estado }}, tema: {{ tema }} </span>
+                     <span class="caption-helper"> Mostrando estado: {{ estado }}, tema: {{ category_label|safe }} </span>
                    {% endif %}
                  </div>
                </div>
