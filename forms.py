@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from flask.ext.wtf import Form
 from wtforms import Form, BooleanField, StringField, PasswordField, validators, SelectField
 from wtforms.validators import DataRequired
 from utils.Utilities import Constants
