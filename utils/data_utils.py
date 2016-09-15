@@ -12,10 +12,6 @@ def datepickerstring_to_date(datepickerstring):
     converted = datetime.datetime.strptime(datepickerstring, "%m/%d/%Y").date()
     return converted
 
-def date_to_universal_format_string(the_date):
-    converted = the_date.strfdate("%Y-%m-%d")
-    return converted
-
 def string_to_date(st):
     datepars = [int(v) for v in st.split("-")]
     return datetime.datetime(datepars[0], datepars[1], datepars[2])
@@ -676,18 +672,16 @@ def export_data_pp(days_ago=30):
         data.append(row)
     return data
 
-def filter_data_politicas_publicas_export(estado=None, categoria=None, inicio=None, fin=None):
+def filter_data_politicas_publicas_export(estado=None, categoria=None, start_date=None, end_date=None):
     data = []
 
     tema, etiqueta = "", "General"
     if categoria:
         tema = "_" + categoria
         etiqueta = Utilities.get_category_label(categoria)
-    start_date = date_to_universal_format_string(inicio)
-    end_date = date_to_universal_format_string(fin)
 
-    query = """select	tbl4.date_created,
-	tbl4.estado,
+    query = """select	tbl4.estado,
+	tbl4.date_created,
 	tbl4."rank{1}" as "rank_{2}",
 	tbl4."score{1}" as "score_{2}"
 from	public.tbl4 as tbl4

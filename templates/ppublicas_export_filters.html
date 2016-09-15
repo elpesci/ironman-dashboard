@@ -13,6 +13,16 @@
 
 {% block content %}
 <div class="page-content">
+    <div class="jumbotron">
+    <h3 style="text-align: center;">
+	    Exportar datos sobre desempe&ntilde;o y ranking de pol&iacute;ticas p&uacute;blicas
+    </h3>
+    <p>
+        Seleccione el estado, la categor&iacute;a y el rango de fechas sobre las cuales dese&eacute;
+        extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
+        un archivo en un archivo de formato legible para MS-Excel con la informaci&oacute;n solicitada.
+    </p>
+    </div>
     {% from "_formhelpers.html" import render_field %}
     <form id="exportForm" action="{{ url_for('export_ppublicas') }}" method="post">
     <div class="row">
@@ -30,15 +40,6 @@
         <div class="col-md-3">
             <i class="glyphicon glyphicon-calendar"></i>
             {{ render_field(form.periodo, class="form-control input-md") }}
-            <!--
-            <div class="form-group">
-                <div class='input-group date' id='datetimepicker1'>
-                    <span class="input-group-addon">
-                        <i class="glyphicon glyphicon-calendar"></i>
-                    </span>
-                </div>
-            </div>
-            -->
         </div>
         </dl>
 
@@ -86,17 +87,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-        $("#categoria option").each(function(i, elem) {
-            var _this = $(elem);
-            console.log(_this.text());
-        });
-
         $("#btnSubmit").on('click', function() {
-            var edo = $("#estado").val();
-            var cat = $("#categoria").val();
-            var range = $("#periodo").val();
-
-            $("#startDate").text(edo + " ^ " + cat + " ^ " + range );
             $("#exportForm").submit();
         });
 

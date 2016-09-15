@@ -126,10 +126,56 @@ License: You must have a valid license purchased only from themeforest(the above
                         </div>
                         <!-- BEGIN HEADER MENU -->
                         <div class="nav-collapse collapse navbar-collapse navbar-responsive-collapse">
-                            <ul class="nav navbar-nav">
-				{% block headtabs %}
-				{% endblock %}
-                            </ul>
+                            <ul class="nav navbar-nav">   <!-- Navigation Menu -->
+                                <li id="menu_opt_sh" class="dropdown dropdown-fw active selected">
+                                    <a href="{{ url_for('index') }}" class="text-uppercase">
+                                    <i class="fa fa-globe"></i> S&amp;H </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                        {% block s_and_h_nav_options %}
+                                        {% endblock %}
+                                    </ul>
+                                </li>
+                                <li id="menu_opt_estados" class="dropdown dropdown-fw  active selected">
+                                    <a href="{{ url_for('ranking') }}" class="text-uppercase">
+                                    <i class="fa fa-cubes"></i> Estados </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                        {% block estados_nav_options %}
+                                        {% endblock %}
+                                    </ul>
+                                </li>
+                                <li id="menu_opt_ppublicas" class="dropdown dropdown-fw active selected">
+                                    <a href="/ppublicas" class="text-uppercase">
+                                    <i class="fa fa-university"></i> Pol&iacute;ticas Pub </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                        {% block polpublicas_nav_options %}
+                                        {% endblock %}
+                                    </ul>
+                                </li>
+                                <li id="menu_opt_corr" class="dropdown dropdown-fw active selected">
+                                    <a href="/corrs" class="text-uppercase">
+                                    <i class="fa fa-th"></i> Correlaciones </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                        {% block correlaciones_nav_options %}
+                                        {% endblock %}
+                                    </ul>
+                                </li>
+                                <li id="menu_opt_reportes" class="dropdown dropdown-fw active selected">
+                                    <a href="/reportes" class="text-uppercase">
+                                    <i class="fa fa-download"></i> Reportes </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                        {% block reportes_nav_options %}
+                                        {% endblock %}
+                                    </ul>
+                                </li>
+                                <li id="menu_opt_usuarios" class="dropdown dropdown-fw active selected">
+                                    <a href="/usuarios" class="text-uppercase">
+                                    <i class="fa fa-users"></i> Usuarios </a>
+                                    <ul class="dropdown-menu dropdown-menu-fw">
+                                        {% block usuarios_nav_options %}
+                                        {% endblock %}
+                                    </ul>
+                                </li>
+                            </ul>   <!-- Navigation Menu End-->
                         </div>
                         <!-- END HEADER MENU -->
                     </div>
@@ -1897,6 +1943,8 @@ License: You must have a valid license purchased only from themeforest(the above
         <script src="/static/assets/layouts/layout5/scripts/layout.min.js" type="text/javascript"></script>
         <script src="/static/assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
         <!-- END THEME LAYOUT SCRIPTS -->
+        <script src="/static/js/navBarStylingActions.js" type="text/javascript"></script>
+
    	{% endblock %} 
    </body>
 
