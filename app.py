@@ -138,9 +138,11 @@ def register():
         client.save()
 
         session["username"] = client.login
-        flash('Gracias por registrarse en nuestro servicio! A continuacion procederemos con los detalles de su pago.')
-        return redirect(url_for('payment'))
-    return render_template('register.html', form=form)
+        flash('Gracias por registrarse en nuestro servicio!')
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html', form=form, copyright_year=datetime.datetime.now().year)
 
 @app.route('/payment')
 def payment():
@@ -774,7 +776,7 @@ def export_ppublicas():
             cw.writerows(data_to_export)
 
             output = make_response(si.getvalue())
-            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}.xsl".format(Utilities.get_category_label(filtering_category))
+            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, Utilities.get_category_label(filtering_category))
             output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
             return output    # returning the attachment

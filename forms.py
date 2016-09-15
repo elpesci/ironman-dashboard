@@ -6,11 +6,11 @@ from wtforms.validators import DataRequired
 from utils.Utilities import Constants
 
 class RegistrationForm(Form):
-    nombre = StringField('Nombre', validators=[DataRequired()])
-    login = StringField('Login', validators=[DataRequired()])
-    password = PasswordField('Introduzca un password', [
+    nombre = StringField('Nombre y apellido', validators=[DataRequired()])
+    login = StringField('Nombre de usuario (username)', validators=[DataRequired()])
+    password = PasswordField('Contrase&ntilde;a (password)', [
                 validators.DataRequired(),
-                validators.EqualTo('confirm', message='Los passwords deben coincidir')
+                validators.EqualTo('confirm', message='La confirmación de contraseña no coincide con el valor inicial de contraseña')
             ])
     confirm = PasswordField('Confirme el password')
     descripcion = StringField('Describa su institucion')
