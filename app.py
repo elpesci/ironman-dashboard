@@ -776,7 +776,7 @@ def export_ppublicas():
             cw.writerows(data_to_export)
 
             output = make_response(si.getvalue())
-            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, Utilities.get_category_label(filtering_category))
+            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.csv".format(filtering_state, str(filtering_category).replace('.', '_'))
             output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
             return output    # returning the attachment
