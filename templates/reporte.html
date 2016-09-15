@@ -8,52 +8,11 @@
 
 {% endblock %}
 
-{% block headtabs %}
-        <li class="dropdown dropdown-fw active selected">
-                                            <a href="{{ url_for('index') }}" class="text-uppercase">
-                                             <i class="fa fa-globe"></i> S&H </a>
-                                             <ul class="dropdown-menu dropdown-menu-fw">
-                                             </ul>
-                                          </li>
-        <li class="dropdown dropdown-fw  active selected">
-                                    <a href="/ranking" class="text-uppercase">
-                                        <i class="fa fa-cubes"></i> Rankings </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-         <li class="dropdown dropdown-fw active selected">
-                                <a href="/ppublicas" class="text-uppercase">
-                                <i class="fa fa-university"></i> Politicas Pub </a>
-                                <ul class="dropdown-menu dropdown-menu-fw">
-                                </ul>
-                                </li>
-         <li class="dropdown dropdown-fw active selected">
-                                <a href="/corrs" class="text-uppercase">
-                                <i class="fa fa-th"></i> Correlaciones </a>
-                                <ul class="dropdown-menu dropdown-menu-fw">
-                                </ul>
-                                </li>
-      <li class="dropdown dropdown-fw active open selected">
-                                    <a href="javascript:;" class="text-uppercase">
-                                        <i class="fa fa-download"></i> Reportes </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-				<li class="dropdown dropdown-fw active selected">
-                                    <a href="/usuarios" class="text-uppercase">
-                                        <i class="fa fa-users"></i> Usuarios </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-
-{% endblock%}
-
-
 
 {% block content %}
 <div class="page-content">
 		<!-- BEGIN SELECTOR -->
-		<h3>
+		<h3 style="text-align: center;">
 			Seleccione la entidad federativa deseada para generar el reporte
     </h3><br/>
     En este apartado el usuario tiene la opción de seleccionar la entidad federativa de su interés y obtener un reporte con todos<br/> los elementos analizados para dicha entidad federativa para el período de tiempo seleccionado. 
@@ -154,6 +113,9 @@
   <!-- END PAGE LEVEL SCRIPTS -->
 	<script>
 	jQuery(document).ready(function() {
+            removeNavOpenState();
+            setNavOpenStateOn($("#menu_opt_reportes"));
+
         	$("#search-button").on("click",function(){
 			        var estado = $("#select1-single-input-sm").val();
 			        var tema = $("#select2-single-input-sm").val();

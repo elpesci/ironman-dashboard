@@ -8,295 +8,214 @@
 
 {% endblock %}
 
-{% block headtabs %}
-        <li class="dropdown dropdown-fw active selected">
-                                    <a href="{{ url_for('index') }}" class="text-uppercase">
-                                    <i class="fa fa-globe"></i> S&H </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-        <li class="dropdown dropdown-fw active selected">
-                                    <a href="/ranking" class="text-uppercase">
-                                        <i class="fa fa-cubes"></i> Rankings </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-         <li class="dropdown dropdown-fw active open selected">
-                                    <a href="javascript:;" class="text-uppercase">
-                                        <i class="fa fa-university"></i> Politicas Pub </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-       <li class="dropdown dropdown-fw active selected">
-                                    <a href="/corrs" class="text-uppercase">
-                                    <i class="fa fa-th"></i> Correlaciones </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-					<li class="dropdown dropdown-fw active selected">
-                                    <a href="/reportes" class="text-uppercase">
-                                        <i class="fa fa-download"></i> Reportes </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-			<li class="dropdown dropdown-fw active selected">
-                                    <a href="/usuarios" class="text-uppercase">
-                                        <i class="fa fa-users"></i> Usuarios </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-
-{% endblock%}
-
-
-
 {% block content %}
 <div class="page-content">
-		<!-- BEGIN SELECTOR -->
-		<h3>
-			Desempeño Social histórico por Estado  en Medios Sociales
-		</h3>
+	<!-- BEGIN SELECTOR -->
+	<h3 style="text-align: center;">
+		Desempe&ntilde;o Social hist&oacute;rico por Estado en Medios Sociales
+	</h3>
     <div class="row">
-    <div class="col-md-12">
-    <p style="text-align: justify">
-  En este apartado se muestra el desempeño social histórico por entidad federativa. El usuario tiene la opción de seleccionar las categorías: 
-  <b>Presidente de la República, Gobernador del Estado, Diputados y Senadores, salud, recolección de basura, servicio de agua, transporte público, seguridad, economía, pavimentación, obra pública, y Gobierno en general</b>,
-    así como el período de tiempo deseado. En la gráfica “Desempeño histórico” podrá observar en comportamiento del indicador seleccionado, así como su relación con la media nacional. Este apartado le permite al usuario visualizar la actividad en los medios sociales de manera geográfica de acuerdo a su respectiva polaridad (positiva, negativa o neutral), las principales noticias y menciones en medios sociales por categoría, así como los eventos clave más mencionadas en la entidad y categoría seleccionada.<br/>
-    <br/><b>Notas:</b><br/>
-  1.- Se desagrega la categoría “Servicios” en sus componentes: salud, recolección de basura, servicio de agua y transporte público<br/>
-  2.- Se desagrega la categoría “obra pública” en sus componentes: pavimentación y obra pública en general<br/>
-  3.- La categoría “Gobierno” incluye: frases o menciones en donde se incluye la palabra “Gobierno”.
-  </p>
-</div>
-    <div class="col-md-6"></div></div>
-		<div class="row">
+		<div class="col-md-12">
+			<p style="text-align: justify">
+				En este apartado se muestra el desempe&ntilde;o social hist&oacute;rico por entidad federativa. El usuario tiene la opci&oacute;n de seleccionar las categor&iacute;as:
+				<b>Presidente de la Rep&uacute;blica, Gobernador del Estado, Diputados y Senadores, salud, recolecci&oacute;n de basura, servicio de agua, transporte p&uacute;blico, seguridad, econom&iacute;a, pavimentaci&oacute;n, obra p&uacute;blica, y Gobierno en general</b>,
+				as&iacute; como el per&iacute;odo de tiempo deseado. En la gr&aacute;fica &ldquo;Desempe&ntilde;o hist&oacute;rico&rdquo; podr&aacute; observar en comportamiento del indicador seleccionado, as&iacute; como su relaci&oacute;n con la media nacional. Este apartado le permite al usuario visualizar la actividad en los medios sociales de manera geogr&aacute;fica de acuerdo a su respectiva polaridad (positiva, negativa o neutral), las principales noticias y menciones en medios sociales por categor&iacute;a, as&iacute; como los eventos clave m&aacute;s mencionadas en la entidad y categor&iacute;a seleccionada.<br/>
+				<br/><b>Notas:</b><br/>
+				1.- Se desagrega la categor&iacute;a &ldquo;Servicios&rdquo; en sus componentes: salud, recolecci&oacute;n de basura, servicio de agua y transporte p&uacute;blico<br/>
+				2.- Se desagrega la categor&iacute;a &ldquo;obra p&uacute;blica&rdquo; en sus componentes: pavimentaci&oacute;n y obra p&uacute;blica en general<br/>
+				3.- La categor&iacute;a &ldquo;Gobierno&rdquo; incluye: frases o menciones en donde se incluye la palabra &ldquo;Gobierno&rdquo;.
+			</p>
+		</div>
+	</div>
+
+	<div class="row">
 		<!-- BEGIN STATES SELECTOR -->
-					<div class="col-md-3">
-                                            <label for="select1-single-input-sm" class="control-label">Estado</label>
-                                            <select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                                                <optgroup label="">
-                                                    <option value="">Seleccione una opcion</option>
-                                                </optgroup>
-                                                <optgroup label="Estados">
-						    {% for tup in estados %}
-                                                    <option value="{{ tup[0] }}">{{ tup[1] }}</option>
-                                               	    {% endfor %}
-						 </optgroup>
-                                            </select>
-                                        </div>
+		<div class="col-md-3">
+			<label for="select1-single-input-sm" class="control-label">Estado</label>
+			<select id="select1-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+				<optgroup label="">
+					<option value="">Seleccione una opci&oacute;n</option>
+				</optgroup>
+				<optgroup label="Estados">
+					{% for tup in estados %}
+					<option value="{{ tup[0] }}" {% if estado == tup[1] %} selected {% endif %}>{{ tup[1] }}</option>
+					{% endfor %}
+				</optgroup>
+			</select>
+		</div>
 		<!-- END STATES SELECTOR -->
-    <!-- BEGIN CATS SELECTOR -->
-					<div class="col-md-3">
-                                            <label for="select2-single-input-sm" class="control-label">Categoria</label>
-                                            <select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                                                 <optgroup label="">
-                                                    <option value="">Seleccione una opcion</option>
-                                                </optgroup>
-                                                <optgroup label="Categorias">
-                                                    <option value="general">General</option>
-						    {% for item in temas %}
-                                                    <option value="{{ item }}">{{ " ".join(item.capitalize().split(".")) }}</option>
-                                               	    {% endfor %}
-						 </optgroup>
-                                            </select>
-                                      </div>
-    <!-- END CATS SELECTOR -->
-		<!-- <div class="col-md-3">
-			<label for="select3-single-input-sm" class="control-label">Rango de fecha</label>
-                	<div class="input-group input-large date-picker input-daterange" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
-                        <input id="d-from" type="text" class="form-control" name="from">
-                        <span class="input-group-addon"> to </span>
-                      	<input id= "d-to" type="text" class="form-control" name="to"> </div>
-                </div>
-    </div> -->
+		<!-- BEGIN CATS SELECTOR -->
+		<div class="col-md-3">
+			<label for="select2-single-input-sm" class="control-label">Categor&iacute;a</label>
+			<select id="select2-single-input-sm" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+				 <optgroup label="">
+					<option value="">Seleccione una opci&oacute;n</option>
+				</optgroup>
+				<optgroup label="Categor&iacute;as">
+					{% for key, value in categorias.iteritems(): %}
+					<option value="{{ key }}" {% if tema == key %} selected {% endif %}>{{ value|safe }}</option>
+					{% endfor %}
+				</optgroup>
+			</select>
+		</div>
 		<br/>
 		<button id="search-button" class="btn btn-circle green btn-sm" type="button">
-		Ver resultados</button>
+			Buscar
+        </button>
 
-    <a href="/export/ppublicas" target="_blank">
-    <button class="btn btn-circle blue btn-sm" type="button" style="float:right">
-    Exportar datos
-    </button></a>
+		<a href="/export/ppublicas" class="btn btn-circle blue btn-sm" style="float:right;" target="_blank">Exportar datos</a>
 		<br/>
-    <hr/>
-    {% if estado %}
-    El siguiente análisis muestra el desempeño del  estado de <b id="state">{{ estado }}</b> en el periodo del 
-    {{ sdate }} a {{ ndate }} en la categoría: <b id="category">{{ " ".join(tema.upper().split(".")) }}</b>
-    {% endif %}
-    <br/><br/>
+		<hr/>
 		<!-- END SELECTORS -->
+	</div>
+
+	<div class="container" style="width: 100%; {% if(not show_search_results) %}display:none;{% endif %}">
+		<!-- <span>Aquí es donde irán los TABS</span> -->
+		{% if estado %}
 		<div class="row">
-
+			<div class="col-md-12">
+				El siguiente análisis muestra el desempeño del  estado de <b id="state">{{ estado }}</b> en el periodo del
+				{{ sdate }} a {{ ndate }} en la categoría: <b id="category">{{ category_label|safe }}</b>
+			</div>
+		</div>
+		{% endif %}
 		<!-- Begin Interactive chart -->
-    <div class="col-md-12">
-
-      <div class="col-md-5 portlet light portlet-fit bordered">
-        <table class="table table-striped table-bordered table-hover table-checkable order-column">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Score Actual</th>
-              <th>Score Semana Anterior</th>
-              <th>Cambio Porcentual Score</th>
-              <th>Ranking Actual</th>
-              <th>Ranking Semana Anterior</th>
-              <th>Cambio Porcentural Ranking</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td>{{ int(score*100)/100 }}</td>
-              <td>{{ int(score_anterior*100)/100 }}</td>
-              <td>
-                {% if (score-score_anterior) > 0 %}
-                <i class="fa fa-chevron-up" style="color:green"></i>
-                {% elif (score-score_anterior) < 0 %}
-                <i class="fa fa-chevron-down" style="color:red"></i>
-                {% else %}
-                {% endif %}&nbsp;&nbsp;
-                {{ int(((score-score_anterior)/(1+score_anterior))*100)/100.0 }}
-              </td>
-              <td>{{ rank }}</td>
-              <td>{{ rank_anterior }}</td>
-              <td>
-                {% if (rank-rank_anterior) > 0 %}
-                <i class="fa fa-chevron-up" style="color:green"></i>
-                {% elif (rank-rank_anterior) < 0 %}
-                <i class="fa fa-chevron-down" style="color:red"></i>
-                {% else %}
-                {% endif %}&nbsp;&nbsp;
-                {{ rank-rank_anterior }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-   </div>
-   <div class="col-md-6">
-      <div class="portlet light portlet-fit bordered">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <span class="caption-subject font-dark sbold uppercase">
-                                          DESEMPEÑO ESTA SEMANA</span><br/>
-                                        <span class="caption-subject">(de clic sobre la serie para visualizar hashtags y tweets relevantes)</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div id="chart_2" class="chart"> </div>
-                                </div>
-      </div>
-      <div class="portlet light portlet-fit bordered">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <span class="caption-subject font-dark sbold uppercase">
-                                          Hashtags relevantes del dia</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                  <center>
-                                  <wordcloud></wordcloud>
-                                  </center>
-                                </div>
-      </div>
-      <div class="portlet light portlet-fit bordered">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <span class="caption-subject font-dark sbold uppercase">
-                                          Tweets mas importantes del dia</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                  <center>
-                                    <table id="tweets-list" class="table table-hover table-light">
-                                      <thead>
-                                        <tr>
-                                          <th>Tweet</th>
-                                          <th>Score</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        <tr>
-                                          <td></td>
-                                          <td></td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                  </center>
-                                </div>
-      </div>
-
-    </div>
-    <div.class="col-md-6">
-      <div class="col-md-6">
-             <div class="portlet light portlet-fit bordered">
-               <div class="portlet-title">
-                 <div class="caption">
-                   <i class="icon-microphone font-green"></i>
-                   <span class="caption-subject bold font-green uppercase"> Noticias </span>
-                   {% if tema and estado %}
-                     <span class="caption-helper"> Mostrando estado: {{ estado }}, tema: {{ tema }} </span>
-                   {% endif %}
-                 </div>
-               </div>
-               <div class="portlet-body">
-                 <div class="timeline">
-                   <!-- TIMELINE ITEM -->
-                   {% for noticia in noticias %}
-                     <div class="timeline-item">
-                       <div class="timeline-badge">
-                         <img class="timeline-badge-userpic" src="">.
-                       </div>
-                       <div class="timeline-body">
-                         <div class="timeline-body-arrow"> </div>
-                         <div class="timeline-body-head">
-                           <div class="timeline-body-head-caption">
-                             <a href="{{ noticia[4] }}" class="timeline-body-title font-blue-madison" target="_blank">{{ noticia[1] }}</a>
-                             <span class="timeline-body-time font-grey-cascade">Publicada por {{ noticia[2] }}, en: {{ noticia[0] }}</span>
-                           </div>
-                           <div class="timeline-body-head-actions">
-                             <!--<div class="btn-group">
-                             <button class="btn btn-circle green btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-hover="dropdown" d>
-                             <i class="fa fa-angle-down"></i>
-                             </button>
-                             <ul class="dropdown-menu pull-right" role="menu">
-                             <li>
-                             <a href="javascript:;">Action </a>
-                             </li>
-                             <li>
-                             <a href="javascript:;">Another action </a>
-                             </li>
-                             <li>
-                             <a href="javascript:;">Something else here </a>
-                             </li>
-                             <li class="divider"> </li>
-                             <li>
-                             <a href="javascript:;">Separated link </a>
-                             </li>
-                             </ul>
-                             </div>-->
-                           </div>
-                         </div>
-                         <div class="timeline-body-content">
-                           <span class="font-black-cascade">.
-                             {{ noticia[3] }}
-                           </span>
-                         </div>
-                       </div>
-                     </div>
-                   {% endfor %}
-                   <!-- END TIMELINE ITEM -->
-                 </div>
-               </div>
-             </div>
-           </div>
-
-      </div>
+		<div class="row">
+			<div class="col-md-5 portlet light portlet-fit bordered"> <!-- HERE -->
+				<table class="table table-striped table-bordered table-hover table-checkable order-column">
+				  <thead>
+					<tr>
+					  <th></th>
+					  <th>Score Actual</th>
+					  <th>Score Semana Anterior</th>
+					  <th>Cambio Porcentual Score</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<tr>
+					  <td></td>
+					  <td>{{ '%.2f'%(score_var_dict['score_current_week']) }}</td>
+					  <td>{{ '%.2f'%(score_var_dict['score_last_week']) }}</td>
+					  <td>
+						{% if (score_var_dict['score_current_week'] - score_var_dict['score_last_week']) > 0 %}
+							<i class="fa fa-chevron-up" style="color:green"></i>
+						{% else %}
+						   <i class="fa fa-chevron-down" style="color:red"></i>
+						{% endif %}&nbsp;&nbsp;
+						{{ '%.2f'%(score_var_dict['score_ptg_var']) }} %
+					  </td>
+					</tr>
+				  </tbody>
+				</table>
+			</div>
 		</div>
+
+		<div class="row">
+			<div class="col-md-6"> <!-- Left column -->
+			  <div class="portlet light portlet-fit bordered">
+										<div class="portlet-title">
+											<div class="caption">
+												<span class="caption-subject font-dark sbold uppercase">
+												  DESEMPEÑO ESTA SEMANA</span><br/> <!-- Performance Chart -->
+												<span class="caption-subject">(de clic sobre la serie para visualizar hashtags y tweets relevantes)</span>
+											</div>
+										</div>
+										<div class="portlet-body">
+											<div id="chart_2" class="chart"> </div>
+										</div>
+			  </div>
+			  <div class="portlet light portlet-fit bordered">
+										<div class="portlet-title">
+											<div class="caption">
+												<span class="caption-subject font-dark sbold uppercase">
+												  Hashtags relevantes del d&iacute;a</span> <!-- #'s -->
+											</div>
+										</div>
+										<div class="portlet-body">
+										  <center>
+										  <wordcloud></wordcloud>
+										  </center>
+										</div>
+			  </div>
+			  <div class="portlet light portlet-fit bordered">
+										<div class="portlet-title">
+											<div class="caption">
+												<span class="caption-subject font-dark sbold uppercase">
+												  Tweets mas importantes del d&iacute;a</span> <!-- Tweets -->
+											</div>
+										</div>
+										<div class="portlet-body">
+										  <center>
+											<table id="tweets-list" class="table table-hover table-light">
+											  <thead>
+												<tr>
+												  <th>Tweet</th>
+												  <th>Score</th>
+												</tr>
+											  </thead>
+											  <tbody>
+												<tr>
+												  <td></td>
+												  <td></td>
+												</tr>
+											  </tbody>
+											</table>
+										  </center>
+										</div>
+			  </div>
+
+			</div> <!-- Left column end -->
+
+			<!-- <div class="col-md-6"> -->
+			<div class="col-md-6"> <!-- Right column -->
+				<div class="portlet light portlet-fit bordered">
+					<div class="portlet-title">
+						<div class="caption">
+							<i class="icon-microphone font-green"></i>
+							<span class="caption-subject bold font-green uppercase"> Noticias </span>
+							{% if tema and estado %}
+							<span class="caption-helper"> Mostrando estado: {{ estado }}, tema: {{ category_label|safe }} </span>
+							{% endif %}
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="timeline">
+						<!-- TIMELINE ITEM -->
+						{% for noticia in noticias %}
+							<div class="timeline-item">
+								<div class="timeline-badge">
+									<!-- <img class="timeline-badge-userpic" src=""> -->
+                                    <i class="fa fa-external-link" aria-hidden="true" style="font-size: 35px; vertical-align: bottom; float: right; padding-top: 30px;"></i>
+								</div>
+								<div class="timeline-body">
+									<div class="timeline-body-arrow"> </div>
+									<div class="timeline-body-head">
+										<div class="timeline-body-head-caption">
+											<a href="{{ noticia[4] }}" class="timeline-body-title font-blue-madison" target="_blank">{{ noticia[1] }}</a>
+											<div class="timeline-publishing-details font-grey-cascade">
+												Publicada por {{ noticia[2] }} ({{ noticia[0] }})
+											</div>
+										</div>
+										<div class="timeline-body-head-actions"></div>
+									</div>
+									<div class="timeline-body-content">
+										<span class="font-black-cascade">
+										{{ noticia[3] }}
+										</span>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+						<!-- END TIMELINE ITEM -->
+						</div>
+					</div>
+				 </div> <!--end portlet -->
+		   </div>  <!-- Right column end -->
+
+		</div> <!-- end row -->
 		<!-- End interactive chart -->
-
-		</div>
-</div>
+	</div> <!-- End container -->
+</div><!-- end page-content -->
 {% block bootbox %}
 {{ super() }}
 {% endblock %}
@@ -334,6 +253,9 @@
   <!-- END PAGE LEVEL SCRIPTS -->
 	<script>
 	jQuery(document).ready(function() {
+            removeNavOpenState();
+            setNavOpenStateOn($("#menu_opt_ppublicas"));
+
         	$("#search-button").on("click",function(){
 			var estado = $("#select1-single-input-sm").val();
 			var tema = $("#select2-single-input-sm").val();

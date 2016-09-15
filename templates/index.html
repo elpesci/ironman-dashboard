@@ -7,74 +7,26 @@
         <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
-{% block headtabs %}
-					<li class="dropdown dropdown-fw active selected">
-                                    <a href="{{ url_for('index') }}" class="text-uppercase">
-                                        <i class="fa fa-globe"></i> S&H </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-			<li class="dropdown dropdown-fw  active open selected">
-                                    <a href="javascript:;" class="text-uppercase">
-                                        <i class="fa fa-cubes"></i> Rankings </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                        <li>
-                                        <a href="{{url_for('ranking')}}">
-                                          <button class=" btn btn-default">
-                                                <i class="icon-list"></i> Ranking Combinado 
-                                            </button></a>
-                                        </li>
-                                        <li class="active">
-                                        <a href="javascript:;">
-                                          <button class=" btn btn-default active">
-                                                <i class="icon-list"></i> Ranking Social 
-                                                </button></a>
-                                        </li>
-                                        <li>
-                                        <a href="{{url_for('noticias')}}">
-                                          <button class=" btn btn-default">
-                                                <i class="icon-list"></i> Ranking Noticias 
-                                            </button></a>
-                                        </li>
-                                      <!--
-                                        <li>
-                                            <a href="dashboard_3.html">
-                                                <i class="icon-pie-chart"></i> Dashboard 3 </a>
-                                        </li>
-                                        <li>
-                                            <a href="dashboard_3.html">
-                                                <i class="icon-bar-chart"></i> Dashboard 3 </a>
-                                        </li>
-
-                                        -->
-                                    </ul>
-                                </li>
-        <li class="dropdown dropdown-fw active selected">
-                                <a href="/ppublicas" class="text-uppercase">
-                                <i class="fa fa-university"></i> Politicas Pub </a>
-                                <ul class="dropdown-menu dropdown-menu-fw">
-                                </ul>
-                                </li>
-	        <li class="dropdown dropdown-fw active selected">
-                                <a href="/corrs" class="text-uppercase">
-                                <i class="fa fa-th"></i> Correlaciones </a>
-                                <ul class="dropdown-menu dropdown-menu-fw">
-                                </ul>
-                                </li>
-				<li class="dropdown dropdown-fw active selected">
-                                    <a href="/reportes" class="text-uppercase">
-                                        <i class="fa fa-download"></i> Reportes </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-			<li class="dropdown dropdown-fw active selected">
-                                    <a href="/usuarios" class="text-uppercase">
-                                        <i class="fa fa-users"></i> Usuarios </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-
+<! -- Navigation submenu -->
+{% block estados_nav_options %}
+        <li>
+            <a href="{{url_for('ranking')}}">
+                <button class=" btn btn-default"> <i class="icon-list"></i> Desempe&ntilde;o Combinado </button>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <button class=" btn btn-default active"><i class="icon-list"></i> Desempe&ntilde;o Social </button>
+            </a>
+        </li>
+        <li>
+            <a href="{{url_for('noticias')}}">
+                <button class=" btn btn-default"><i class="icon-list"></i> Desempe&ntilde;o Noticias </button>
+            </a>
+        </li>
 {% endblock %}
+<! -- Navigation submenu -->
+
 
 {% block content %}
 <div class="page-content">
@@ -362,6 +314,8 @@ var ChartsFlotcharts = function() {
     }
 }();
 jQuery(document).ready(function() {
+    removeNavOpenState();
+    setNavOpenStateOn($("#menu_opt_estados"));
 
     $("#search-button").on("click", function() {
         $("#frmCategorias").submit();

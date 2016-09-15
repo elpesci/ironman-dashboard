@@ -58,36 +58,57 @@ License: You must have a valid license purchased only from themeforest(the above
             </a>-->
         </div>
         <!-- END LOGO -->
-        <!-- BEGIN LOGIN -->
-        <div class="content">
-            <!-- BEGIN LOGIN FORM -->
-            {% from "_formhelpers.html" import render_field %}
-            <form class="login-form" action="/register" method="post">
-		{% with messages = get_flashed_messages() %}
-  			{% if messages %}
-    				{% for message in messages %}
-      				<div class="alert alert-danger">
-				<button class="close" data-close="alert"></button>
-				<span>{{ message }}</span>
-    				</div>
-				{% endfor %}
-  			{% endif %}
-	   {% endwith %}
-
-           <div class="form-group">
-                {{ render_field(form.nombre, class="form-control form-control-solid placeholder-no-fix") }}
-                {{ render_field(form.descripcion, class_="form-control form-control-solid placeholder-no-fix") }}
-                {{ render_field(form.login, class_="form-control form-control-solid placeholder-no-fix") }}
-                {{ render_field(form.password, class_="form-control form-control-solid placeholder-no-fix") }}
-                {{ render_field(form.confirm, class_="form-control form-control-solid placeholder-no-fix") }}
-          </div>
-          <div class="form-actions">
-            <button type=submit  class="btn green uppercase">Registrarse</button>
-          </div>
-            </form>
-           <!-- END LOGIN FORM -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="content">
+                    <h1 style="text-align: center; color: #32c5d2;">
+                        Desempe&ntilde;o social de los gobiernos
+                    </h1>
+                    <p>
+                        Para tener acceso al sitio, es necesario generar un nombre de usuario y una contrase&ntilde;a.
+                        Por favor capture todos los datos solicitados en el siguiente formulario (todos los campos son obligatorios).
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- BEGIN LOGIN -->
+                <div class="content">
+                    <!-- BEGIN LOGIN FORM -->
+                    <div>
+                        <h1 style="color: #32c5d2;">
+                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                            Nuevo usuario
+                        </h1>
+                    </div>
+                    {% from "_formhelpers.html" import render_field %}
+                    <form class="login-form" action="/register" method="post">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-danger">
+                                    <button class="close" data-close="alert"></button>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                       <div class="form-group">
+                            {{ render_field(form.nombre, class="form-control form-control-solid placeholder-no-fix") }}
+                            {{ render_field(form.login, class_="form-control form-control-solid placeholder-no-fix") }}
+                            {{ render_field(form.password, class_="form-control form-control-solid placeholder-no-fix") }}
+                            {{ render_field(form.confirm, class_="form-control form-control-solid placeholder-no-fix") }}
+                            {{ render_field(form.descripcion, class_="form-control form-control-solid placeholder-no-fix") }}
+                      </div>
+                      <div class="form-actions">
+                        <button type=submit  class="btn green uppercase">Registrarse</button>
+                      </div>
+                    </form>
+                   <!-- END LOGIN FORM -->
+                </div>
+            </div>
         </div>
-        <div class="copyright"> 2016 @ GCN. </div>
+
+        <div class="copyright"> &copy; {{ copyright_year }} @ GCN. </div>
         <!--[if lt IE 9]>
 <script src="../assets/global/plugins/respond.min.js"></script>
 <script src="../assets/global/plugins/excanvas.min.js"></script> 

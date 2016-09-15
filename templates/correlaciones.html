@@ -8,73 +8,34 @@
         <link rel="stylesheet" type="text/css" href="/static/correxplorer.css">
 {% endblock %}
 
-{% block headtabs %}
-				  <li class="dropdown dropdown-fw active selected">
-                                   <a href="{{ url_for('index') }}" class="text-uppercase">
-                                   <i class="fa fa-globe"></i> S&H </a>
-                                   <ul class="dropdown-menu dropdown-menu-fw">
-                                   </ul>
-                                </li>
-          <li class="dropdown dropdown-fw  active selected">
-                                    <a href="/ranking" class="text-uppercase">
-                                        <i class="fa fa-cubes"></i> Rankings </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-         <li class="dropdown dropdown-fw active selected">
-                                    <a href="/ppublicas" class="text-uppercase">
-                                    <i class="fa fa-university"></i> Politicas Pub </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                 </li>
-
-				<li class="dropdown dropdown-fw active open selected">
-                                    <a href="javascript:;" class="text-uppercase">
-                                        <i class="fa fa-th"></i> Correlaciones </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                      {% if indicador!="ir" %}
-                                      <li class="active">
-                                       <a href="javascript:;">
-                                       <i class="icon-list"></i> Redes Sociales/Noticias </a>
-                                      </li>
-                                       <li>
-                                       <a href="/corrs-inegi">
-                                       <i class="icon-list"></i> Redes Sociales/INEGI </a>
-                                      </li>
-                                      {% else %}
-                                       <li>
-                                       <a href="/corrs">
-                                       <i class="icon-list"></i> Redes Sociales/Noticias </a>
-                                      </li>
-                                       <li class="active">
-                                       <a href="javascript:;">
-                                       <i class="icon-list"></i> Redes Sociales/INEGI </a>
-                                      </li>
-                                      {% endif %}
-
-                                    </ul>
-                                </li>
-					<li class="dropdown dropdown-fw active selected">
-                                    <a href="/reportes" class="text-uppercase">
-                                        <i class="fa fa-download"></i> Reportes </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-			 <li class="dropdown dropdown-fw active selected">
-                                    <a href="/usuarios" class="text-uppercase">
-                                        <i class="fa fa-users"></i> Usuarios </a>
-                                    <ul class="dropdown-menu dropdown-menu-fw">
-                                    </ul>
-                                </li>
-{% endblock%}
-
+{% block correlaciones_nav_options %}
+    {% if indicador!="ir" %}
+    <li class="active">
+        <a href="javascript:;">
+        <i class="icon-list"></i> Redes Sociales/Noticias </a>
+    </li>
+    <li>
+        <a href="/corrs-inegi">
+        <i class="icon-list"></i> Redes Sociales/INEGI </a>
+    </li>
+    {% else %}
+    <li>
+        <a href="/corrs">
+        <i class="icon-list"></i> Redes Sociales/Noticias </a>
+    </li>
+    <li class="active">
+        <a href="javascript:;">
+        <i class="icon-list"></i> Redes Sociales/INEGI </a>
+    </li>
+    {% endif %}
+{% endblock %}
 
 
 {% block content %}
 <div class="page-content" style="width:100%">
-  <h3>Análisis Estadístico de Variables </h3><br/>
+  <h3 style="text-align: center;">Análisis Estadístico de Variables </h3><br/>
     <div class="row">
-     <div class="col-md-6">
+     <div class="col-md-12">
     <p style="text-align: justify">
     En este apartado el usuario tiene la opción de identificar posibles correlaciones estadísticas entre las mismas variables que conforman el desempeño social de los Gobiernos, así como su posible correlación con los datos oficiales emitidos por el Gobierno Federal.  Así mismo, se tiene la opción de seleccionar el período de tiempo deseado.
     </p>
@@ -207,6 +168,9 @@
 	<!-- END PAGE LEVEL SCRIPTS -->
 	<script>
         jQuery(document).ready(function() {
+            removeNavOpenState();
+            setNavOpenStateOn($("#menu_opt_corr"));
+
                 $("#search-button").on("click",function(){
                         var estado = $("#select1-single-input-sm").val();
                         // var tema = $("#select2-single-input-sm").val();
