@@ -13,7 +13,6 @@
 
 {% block content %}
 <div class="page-content">
-    <div class="jumbotron">
     <h3 style="text-align: center;">
 	    Exportar datos sobre desempe&ntilde;o y ranking de pol&iacute;ticas p&uacute;blicas
     </h3>
@@ -22,7 +21,6 @@
         extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
         un archivo en un archivo de formato legible para MS-Excel con la informaci&oacute;n solicitada.
     </p>
-    </div>
     {% from "_formhelpers.html" import render_field %}
     <form id="exportForm" action="{{ url_for('export_ppublicas') }}" method="post">
     <div class="row">
