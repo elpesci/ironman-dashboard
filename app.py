@@ -600,6 +600,7 @@ def ppublicas(pars=None,dfrom=None,dto=None):
         last_week_end_date = datetime_to_str(get_days_ago(8))
         dict_category_score_var_data = get_ppublicas_score_variation_by_state_category(destados[estado], tema, this_week_start_date, this_week_end_date, last_week_start_date, last_week_end_date)
 
+    estadoid = estado
     destados = dict(estados)
     sdate_anterior = None
     ndate_anterior = None
@@ -662,6 +663,10 @@ def ppublicas(pars=None,dfrom=None,dto=None):
     if not estado:pass
     else: estadoid=estado;estado=destados[estado]
 
+    export_form = ExportPoliticasPublicasForm(request.form)
+    export_form.estado.data = estadoid
+    export_form.categoria.data = tema
+
     return render_template("ppublicas.html", int=int, noticias=noticias, destados=destados, \
             tema=tema, estado=estado, score=score, rank=rank, \
             categorias=temas, estados=estados, timeline_scores=timeline_scores, \
@@ -670,7 +675,8 @@ def ppublicas(pars=None,dfrom=None,dto=None):
             mean_timeline_scores=mean_timeline_scores, \
             score_anterior=score_anterior, rank_anterior=rank_anterior, show_search_results=show_search_results, \
             score_var_dict=dict_category_score_var_data, \
-            category_label = Utilities.get_category_label(tema))
+            category_label = Utilities.get_category_label(tema),
+            form=export_form)
 
 
 
