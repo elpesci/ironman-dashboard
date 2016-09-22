@@ -250,10 +250,7 @@ def ranking(pars=None):
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
 
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = [(row[0],row[1]) for row in reader]
-
+    estados = Constants.states_dict()
     tema_default = Constants.general_ranking_category()
     tema = ''
     error = ''
@@ -267,9 +264,8 @@ def ranking(pars=None):
         else:
             tema, estado = tema_default, None
 
-        temas = Constants.ranking_categories()    #Constants.state_performance_categories_dict()
-
         destados = dict(estados)
+        temas = dict(Constants.state_performance_categories_dict())  # Constants.ranking_categories()
 
         data = list(get_ranking_combinado_values_by_category(tema))
 
