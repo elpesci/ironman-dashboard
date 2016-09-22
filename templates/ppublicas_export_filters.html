@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+        <link href="/static/assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block headtabs %}
+{% endblock%}
+
+{% block content %}
+<div class="page-content">
+    <h3 style="text-align: center;">
+	    Exportar datos sobre desempe&ntilde;o y ranking de pol&iacute;ticas p&uacute;blicas
+    </h3>
+    <p>
+        Seleccione el estado, la categor&iacute;a y el rango de fechas sobre las cuales dese&eacute;
+        extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
+        un archivo en un archivo de formato legible para MS-Excel con la informaci&oacute;n solicitada.
+    </p>
+    {% from "_formhelpers.html" import render_field %}
+    <form id="exportForm" action="{{ url_for('export_ppublicas') }}" method="post">
+    <div class="row">
+        <dl>
+		<!-- BEGIN STATES SELECTOR -->
+        <div class="col-md-3">
+            {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+        </div>
+		<!-- END STATES SELECTOR -->
+        <!-- BEGIN CATS SELECTOR -->
+        <div class="col-md-3">
+            {{ render_field(form.categoria, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+        </div>
+        <!-- END CATS SELECTOR -->
+        <div class="col-md-3">
+            <i class="glyphicon glyphicon-calendar"></i>
+            {{ render_field(form.periodo, class="form-control input-md") }}
+        </div>
+        </dl>
+
+        <div class="col-md-3">
+            <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Export to Excel">
+              <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Exportar a Excel
+            </a>
+        </div>
+    </div>
+    </form>
+    <div class="row">
+        <div class="col-lg-4" id="startDate"></div>
+        <div class="col-lg-4" id="endDate"></div>
+        <div class="col-lg-4" id="maxDate"></div>
+    </div>
+</div>
+{% block bootbox %}
+{{ super() }}
+{% endblock %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+	<script src="/static/assets/global/plugins/flot/jquery.flot.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/flot/jquery.flot.resize.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/flot/jquery.flot.pie.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/flot/jquery.flot.stack.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/flot/jquery.flot.crosshair.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+	<script src="/static/assets/pages/scripts/components-select2.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-daterangepicker/moment.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/clockface/js/clockface.js" type="text/javascript"></script>
+	<script src="/static/assets/pages/scripts/components-my-date-time-pickers.js" type="text/javascript"></script>
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="/static/assets/d3.layout.cloud.js"></script>
+    <!-- END PAGE LEVEL SCRIPTS -->
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $("#btnSubmit").on('click', function() {
+            $("#exportForm").submit();
+        });
+
+        $("#periodo").daterangepicker({
+            "locale": {
+                "format": "YYYY-MM-DD",
+                "separator": " - ",
+                "applyLabel": "Seleccionar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Custom",
+                "weekLabel": "Sem",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mie",
+                    "Jue",
+                    "Vie",
+                    "Sab"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Deciembre"
+                ],
+                "firstDay": 1
+            },
+            "startDate": moment().subtract(8, 'days').format('MM/DD/YYYY'),
+            "endDate": moment().subtract(1, 'days').format('MM/DD/YYYY'),
+            "maxDate": moment().subtract(1, 'days').format('MM/DD/YYYY'),
+            "opens": "left",
+            "dateFormat": "dd/mm/yyyy"
+        }, function(start, end, label) {
+          console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+        });
+    });
+</script>
+{% endblock %}
+

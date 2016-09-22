@@ -8,57 +8,16 @@
 
 {% endblock %}
 
-{% block headtabs %}
-      <li class="dropdown dropdown-fw active open selected">
-                <a href="{{ url_for('index') }}" class="text-uppercase">
-                   <i class="fa fa-globe"></i> S&H </a>
-                   <ul class="dropdown-menu dropdown-menu-fw">
-                   </ul>
-                </li>
-      <li class="dropdown dropdown-fw  active selected">
-              <a href="{{url_for('ranking')}}" class="text-uppercase">
-                  <i class="fa fa-cubes"></i> Rankings </a>
-                  <ul class="dropdown-menu dropdown-menu-fw">
-                 </ul>
-        </li>
-        <li class="dropdown dropdown-fw active selected">
-             <a href="/ppublicas" class="text-uppercase">
-             <i class="fa fa-university"></i> Politicas Pub </a>
-             <ul class="dropdown-menu dropdown-menu-fw">
-             </ul>
-        </li>
-         <li class="dropdown dropdown-fw active selected">
-             <a href="/corrs" class="text-uppercase">
-             <i class="fa fa-th"></i> Correlaciones </a>
-             <ul class="dropdown-menu dropdown-menu-fw">
-             </ul>
-        </li>
-         <li class="dropdown        dropdown-fw active selected">
-             <a href="/reportes" class="text-uppercase">
-                 <i class="fa fa-download"></i> Reportes </a>
-             <ul class="dropdown-menu dropdown-menu-fw">
-             </ul>
-        </li>
-      <li class="dropdown dropdown-fw active selected">
-             <a href="/usuarios" class="text-uppercase">
-                 <i class="fa fa-users"></i> Usuarios </a>
-             <ul class="dropdown-menu dropdown-menu-fw">
-             </ul>
-        </li>
-
-{% endblock%}
-
-
 
 {% block content %}
 <div class="page-content">
 		<!-- BEGIN SELECTOR -->
-		<h3>
+		<h3 style="text-align: center;">
 			El Desempeño Social de los Gobiernos
 		</h3>
     <p>
     El siguiente análisis muestra el desempeño social de los gobiernos tanto en medios sociales como en noticias durante el periodo
-    <b>{{ sdate }}</b> a <b>{{ ndate }}</b>(7 dias) y muestra la califcaci&oacute;n emitida por entidad federativa para las categorías: Presidente de la Republica,
+    <b>{{ sdate }}</b> a <b>{{ ndate }}</b> (7 dias) y muestra la califcaci&oacute;n emitida por entidad federativa para las categorías: Presidente de la Republica,
     Gobernador, Diputados y Senadores, Seguridad, Economía, Servicios P&uacute;blicos y Gobierno en general.
     </p>
 		<div class="row">
@@ -145,26 +104,26 @@
                              {% endif %}
                              ">
                                <td class="span6" style="max-width:1000px"> {{ t[0] }} </td>
-                               <td> {{ t[1][0] }} </td>
-                               <td> {{ t[1][1] }} </td>
-                               <td> {{ t[1][2] }} </td>
-                               <td> {{ t[1][3] }} </td>
-                               <td> {{ t[1][4] }} </td>
-                               <td> {{ t[1][5] }} </td>
-                               <td> {{ t[1][6] }} </td>
-                               <td> {{ t[1][7] }} </td>
+                               <td> {{ '%.2f'%(t[1][0]) }} </td>
+                               <td> {{ '%.2f'%(t[1][1]) }} </td>
+                               <td> {{ '%.2f'%(t[1][2]) }} </td>
+                               <td> {{ '%.2f'%(t[1][3]) }} </td>
+                               <td> {{ '%.2f'%(t[1][4]) }} </td>
+                               <td> {{ '%.2f'%(t[1][5]) }} </td>
+                               <td> {{ '%.2f'%(t[1][6]) }} </td>
+                               <td> {{ '%.2f'%(t[1][7]) }} </td>
                            </tr>
                         {% endfor %}
                         <tr class="danger">
                           <td>  <i hidden>z</i>Promedio Nacional </td>
-                            <td>  {{ proms[0] }}  </td>
-                            <td>  {{ proms[1] }}  </td>
-                            <td>  {{ proms[2] }}  </td>
-                            <td>  {{ proms[3] }}  </td>
-                            <td>  {{ proms[4] }}  </td>
-                            <td>  {{ proms[5] }}  </td>
-                            <td>  {{ proms[6] }}  </td>
-                            <td>  {{ proms[7] }}  </td>
+                            <td>  {{ '%.2f'%(proms[0]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[1]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[2]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[3]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[4]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[5]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[6]) }}  </td>
+                            <td>  {{ '%.2f'%(proms[7]) }}  </td>
                         </tr>
                   </tbody>
              </table>
@@ -204,23 +163,23 @@
         <!-- BEGIN PAGE LEVEL SCRIPTS -->
 	<!--<script src="static/assets/pages/scripts/charts-flotcharts.min.js" type="text/javascript"/>-->
 	<script src="/static/assets/pages/scripts/timeline.js" type="text/javascript"></script>
-        <script type="text/javascript">
-    	//var topics = [{% for topic in tpars %}"{{topic}}",{% endfor %}];
-
-	</script>
 	<!-- END PAGE LEVEL SCRIPTS -->
-	<script>
-	jQuery(document).ready(function() {
-        	$("#search-button").on("click",function(){
-			      var estado = $("#select1-single-input-sm").val();
-			      var tema = $("#select2-single-input-sm").val();
-			      window.location.href = '/index/'+tema;
-		      });
-          $('#sample_general').dataTable({
-              "order": [[ 0, "asc" ]],
-              "lengthMenu": [[-1], ["All"]]
-           });
-    	});
+	<script type="text/javascript">
+        $(document).ready(function() {
+            removeNavOpenState();
+            setNavOpenStateOn($("#menu_opt_sh"));
+
+            $("#search-button").on("click",function() {
+                var estado = $("#select1-single-input-sm").val();
+                var tema = $("#select2-single-input-sm").val();
+                window.location.href = '/index/'+tema;
+            });
+
+            $('#sample_general').dataTable({
+                "order": [[ 0, "asc" ]],
+                "lengthMenu": [[-1], ["All"]]
+            });
+        });
 	</script>
 
 

@@ -14710,6 +14710,9 @@ Timeline
   .timeline .timeline-body-alerttitle {
     font-size: 16px;
     font-weight: 600; }
+  .timeline .timeline-publishing-details {
+    font-size: 14px;
+    margin-left: unset; }
   .timeline .timeline-body-time {
     font-size: 14px;
     margin-left: 10px; }

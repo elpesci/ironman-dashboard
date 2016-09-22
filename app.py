@@ -1,7 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from flask import Flask, make_response, flash, redirect
 from flask import render_template, session, request, url_for
-from data_utils import *
-from rq_queues import create_general_report
+from utils.data_utils import *
+from utils.rq_queues import create_general_report
 import csv
 from random import shuffle
 # from future import unicode_literals
@@ -15,11 +17,12 @@ from dropbox_corr_links import get_corrs_from_api
 import StringIO
 from collections import defaultdict
 import operator
+from sortedcontainers import SortedDict
+from utils.Utilities import Constants
 
 from models import *
 
 sys.setdefaultencoding("utf-8")
-
 
 app = Flask(__name__)
 
@@ -52,7 +55,7 @@ def before_request():
             return
         else:
             flash(invitado_message,"error")
-            return redirect(url_for('index'))
+            # return redirect(url_for('index'))
     elif request.endpoint == "usuarios":
         params = request.url.strip('/').split('/')[-1]
         if params == "usuarios":
@@ -135,79 +138,62 @@ def register():
         client.save()
 
         session["username"] = client.login
-        flash('Gracias por registrarse en nuestro servicio! A continuacion procederemos con los detalles de su pago.')
-        return redirect(url_for('payment'))
-    return render_template('register.html', form=form)
+        flash('Gracias por registrarse en nuestro servicio!')
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html', form=form, copyright_year=datetime.datetime.now().year)
 
 @app.route('/payment')
 def payment():
     form = PaymentForm(request.form)
     return render_template('payment.html', form=form)
 
-@app.route("/score")
-@app.route("/score/<tpars>")
+@app.route("/score", methods=['GET', 'POST'])
+@app.route("/score/<tpars>, methods=['GET', 'POST']")
 def score(tpars=None):
     if not session.has_key("username"):return redirect("/login")
     if tpars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = dict([(row[0],row[1]) for row in reader])
-    estados = estados.keys()
-    estados.sort()
-    # print estados
-    alltopics = ("economia", "salud", "seguridad", "servicios")
-    notopic = False
-    if not tpars or tpars=="general":
-        notopic = True
-        tpars = ["economia", "salud", "seguridad", "servicios"]
-    else:
-        tpars = [tpars]
 
-    sentiments = get_rows_tb3_date_range()
-    data_sentiments = {}
-    for state in sentiments:
-        if notopic:
-            general = {'neg': 0, 'neu': 0, 'pos': 0}
-            for key in tpars:
-                general['neg'] = general['neg']+sentiments[state][key]['neg']
-                general['neu'] = general['neu']+sentiments[state][key]['neu']
-                general['pos'] = general['pos']+sentiments[state][key]['pos']
-            data_sentiments[state] = dict([("general", general)])
+
+    if not tpars or tpars == Constants.general_ranking_category():
+        rsearch = Constants.ranking_categories_in_general_rank() # ["general"]
+    else:
+        rsearch = tpars
+
+    try:
+        reader = csv.reader(open("./utils/formato_estados.csv"))
+        _ = reader.next()
+        estados = dict([(row[0], row[1]) for row in reader])
+        estados = estados.keys()
+        estados.sort()
+
+        if request.method == 'POST':
+            try:
+                tema = request.form['ddlCategoria']
+            except:
+                tema = Constants.general_ranking_category()
         else:
-            data_sentiments[state] = dict([(key, sentiments[state][key]) for key in tpars])
-    if notopic:
-        rsearch = ["general"]
-    else: rsearch = tpars
+            tema = Constants.general_ranking_category()
 
-    scores, ranks = get_rows_tb4_date_range()
-    last_scores , last_ranks = get_rows_tb4_date_range(get_days_ago(14),get_days_ago(7))
-    data_scores, data_ranks = {}, {}
-    last_data_scores, last_data_ranks = {}, {}
-    for state in scores:
-        data_scores[state] = dict([(key, scores[state][key]) for key in rsearch])
-        last_data_scores[state] = dict([(key, last_scores[state][key]) for key in rsearch])
-    for state in ranks:
-        data_ranks[state] = dict([(key, int(ranks[state][key])) for key in rsearch])
-        last_data_ranks[state] = dict([(key, int(last_ranks[state][key])) for key in rsearch])
+        data = list(get_ranking_social_values_by_category(tema))
 
-    ## hand coded stuff
-    if notopic:
-        data_sentiments = sorted(data_sentiments.items(), \
-                key=lambda x: x[1]['general']['neu'], reverse=True)
-    else:
-        data_sentiments = sorted(data_sentiments.items(), \
-                key=lambda x: x[1][tpars[0]]["neu"], reverse=True)
-    ndate = datetime.datetime.now()
-    d = datetime.timedelta(days=7)
-    sdate = ndate-d
-    ndate = ndate.strftime("%Y-%m-%d")
-    sdate = sdate.strftime("%Y-%m-%d")
-    return render_template("index.html", alltopics=alltopics, tpars=tpars, rsearch=rsearch,
-                            data=None, estados=estados, int=int,
-                            data_sentiments=data_sentiments, data_scores=data_scores,
-                            data_ranks=data_ranks, temas=alltopics, sdate=sdate, ndate=ndate,
-                            last_data_scores=last_data_scores, last_data_ranks=last_data_ranks)
+        data_sentiments_revisited = list(get_polarizacion_rows_by_category(tema))
+
+
+        temas = Constants.ranking_categories()
+        error = ''
+
+        return render_template("index.html", estados=estados, rsearch=rsearch, \
+                               category=tema, categories=temas, \
+                               rank_score_values=data, \
+                               sentiments_rev=data_sentiments_revisited)
+
+    except Exception as e:
+        #flash(e)
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 @app.route("/")
 @app.route("/<pars>")
@@ -221,20 +207,20 @@ def index(pars=None):
     reader = csv.reader(open("./utils/formato_estados.csv"))
     _ = reader.next()
     estados = [(row[0],row[1]) for row in reader]
-    temas = ["seguridad", "servicios", "salud", "economia"]
 
-    try:
-        tema, estado = tuple(pars.split("-"))
-    except:
-        tema, estado = "general", None
     destados = dict(estados)
     scores = []
     keys = destados.values()
     keys.sort()
     for key in keys:
-        temp  = get_public_scores_state(key)
+        temp  = list(get_public_scores_state(key)[0]) # Cast values in tuple as list
         # promedio por entidad federativa
-        temp[-1] = int(sum(temp[:-1])*100/len(temp[:-1]))/100.0
+        total_kpi = 0
+        for index in xrange(len(temp)):
+            total_kpi += temp[index]
+        average = total_kpi / len(temp)
+        temp.insert(len(temp), average)
+        # promedio por entidad federativa
         scores.append((key,temp))
     ndate = datetime.datetime.now()
     sdate = ndate-datetime.timedelta(days=7)
@@ -242,125 +228,106 @@ def index(pars=None):
     ndate = ndate.strftime("%Y-%m-%d")
     sdate = sdate.strftime("%Y-%m-%d")
     proms = [0,0,0,0,0,0,0,0,0]
-    for t in scores:
-        for i in xrange(len(t[1])):
-            proms[i]+=t[1][i]
-    for i in xrange(len(t[1])):
-        proms[i]/=len(scores)
-        proms[i] = int(proms[i]*100)/100.0
+
+
+    for state_score_values in scores:
+        for kpi in xrange(len(state_score_values[1])):
+            proms[kpi] += state_score_values[1][kpi]
+
+    for index in xrange(len(proms)):
+        proms[index] /= len(scores)
 
     return render_template("public.html", scores=scores, \
             estados=estados, ndate=ndate, sdate=sdate, destados=destados, \
             proms=proms)
 
 
-@app.route("/ranking")
-@app.route("/ranking/")
-@app.route("/ranking/<pars>")
+@app.route("/ranking", methods=['GET', 'POST'])
+@app.route("/ranking/", methods=['GET', 'POST'])
+@app.route("/ranking/<pars>", methods=['GET', 'POST'])
 def ranking(pars=None):
     if not session.get("username",None):return redirect("/login")
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = [(row[0],row[1]) for row in reader]
-    temas = ["seguridad", "servicios", "salud", "economia"]
+
+    estados = Constants.states_dict()
+    tema_default = Constants.general_ranking_category()
+    tema = ''
+    error = ''
 
     try:
-        tema, estado = tuple(pars.split("-"))
-    except:
-        tema, estado = "general", None
-    destados = dict(estados)
-    if not tema: # or not estado:
-        scores = get_general_sr()
-        last_scores = get_general_sr_last()
-    else: # both are given
-        scores = get_general_sr(tema)
-        last_scores = get_general_sr_last(tema)
-    for i in xrange(len(scores)):
-        scores[i][1]["last_score"] = last_scores[i][1]["score"]
-        scores[i][1]["last_rank"] = last_scores[i][1]["rank"]
+        if request.method == 'POST':
+            try:
+                tema, estado = request.form['ddlCategoria'], None
+            except:
+                tema, estado = tema_default, None
+        else:
+            tema, estado = tema_default, None
 
-    if not estado:pass
-    else: estado=destados[estado]; tema=tema.capitalize()
-    """
-    scores, ranks = get_ranked_news()
-    data_scores, data_ranks = {}, {}
-    for state in scores:
-        data_scores[state] = scores[state][tema.lower()]
-    data_scores = sorted(data_scores.items(), key=operator.itemgetter(1), reverse=True)
-    for state in ranks:
-        data_ranks[state] = int(ranks[state][tema.lower()])
-    data_ranks = sorted(data_ranks.items(), key=operator.itemgetter(1))
-    rank_data = []
-    for i in range(len(data_ranks)):
-        rank_data.append((data_ranks[i][0],data_ranks[i][1],data_scores[i][1]))
-    """
-    ndate = datetime.datetime.now()
-    d = datetime.timedelta(days=7)
-    sdate = ndate-d
-    ndate = ndate.strftime("%Y-%m-%d")
-    sdate = sdate.strftime("%Y-%m-%d")
-    return render_template("ranking_combinado.html", scores=scores, \
-            tema=tema, estado=estado, topic=tema.lower(), \
-            temas=temas, estados=estados, ndate=ndate, sdate=sdate,\
-            last_scores=last_scores, int=int)
+        destados = dict(estados)
+        temas = dict(Constants.state_performance_categories_dict())  # Constants.ranking_categories()
 
-@app.route("/noticias")
-@app.route("/noticias/<pars>")
+        data = list(get_ranking_combinado_values_by_category(tema))
+
+        if not estado:
+            pass
+        else:
+            estado = destados[estado]; tema = tema.capitalize()
+
+        ndate = datetime.datetime.now()
+        d = datetime.timedelta(days=7)
+        sdate = ndate - d
+        ndate = ndate.strftime("%Y-%m-%d")
+        sdate = sdate.strftime("%Y-%m-%d")
+
+        return render_template("ranking_combinado.html", rankings=data, \
+                               tema=tema, estado=estado, topic=tema.lower(), \
+                               temas=temas, estados=estados, ndate=ndate, sdate=sdate, \
+                               int=int, error=error)
+    except Exception as e:
+        #flash(e)
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
+
+@app.route("/noticias", methods=['GET', 'POST'])
+@app.route("/noticias/<pars>", methods=['GET', 'POST'])
 def noticias(pars=None):
     if not session.has_key("username"):return redirect("/login")
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = [(row[0],row[1]) for row in reader]
-    temas = ["seguridad", "servicios", "salud", "economia"]
+
+    temas = Constants.ranking_categories()
+    error = ''
 
     try:
-        tema, estado = tuple(pars.split("-"))
-    except:
-        tema, estado = "general", None
-    destados = dict(estados)
-    if not tema or not estado:
-        noticias = get_news_data()
-    else: # both are given
-        noticias = get_news_data(tema, destados[estado])
-    if not estado:pass
-    else: estado=destados[estado]; tema=tema.capitalize()
+        reader = csv.reader(open("./utils/formato_estados.csv"))
+        _ = reader.next()
+        estados = [(row[0],row[1]) for row in reader]
+        estados.sort()
 
-    scores, ranks = get_ranked_news()
-    last_scores, last_ranks = get_ranked_news_last()
-    data_scores, data_ranks = {}, {}
-    last_data_scores, last_data_ranks = {}, {}
-    for state in scores:
-        data_scores[state] = scores[state][tema.lower()]
-        last_data_scores[state] = last_scores[state][tema.lower()]
-    data_scores = sorted(data_scores.items(), key=operator.itemgetter(1), reverse=True)
-    for state in ranks:
-        data_ranks[state] = int(ranks[state][tema.lower()])
-        last_data_ranks[state] = int(last_ranks[state][tema.lower()])
-    data_ranks = sorted(data_ranks.items(), key=operator.itemgetter(1))
-    rank_data = []
-    last_rank_data = []
-    for i in range(len(data_ranks)):
-        rank_data.append((data_ranks[i][0],data_ranks[i][1],data_scores[i][1]))
-        last_rank_data.append((data_ranks[i][0],\
-                last_data_ranks[data_ranks[i][0]],\
-                last_data_scores[data_ranks[i][0]]))
-    ndate = datetime.datetime.now()
-    sdate = ndate-datetime.timedelta(days=7)
-    ndate = ndate-datetime.timedelta(days=1)
-    ndate = ndate.strftime("%Y-%m-%d")
-    sdate = sdate.strftime("%Y-%m-%d")
-    return render_template("noticias.html",noticias=noticias, \
-            tema=tema, estado=estado, topic=tema.lower(),\
-            temas=temas, estados=estados, rank_data=rank_data,\
-            sdate=sdate, ndate=ndate, last_rank_data=last_rank_data,\
-            xrange=xrange, len=len, int=int)
+        if request.method == 'POST':
+            try:
+                tema = request.form['ddlCategoria']
+            except:
+                tema = Constants.general_ranking_category()
+        else:
+            tema = Constants.general_ranking_category()
 
+        data = list(get_ranking_noticias_values_by_category(tema))
 
+        sdate = Utilities.last_week_start_date()
+        ndate = Utilities.last_week_end_date()
+        ndate = ndate.strftime("%Y-%m-%d")
+        sdate = sdate.strftime("%Y-%m-%d")
 
+        return render_template("noticias.html", rankings=data,\
+            tema=tema, topic=tema.lower(), temas=temas, estados=estados, sdate=sdate, ndate=ndate)
+
+    except Exception as e:
+        # flash(e)
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 @app.route("/_indicadores")
 @app.route("/_indicadores/<pars>")
@@ -596,18 +563,16 @@ def corrsexp(tipo=None,pars=None):
 @app.route("/ppublicas/<pars>/<dfrom>/<dto>")
 def ppublicas(pars=None,dfrom=None,dto=None):
     if not session.has_key("username"):return redirect("/login")
+
     if "favicon.ico" in request.url:
         return redirect(url_for('static', filename='favicon.ico'))
+
     reader = csv.reader(open("./utils/formato_estados.csv"))
     _ = reader.next()
+
     estados = [(row[0],row[1]) for row in reader]
     destados = dict(estados)
-    temas = [ \
-            "seguridad","servicios","salud","economia", \
-            "presidente", "gobernador", \
-            "gobierno", "obra.publica", \
-            "pavimentacion", "recoleccion.basura", "servicio.agua", \
-            "transporte.publico","legislativo", "judicial"]
+    temas = SortedDict(Constants.categories_dict())
 
     if pars and len(pars.split("-"))==2:
         tema, estado = tuple(pars.split("-"))
@@ -615,11 +580,23 @@ def ppublicas(pars=None,dfrom=None,dto=None):
         tema, estado = "general", pars.strip("-")
     else: tema, estado = None, None
 
-    if not tema or not estado:
-        noticias = get_news_data()
-    else: # both are given
-        noticias = get_news_data(tema, destados[estado])
+    if (tema == Constants.default_ranking_category()):
+        tema = ""
 
+    if not tema and not estado:
+        show_search_results = False
+        noticias = get_news_data()
+        dict_category_score_var_data = {'score_ptg_var': 0, 'score_last_week': 0, 'score_current_week': 0}
+    else: # both are given
+        show_search_results = True
+        noticias = get_news_data(tema, destados[estado])
+        this_week_start_date = datetime_to_str(get_days_ago(7))
+        this_week_end_date = datetime_to_str(get_days_ago(1))
+        last_week_start_date = datetime_to_str(get_days_ago(14))
+        last_week_end_date = datetime_to_str(get_days_ago(8))
+        dict_category_score_var_data = get_ppublicas_score_variation_by_state_category(destados[estado], tema, this_week_start_date, this_week_end_date, last_week_start_date, last_week_end_date)
+
+    estadoid = estado
     destados = dict(estados)
     sdate_anterior = None
     ndate_anterior = None
@@ -680,14 +657,22 @@ def ppublicas(pars=None,dfrom=None,dto=None):
             ndate=dto[-4:]+"-"+dto[:2]+"-"+dto[2:4]
         timeline_scores = [(item[0], item[1], item[2].split("-")[-1]) for item in timeline_scores]
     if not estado:pass
-    else: estadoid=estado;estado=destados[estado]; tema=tema.capitalize()
+    else: estadoid=estado;estado=destados[estado]
+
+    export_form = ExportPoliticasPublicasForm(request.form)
+    export_form.estado.data = estadoid
+    export_form.categoria.data = tema
+
     return render_template("ppublicas.html", int=int, noticias=noticias, destados=destados, \
             tema=tema, estado=estado, score=score, rank=rank, \
-            temas=temas, estados=estados, timeline_scores=timeline_scores, \
+            categorias=temas, estados=estados, timeline_scores=timeline_scores, \
             sdate=sdate, ndate=ndate, timeline_positions=timeline_positions,\
             mean_timeline_positions=mean_timeline_positions, \
             mean_timeline_scores=mean_timeline_scores, \
-            score_anterior=score_anterior, rank_anterior=rank_anterior)
+            score_anterior=score_anterior, rank_anterior=rank_anterior, show_search_results=show_search_results, \
+            score_var_dict=dict_category_score_var_data, \
+            category_label = Utilities.get_category_label(tema),
+            form=export_form)
 
 
 
@@ -770,22 +755,39 @@ def ppublicas_values(tema=None,estado=None,dia=None):
 ######## EXPORTS
 import StringIO, csv
 
-@app.route("/export/ppublicas")
+
+@app.route("/export/ppublicas", methods=['GET', 'POST'])
 def export_ppublicas():
-    si = StringIO.StringIO()
-    cw = csv.writer(si)
-    headers = ("Date", "Estado", "Score", "Rank", "Score Gobernador", "Rank Gobernador", \
-            "Score Presidente", "Rank Presidente", "Score Gobierno", "Rank Gobierno", \
-            "Score Obra Publica", "Rank Obra Publica", "Score Pavimentacion", "Rank Pavimentacion", \
-            "Score Recoleccion Basura", "Rank Recoleccion Basura", "Score Servicio Agua", \
-            "Rank Servicio Agua", "Score Transporte Publico", "Rank Transporte Publico", \
-            "Score Legislativo", "Rank Legislativo", "Score Judicial", "Rank Judicial")
-    cw.writerows([headers])
-    cw.writerows(export_data_pp())
-    output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas.csv"
-    output.headers["Content-type"] = "text/csv"
-    return output
+    if not session.has_key("username"):return redirect("/login")
+
+    export_form = ExportPoliticasPublicasForm(request.form)
+
+    try:
+        if request.method == 'POST' and export_form.validate():
+            filtering_state = Utilities.get_state_label(export_form.data['estado'])
+            filtering_category = export_form.data['categoria']
+            period_start_date = datepickerstring_to_date(export_form.data['periodo'].split("-")[0].strip())
+            period_end_date = datepickerstring_to_date(export_form.data['periodo'].split("-")[1].strip())
+
+            data_to_export = filter_data_politicas_publicas_export(filtering_state, filtering_category, period_start_date, period_end_date)
+
+            headers = Utilities.get_exportpp_csv_columns_header(filtering_category)
+            si = StringIO.StringIO()
+            cw = csv.writer(si)
+            cw.writerows([headers])
+            cw.writerows(data_to_export)
+
+            output = make_response(si.getvalue())
+            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.csv".format(filtering_state, str(filtering_category).replace('.', '_'))
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+            return output    # returning the attachment
+
+        return render_template("ppublicas_export_filters.html", form=export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 @app.route("/export/rcombinado")
 def export_rankings():
