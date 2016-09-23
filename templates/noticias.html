@@ -40,13 +40,14 @@
     (periodo comprendido del <b>{{ sdate }}</b> al <b>{{ ndate }}</b>). En esta secci&oacute;n el visitante tiene la opci&oacute;n
     de seleccionar las categor&iacute;as:
     <ul>
-        <li>Presidente de la Rep&uacute;blica</li>
-        <li>Diputados y Senadores</li>
-        <li>Servicios</li>
-        <li>Seguridad</li>
-        <li>Econom&iacute;a</li>
+        <li>Gobernador</li>
         <li>Obra p&uacute;blica</li>
-        <li>Gobierno en general</li>
+        <li>Pavimentaci&oacute;n</li>
+        <li>Recolecci&oacute;n de basura</li>
+        <li>Salud</li>
+        <li>Seguridad</li>
+        <li>Servicio de agua</li>
+        <li>Transporte p&uacute;blico</li>
     </ul>
     Analizados &uacute;nicamente en los medios noticiosos del pa&iacute;s. Actualmente, se muestra la categor&iacute;a: <b>{{ topic | capitalize() }}</b>.
     </p>
@@ -72,14 +73,14 @@
 		<!-- BEGIN CATEGORY SELECTOR -->
 		<div class="col-md-3">
 			<form id="frmCategorias" name="frmCategorias" method="post">
-				<label for="ddlCategoria" class="control-label">Categoria:</label>
+				<label for="ddlCategoria" class="control-label">Categor&iacute;a:</label>
 				<select id="ddlCategoria" name="ddlCategoria" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
 					<optgroup label="General">
 						<option value="general" {% if tema == 'general' %} selected {% endif %}>General</option>
 					</optgroup>
-					<optgroup label="Categorias">
-					{% for item in temas %}
-						<option value="{{ item }}" {% if item == tema %} selected {% endif %}>{{ item.replace(".", " ")|capitalize() }}</option>
+					<optgroup label="Categor&iacute;as">
+					{% for key, value in temas.iteritems(): %}
+						<option value="{{ key }}" {% if key == tema %} selected {% endif %}>{{ value|safe }}</option>
 					{% endfor %}
 					</optgroup>
 				</select>
@@ -297,8 +298,8 @@
    }
 
    var names = [
-     {% for code in estados %}
-       "{{ code[0] }}",
+     {% for key, value in estados.iteritems(): %}
+       "{{ key }}",
      {% endfor %}
    ];
 

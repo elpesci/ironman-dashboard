@@ -43,12 +43,14 @@
                 <!-- BEGIN CATEGORY SELECTOR -->
                     <div class="col-md-3">
                         <form id="frmCategorias" name="frmCategorias" method="post">
-                        <label for="ddlCategoria" class="control-label">Categoria</label>
+                        <label for="ddlCategoria" class="control-label">Categor&iacute;a</label>
                         <select id="ddlCategoria" name="ddlCategoria" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                            <optgroup label="Categorias">
-                                <option value="general" {% if category == 'general' %} selected {% endif %}>General</option>
-                                {% for item in categories %}
-                                <option value="{{ item }}" {% if item == category %} selected {% endif %}>{{ item.replace(".", " ") |capitalize() }}</option>
+                            <optgroup label="General">
+                                <option value="general" {% if tema == 'general' %} selected {% endif %}>General</option>
+                            </optgroup>
+                            <optgroup label="Categor&iacute;as">
+                                {% for key, value in categories.iteritems(): %}
+                                <option value="{{ key }}" {% if category == key %} selected {% endif %}>{{ value|safe }}</option>
                                 {% endfor %}
                              </optgroup>
                         </select>

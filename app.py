@@ -163,11 +163,10 @@ def score(tpars=None):
         rsearch = tpars
 
     try:
-        reader = csv.reader(open("./utils/formato_estados.csv"))
-        _ = reader.next()
-        estados = dict([(row[0], row[1]) for row in reader])
+        estados = dict(Constants.states_dict())
         estados = estados.keys()
         estados.sort()
+        temas = dict(Constants.state_performance_categories_dict())
 
         if request.method == 'POST':
             try:
@@ -180,9 +179,6 @@ def score(tpars=None):
         data = list(get_ranking_social_values_by_category(tema))
 
         data_sentiments_revisited = list(get_polarizacion_rows_by_category(tema))
-
-
-        temas = Constants.ranking_categories()
         error = ''
 
         return render_template("index.html", estados=estados, rsearch=rsearch, \
@@ -297,14 +293,11 @@ def noticias(pars=None):
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
 
-    temas = Constants.ranking_categories()
     error = ''
 
     try:
-        reader = csv.reader(open("./utils/formato_estados.csv"))
-        _ = reader.next()
-        estados = [(row[0],row[1]) for row in reader]
-        estados.sort()
+        estados = SortedDict(Constants.states_dict())
+        temas = dict(Constants.state_performance_categories_dict())
 
         if request.method == 'POST':
             try:
