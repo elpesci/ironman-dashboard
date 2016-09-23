@@ -265,7 +265,7 @@ def ranking(pars=None):
             tema, estado = tema_default, None
 
         destados = dict(estados)
-        temas = dict(Constants.state_performance_categories_dict())  # Constants.ranking_categories()
+        temas = dict(Constants.state_performance_categories_dict())
 
         data = list(get_ranking_combinado_values_by_category(tema))
 
