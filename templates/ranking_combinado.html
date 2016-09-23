@@ -66,9 +66,9 @@
                             <option value="general" {% if tema == 'general' %} selected {% endif %}>General</option>
                         </optgroup>
                         <optgroup label="Categorias">
-                        {% for item in temas %}
-                            <option value="{{ item }}" {% if item == tema %} selected {% endif %}>{{ item.replace(".", " ")|capitalize() }}</option>
-                        {% endfor %}
+                            {% for key, value in temas.iteritems(): %}
+                            <option value="{{ key }}" {% if tema == key %} selected {% endif %}>{{ value|safe }}</option>
+                            {% endfor %}
                         </optgroup>
                     </select>
                 </form>
