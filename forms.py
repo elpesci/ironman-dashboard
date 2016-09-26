@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, SelectField
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, SelectField, HiddenField
 from wtforms.validators import DataRequired
-from utils.Utilities import Constants
+from utils.Utilities import *
 
 class RegistrationForm(Form):
     nombre = StringField('Nombre y apellido', validators=[DataRequired()])
@@ -27,3 +27,13 @@ class ExportPoliticasPublicasForm(Form):
     categoria = SelectField(u'Categor&iacute;a',  choices=Constants.categories_dict(), validators=[DataRequired(message='Por favor, seleccione categoría')])
     periodo = StringField(validators=[DataRequired(message='Por favor, indique período')])
 
+class ExportStatePerformanceForm(Form):
+    estado = SelectField(u'Estado',
+                         choices = Constants.states_dict(),
+                         validators = [DataRequired(message='Por favor, seleccione estado')])
+    categoria = SelectField(u'Categor&iacute;a',
+                            choices = Utilities.full_state_performance_categories_dict(),
+                            validators = [DataRequired(message='Por favor, seleccione categoría')])
+    periodo = StringField(validators = [DataRequired(message='Por favor, indique período')])
+    inicio_periodo = HiddenField(default = Utilities.last_monday_date(datetime.datetime.today() - datetime.timedelta(days=14)).strftime("%m/%d/%Y"))
+    fin_periodo = HiddenField(default = Utilities.next_sunday_date(datetime.datetime.today() - datetime.timedelta(days=7)).strftime("%m/%d/%Y"))

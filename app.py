@@ -250,6 +250,7 @@ def ranking(pars=None):
     tema_default = Constants.general_ranking_category()
     tema = ''
     error = ''
+    export_form = ExportStatePerformanceForm(request.form)
 
     try:
         if request.method == 'POST':
@@ -279,6 +280,7 @@ def ranking(pars=None):
         return render_template("ranking_combinado.html", rankings=data, \
                                tema=tema, estado=estado, topic=tema.lower(), \
                                temas=temas, estados=estados, ndate=ndate, sdate=sdate, \
+                               form=export_form,
                                int=int, error=error)
     except Exception as e:
         #flash(e)
@@ -667,7 +669,53 @@ def ppublicas(pars=None,dfrom=None,dto=None):
             category_label = Utilities.get_category_label(tema),
             form=export_form)
 
+# Metodos para pruebas rapidas
+@app.route("/drange", methods=['GET', 'POST'])
+def export_performace_combinado():
+    actual_start_date = ''; start_week_id = ''
+    actual_end_date = ''; end_week_id = ''
+    export_form = ExportStatePerformanceForm(request.form)
 
+    try:
+        if request.method == 'POST' and export_form.validate():
+            # Getting values from Form
+            filtering_state = export_form.data['estado']
+            filtering_category = export_form.data['categoria']
+            period_start_date = datepickerstring_to_date(export_form['periodo'].data.split("-")[0].strip())
+            period_end_date = datepickerstring_to_date(export_form['periodo'].data.split("-")[1].strip())
+
+            # Calculating actual period start and end dates
+            # Calculating actual starting and ending week id's
+            actual_start_date = Utilities.last_monday_date(period_start_date)
+            actual_end_date = Utilities.next_sunday_date(period_end_date)
+            start_week_id = "{0}{1}".format(actual_start_date.year, actual_start_date.isocalendar()[1])
+            end_week_id = "{0}{1}".format(actual_end_date.year, actual_end_date.isocalendar()[1])
+
+            # Getting the data to export
+            data_to_export = get_combined_performance_data(Constants.ranking_combinado_table_name(), filtering_state,
+                                                            filtering_category, start_week_id, end_week_id)
+
+            # Building exportable file
+            headers = Utilities.get_export_states_performance_csv_column_header(filtering_category)
+            si = StringIO.StringIO()
+            cw = csv.writer(si)
+            cw.writerows([headers])
+            cw.writerows(data_to_export)
+
+            output = make_response(si.getvalue())
+            output.headers["Content-Disposition"] = "attachment; filename=PerformanceCombinado-Estado-{0}-{1}.xls".format(
+                Utilities.get_state_label(filtering_state), str(filtering_category).replace('.', '_'))
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+            return output  # returning the attachment
+        else:
+            actual_start_date = Utilities.last_monday_date(datetime.datetime.today() - datetime.timedelta(days=14)).strftime("%m/%d/%Y")
+            actual_end_date = Utilities.next_sunday_date(datetime.datetime.today() - datetime.timedelta(days=7)).strftime("%m/%d/%Y")
+
+        return render_template("performance_combinado_filters.html", form = export_form)
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 ######################################
 ################# API ################
@@ -772,7 +820,7 @@ def export_ppublicas():
 
             output = make_response(si.getvalue())
             output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, str(filtering_category).replace('.', '_'))
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"
 
             return output    # returning the attachment
 

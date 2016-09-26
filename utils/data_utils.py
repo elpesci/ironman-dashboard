@@ -759,6 +759,31 @@ on crnt_week.estado = last_week.estado""".format(category_field_name, statename,
 
     return result
 
+
+def get_combined_performance_data(from_table_name, filtering_state, filtering_category, start_week_id, end_week_id):
+    query = """SELECT	act.estado,
+	wid.dia_inicial as inicio_semana,
+	wid.dia_inicial + integer '6' as fin_semana,
+	act."rank_{4}",
+	act."score_{4}"
+FROM
+	{0} as act
+INNER JOIN
+	tbl_id as wid on act.id = wid.id
+WHERE	(act.estado = (select nombre from "tbl_catEstado" where clave = '{1}')
+	OR
+	act.estado = (select alias from "tbl_catEstado" where clave = '{1}'))
+AND
+	CAST(act.id as int) >= CAST('{2}' as int)
+AND
+	CAST(act.id as int) <= CAST('{3}' as int)""".format(from_table_name, filtering_state, start_week_id, end_week_id, filtering_category)
+
+
+    pg = PGDatabaseManager()
+    rows = pg.get_rows(query)
+
+    return rows
+
 ##########################################################|||||||>
 
 if __name__=="__main__":

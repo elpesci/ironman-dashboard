@@ -82,96 +82,137 @@
 		<!-- BEGIN STACK CHART CONTROLS PORTLET-->
 		<div class="row">
 		<div class="col-md-12">
-
-      <!-- BEGIN EXAMPLE TABLE PORTLET-->
-      <div class="portlet light bordered">
-          <div class="portlet-title">
-              <div class="caption font-dark">
-                  <i class="icon-list font-dark"></i>
-                  <span class="caption-subject bold uppercase"> 
-                    Estados que conforman el Índice</span>
-              </div>
-              <a href="/export/rcombinado" target="_blank">
-              <button class="btn btn-circle blue btn-sm" type="button" style="float:right">
-              Exportar datos
-              </button></a>
-          </div>
-          <div class="portlet-body">
-              <div class="table-toolbar">
-                  <div class="row">
-                      <div class="col-md-6">
-                      </div>
-                      <div class="col-md-6">
-                      </div>
-                  </div>
-              </div>
-              <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample">
-                  <thead>
-                       <tr>
-                          <th class="span2" style="min-width:50px;background:#416CAF;color:white"> Estado </th>
-                          <th style="min-width:50px;background:#416CAF;color:white"> Ranking Semana Actual</th>
-                          <th style="min-width:50px;background:#416CAF;color:white"> Score Semana Actual</th>
-                          <th style="min-width:50px;background:#416CAF;color:white"> Ranking Semana Anterior</th>
-                          <th style="min-width:50px;background:#416CAF;color:white"> Score Semana Anterior </th>
-                          <th style="min-width:50px;background:#416CAF;color:white"> Cambio Ranking </th>
-                          <th style="min-width:50px;background:#416CAF;color:white"> Cambio Score </th>
-                       </tr>
-                  </thead>
-                  <tbody>
-                {% for estado in rankings %}
-                    <tr class="odd gradeX">
-                        <td class="span6" style="max-width:1000px">{{ estado[0] }}</td>
-                        <td style="text-align:center">{{ estado[1]['rank_semana_actual'] }}</td>
-                        <td style="text-align:center">{{ estado[1]['score_semana_actual'] }}</td>
-                        <td style="text-align:center">{{ estado[1]['rank_semana_ant'] }}</td>
-                        <td style="text-align:center">{{ estado[1]['score_semana_ant'] }}</td>
-                        <td style="text-align:center">
-                            {% if estado[1]['var_ranking'] > 0 %}
-                                <i class="fa fa-chevron-up" style="color:green"></i>&nbsp;
-                            {% elif estado[1]['var_ranking'] < 0%}
-                                <i class="fa fa-chevron-down" style="color:red"></i>&nbsp;
-                            {% else %}
-                                <i class="fa fa-chevron-right" style="color:green"></i>
-                                <i class="fa fa-chevron-left" style="color:green"></i>&nbsp;
-                            {% endif %}
-                            {{ estado[1]['var_ranking'] }}
-                        </td>
-                        <td style="text-align:center">
-                            {% if estado[1]['ptg_var_score'] > 0 %}
-                                <i class="fa fa-chevron-up" style="color:green"></i>&nbsp;
-                            {% elif estado[1]['ptg_var_score'] < 0%}
-                                <i class="fa fa-chevron-down" style="color:red"></i>&nbsp;
-                            {% else %}
-                                <i class="fa fa-chevron-right" style="color:green"></i>
-                                <i class="fa fa-chevron-left" style="color:green"></i>&nbsp;
-                            {% endif %}
-                            {{ '%.2f'%(estado[1]['ptg_var_score']) }}&nbsp;%
-                        </td>
-                    </tr>
-                {% endfor %}
-                  </tbody>
-             </table>
-          </div>
-          </div>
-          <div class="row">
-               <div id="timeline-container" style="height: 400px; min-width: 310px">
-                    <div id="load" class="center"><img src="/static/assets/global/img/loading_blue_32x32.gif" />
-                        &nbsp;
-                        Generando gr&aacute;fica, por favor espere ...
+            <!-- Begin Tabs -->
+            <div class="container" style="width:100%;">
+                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                    <li class="active"><a href="#performance" data-toggle="tab"><i class="fa fa-line-chart" aria-hidden="true"></i> Desempe&ntilde;o combinado</a></li>
+                    <li><a href="#export" data-toggle="tab"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Exportar</a></li>
+                </ul>
+                <div id="my-tab-content" class="tab-content">
+                    <div class="tab-pane active" id="performance">
+                        <!-- Performance Tab : View -->
+                            <h3>Datos sobre desempe&ntilde;o</h3>
+                              <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                              <div class="portlet light bordered">
+                                  <div class="portlet-title">
+                                      <div class="caption font-dark">
+                                          <i class="icon-list font-dark"></i>
+                                          <span class="caption-subject bold uppercase">
+                                            Estados que conforman el Índice</span>
+                                      </div>
+                                  </div>
+                                  <div class="portlet-body">
+                                      <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample">
+                                          <thead>
+                                               <tr>
+                                                  <th class="span2" style="min-width:50px;background:#416CAF;color:white"> Estado </th>
+                                                  <th style="min-width:50px;background:#416CAF;color:white"> Ranking Semana Actual</th>
+                                                  <th style="min-width:50px;background:#416CAF;color:white"> Score Semana Actual</th>
+                                                  <th style="min-width:50px;background:#416CAF;color:white"> Ranking Semana Anterior</th>
+                                                  <th style="min-width:50px;background:#416CAF;color:white"> Score Semana Anterior </th>
+                                                  <th style="min-width:50px;background:#416CAF;color:white"> Cambio Ranking </th>
+                                                  <th style="min-width:50px;background:#416CAF;color:white"> Cambio Score </th>
+                                               </tr>
+                                          </thead>
+                                          <tbody>
+                                        {% for estado in rankings %}
+                                            <tr class="odd gradeX">
+                                                <td class="span6" style="max-width:1000px">{{ estado[0] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['rank_semana_actual'] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['score_semana_actual'] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['rank_semana_ant'] }}</td>
+                                                <td style="text-align:center">{{ estado[1]['score_semana_ant'] }}</td>
+                                                <td style="text-align:center">
+                                                    {% if estado[1]['var_ranking'] > 0 %}
+                                                        <i class="fa fa-chevron-up" style="color:green"></i>&nbsp;
+                                                    {% elif estado[1]['var_ranking'] < 0%}
+                                                        <i class="fa fa-chevron-down" style="color:red"></i>&nbsp;
+                                                    {% else %}
+                                                        <i class="fa fa-chevron-right" style="color:green"></i>
+                                                        <i class="fa fa-chevron-left" style="color:green"></i>&nbsp;
+                                                    {% endif %}
+                                                    {{ estado[1]['var_ranking'] }}
+                                                </td>
+                                                <td style="text-align:center">
+                                                    {% if estado[1]['ptg_var_score'] > 0 %}
+                                                        <i class="fa fa-chevron-up" style="color:green"></i>&nbsp;
+                                                    {% elif estado[1]['ptg_var_score'] < 0%}
+                                                        <i class="fa fa-chevron-down" style="color:red"></i>&nbsp;
+                                                    {% else %}
+                                                        <i class="fa fa-chevron-right" style="color:green"></i>
+                                                        <i class="fa fa-chevron-left" style="color:green"></i>&nbsp;
+                                                    {% endif %}
+                                                    {{ '%.2f'%(estado[1]['ptg_var_score']) }}&nbsp;%
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                          </tbody>
+                                     </table>
+                                  </div>
+                                  <div class="row">
+                                       <div id="timeline-container" style="height: 400px; width: 100%;">
+                                            <div id="load" class="center"><img src="/static/assets/global/img/loading_blue_32x32.gif" />
+                                                &nbsp;
+                                                Generando gr&aacute;fica, por favor espere ...
+                                            </div>
+                                       </div>
+                                  </div>
+                              </div>
+                              <!-- END EXAMPLE TABLE PORTLET-->
+                              <b>Notas:</b><br/>
+                              1. Las categoría “Presidente de la República no es considerada como parte del desempeño social de cada entidad federativa, por lo que es presentado como una categoría aparte.
+                              <br/>2. La categoría “Servicios” incluye: salud, recolección de basura, servicio de agua y transporte público.
+                              <br/>3. La categoría “Obra Pública” incluye: Pavimentación y construcción de obras públicas en general
+                              <hr><br/>
+                              Para conocer más acerca de la metodología, favor de visitar la página:
+                              <a href="http://www.gcn-p.com/metodologia/">http://www.gcn-p.com/metodologia/</a>
+                              <!-- END STACK CHART CONTROLS PORTLET-->
+                        <!-- Performance Tab : View -->
                     </div>
-               </div>
-          </div>
-      </div>
-      <!-- END EXAMPLE TABLE PORTLET-->
-      <b>Notas:</b><br/>
-      1. Las categoría “Presidente de la República no es considerada como parte del desempeño social de cada entidad federativa, por lo que es presentado como una categoría aparte.
-      <br/>2. La categoría “Servicios” incluye: salud, recolección de basura, servicio de agua y transporte público.
-      <br/>3. La categoría “Obra Pública” incluye: Pavimentación y construcción de obras públicas en general
-      <hr><br/>
-      Para conocer más acerca de la metodología, favor de visitar la página: 
-      <a href="http://www.gcn-p.com/metodologia/">http://www.gcn-p.com/metodologia/</a>
-    </div>
-		<!-- END STACK CHART CONTROLS PORTLET-->	
+                    <div class="tab-pane" id="export">
+                        <h3>Exportar datos</h3>
+                        <!-- Export Tab : View -->
+                            {% from "_formhelpers.html" import render_field %}
+                            <form id="exportForm" action="{{ url_for('export_performace_combinado') }}" method="post">
+                              {{ form.inicio_periodo() }}
+                              {{ form.fin_periodo() }}
+                            <div class="row">
+                                <dl>
+                                <!-- BEGIN STATES SELECTOR -->
+                                <div class="col-md-3">
+                                    {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                                </div>
+                                <!-- END STATES SELECTOR -->
+                                <!-- BEGIN CATS SELECTOR -->
+                                <div class="col-md-3">
+                                    {{ render_field(form.categoria, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                                </div>
+                                <!-- END CATS SELECTOR -->
+                                <div class="col-md-3">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                    {{ render_field(form.periodo, class="form-control input-md") }}
+                                </div>
+                                </dl>
+
+                                <div class="col-md-3">
+                                    <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Export to Excel">
+                                      <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Exportar a Excel
+                                    </a>
+                                </div>
+                            </div>
+                            </form>
+                            <p>
+                                Seleccione el estado, la categor&iacute;a y el rango de fechas sobre las cuales dese&eacute;
+                                extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
+                                un archivo en un archivo de formato legible para MS-Excel con la informaci&oacute;n solicitada.
+                            </p>
+                        <!-- Export Tab : View -->
+                    </div>
+                </div>
+            </div>
+            <!-- End Tabs -->
+        </div>
+        </div>
 </div>
 {% endblock %}
 {% block scripts %}
@@ -237,6 +278,75 @@
         $("#search-button").on("click",function(){
 			$("#frmCategorias").submit();
 		});
+
+        $("#btnSubmit").on('click', function() {
+            $("#exportForm").submit();
+        });
+
+		$("#periodo").daterangepicker({
+            "locale": {
+                "format": "YYYY-MM-DD",
+                "separator": " - ",
+                "applyLabel": "Seleccionar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Custom",
+                "weekLabel": "Sem",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mie",
+                    "Jue",
+                    "Vie",
+                    "Sab"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Deciembre"
+                ],
+                "firstDay": 1
+            },
+            "autoApply": true,
+            "showDropdowns": true,
+            "startDate": moment($("#inicio_periodo").val()).format('MM/DD/YYYY'),
+            "endDate": moment($("#fin_periodo").val()).format('MM/DD/YYYY'),
+            "maxDate": moment().subtract(moment().day(), 'days').format('MM/DD/YYYY'),
+            "opens": "left",
+            "pulls": "up",
+            "dateFormat": "dd/mm/yyyy"
+        });
+
+        $("#periodo").on('apply.daterangepicker', function(ev, picker) {
+            var selected_start = moment(picker.startDate);
+            var actual_start = selected_start;
+            if(selected_start.day() == 0) { //sunday selected, pick last monday as start date
+                actual_start = selected_start.subtract(6, 'days');
+            } else {
+                actual_start = selected_start.subtract(selected_start.day() - 1, 'days');
+            }
+            picker.setStartDate(actual_start);
+            $("#inicio_periodo").val(actual_start.format("MM/DD/YYYY"));
+
+            var selected_end = moment(picker.endDate);
+            var actual_end = selected_end;
+            if(selected_end.day() != 0) { // other than sunday selected, pick next sunday as end date
+                actual_end = selected_end.add(7 - selected_end.day(), 'days')
+            }
+            picker.setEndDate(actual_end);
+            $("#fin_periodo").val(actual_end.format("MM/DD/YYYY"));
+        });
     });
 	</script>
 

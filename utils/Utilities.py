@@ -101,6 +101,28 @@ class Utilities:
         return end_date
 
     @staticmethod
+    def last_monday_date(my_date = None):
+        if my_date:
+            seed_date = my_date
+        else:
+            seed_date = datetime.datetime.today()
+
+        last_monday_date = seed_date - datetime.timedelta(days = seed_date.weekday())
+
+        return last_monday_date
+
+    @staticmethod
+    def next_sunday_date(my_date = None):
+        if my_date:
+            seed_date = my_date
+        else:
+            seed_date = datetime.datetime.now()
+
+        next_sunday_date = seed_date + datetime.timedelta(days = 6 - seed_date.weekday())
+
+        return next_sunday_date
+
+    @staticmethod
     def to_utf8_html_encoding(tagged_text):
         converted_text = tagged_text
 
@@ -117,7 +139,7 @@ class Utilities:
     @staticmethod
     def get_category_label(category_key):
         categries_dict = dict(Constants.categories_dict())
-        category_label = ""
+        category_label = "General"
 
         for item in categries_dict.keys():
             if item == category_key:
@@ -151,3 +173,23 @@ class Utilities:
         headers = ("Estado", "Fecha", score_header_label, rank_header_label)
 
         return headers
+
+    @staticmethod
+    def get_export_states_performance_csv_column_header(category):
+        score_header_label = "Score"
+        rank_header_label = "Rank"
+
+        if category:
+            cat_label = Utilities.get_category_label(category)
+            score_header_label = " ".join([score_header_label, cat_label])
+            rank_header_label = " ".join([rank_header_label, cat_label])
+
+        headers = ("Estado", "Inicio Periodo", "Fin Periodo", rank_header_label, score_header_label)
+
+        return headers
+
+    @staticmethod
+    def full_state_performance_categories_dict():
+        full_dict = Constants.state_performance_categories_dict()
+        full_dict.insert(0, ('general', "General"))
+        return full_dict
