@@ -8,10 +8,6 @@ from tweepy import TweepError
 import operator
 from Utilities import *
 
-def datepickerstring_to_date(datepickerstring):
-    converted = datetime.datetime.strptime(datepickerstring, "%m/%d/%Y").date()
-    return converted
-
 def string_to_date(st):
     datepars = [int(v) for v in st.split("-")]
     return datetime.datetime(datepars[0], datepars[1], datepars[2])

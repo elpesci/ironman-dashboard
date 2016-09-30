@@ -193,3 +193,8 @@ class Utilities:
         full_dict = Constants.state_performance_categories_dict()
         full_dict.insert(0, ('general', "General"))
         return full_dict
+
+    @staticmethod
+    def datepickerstring_to_date(datepickerstring):
+        converted = datetime.datetime.strptime(datepickerstring, "%m/%d/%Y").date()
+        return converted

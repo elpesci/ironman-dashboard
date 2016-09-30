@@ -12,16 +12,16 @@
 {% block estados_nav_options %}
         <li>
             <a href="{{ url_for('ranking') }}">
-                <button class=" btn btn-default active"> <i class="icon-list"></i> Desempe&ntilde;o Combinado </button>
+                <button class=" btn btn-default"> <i class="icon-list"></i> Desempe&ntilde;o Combinado </button>
             </a>
         </li>
         <li>
-            <a href="{{url_for('score')}}">
-                <button class=" btn btn-default"><i class="icon-list"></i> Desempe&ntilde;o Social </button>
+            <a href="{{ url_for('score') }}">
+                <button class=" btn btn-default active"><i class="icon-list"></i> Desempe&ntilde;o Social </button>
             </a>
         </li>
         <li>
-            <a href="{{url_for('noticias')}}">
+            <a href="{{ url_for('noticias') }}">
                 <button class=" btn btn-default"><i class="icon-list"></i> Desempe&ntilde;o Noticias </button>
             </a>
         </li>
@@ -44,18 +44,18 @@
                   <div class="portlet-title">
                       <div class="caption font-dark">
                             <h3 style="text-align: center;">
-                                Exportar datos sobre desempe&ntilde;o y ranking de estados
+                                Exportar datos sobre desempe&ntilde;o y ranking de estados - Redes Sociales
                             </h3>
                             <p>
                                 Seleccione el rango de fechas sobre las cuales dese&eacute;
                                 extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
-                                un archivo en un archivo de formato legible para MS-Excel con la informaci&oacute;n solicitada.
+                                un archivo en formato legible para MS-Excel con la informaci&oacute;n solicitada.
                             </p>
                       </div>
                   </div>
                   <div class="portlet-body">
                         {% from "_formhelpers.html" import render_field %}
-                      <form id="exportForm" action="{{ url_for('export_performace_combinado') }}" method="post">
+                      <form id="exportForm" action="{{ url_for('export_performance_medios_sociales') }}" method="post">
                           {{ form.inicio_periodo() }}
                           {{ form.fin_periodo() }}
                         <div class="row">
