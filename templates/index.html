@@ -31,43 +31,50 @@
 {% block content %}
 <div class="page-content">
 		<!-- BEGIN SELECTOR -->
-                <h3 style="text-align: center;">
-                        Índice de Desempeño  en Medios Sociales (Comentarios y Publicaciones) 
-                </h3>
-                <p>
-                El siguiente análisis muestra el desempeño estatal en la semana anterior (lunes a domingo anteriores) en la categoría:
-                <b>{{ category.replace(".", " ") | capitalize() }}</b>. Analizados únicamente en los medios
-                sociales.<br/>
-                </p>
-                <div class="row">
-                <!-- BEGIN CATEGORY SELECTOR -->
-                    <div class="col-md-3">
-                        <form id="frmCategorias" name="frmCategorias" method="post">
-                        <label for="ddlCategoria" class="control-label">Categoria</label>
-                        <select id="ddlCategoria" name="ddlCategoria" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                            <optgroup label="Categorias">
-                                <option value="general" {% if category == 'general' %} selected {% endif %}>General</option>
-                                {% for item in categories %}
-                                <option value="{{ item }}" {% if item == category %} selected {% endif %}>{{ item.replace(".", " ") |capitalize() }}</option>
-                                {% endfor %}
-                             </optgroup>
-                        </select>
-                        </form>
-                    </div>
-                <!-- END CATEGORY SELECTOR -->
-                <br/>
-                <button id="search-button" class="btn btn-circle green btn-sm" type="button">
-                Buscar</button>
-                </div>
+        <h3 style="text-align: center;">
+                Índice de Desempeño  en Medios Sociales (Comentarios y Publicaciones) 
+        </h3>
+        <p>
+        El siguiente análisis muestra el desempeño estatal en la semana anterior (lunes a domingo anteriores) en la categoría:
+        <b>{{ category.replace(".", " ") | capitalize() }}</b>. Analizados únicamente en los medios
+        sociales.<br/>
+        </p>
+        <div class="row">
+        <!-- BEGIN CATEGORY SELECTOR -->
+            <div class="col-md-3">
+                <form id="frmCategorias" name="frmCategorias" method="post">
+                <label for="ddlCategoria" class="control-label">Categor&iacute;a</label>
+                <select id="ddlCategoria" name="ddlCategoria" class="form-control input-sm select2-multiple select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                    <optgroup label="General">
+                        <option value="general" {% if tema == 'general' %} selected {% endif %}>General</option>
+                    </optgroup>
+                    <optgroup label="Categor&iacute;as">
+                        {% for key, value in categories.iteritems(): %}
+                        <option value="{{ key }}" {% if category == key %} selected {% endif %}>{{ value|safe }}</option>
+                        {% endfor %}
+                     </optgroup>
+                </select>
+                </form>
+            </div>
+            <!-- END CATEGORY SELECTOR -->
+            <br/>
+            <button id="search-button" class="btn btn-circle green btn-sm" type="button">Buscar</button>
+        </div>
+        <br/>
+        <!-- END SELECTORS -->
 
-                <br/>
-                <!-- END SELECTORS -->
-		<hr/>
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Begin Tabs -->
+                <div class="container" style="width:100%;">
+                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a href="#performance" data-toggle="tab"><i class="fa fa-line-chart" aria-hidden="true"></i> Desempe&ntilde;o medios sociales</a></li>
+                        <li><a href="#export" data-toggle="tab"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Exportar</a></li>
+                    </ul>
+                    <div id="my-tab-content" class="tab-content">
+                        <div class="tab-pane active" id="performance">
 
-		<div class="row">
-
-		<div class="col-md-12">
-			    		<!-- Extended timeline -->
+                            <!-- Extended timeline -->
                             <!-- BEGIN EXAMPLE TABLE PORTLET-->
                             <div class="portlet light bordered">
                                 <div class="portlet-title">
@@ -75,21 +82,8 @@
                                         <i class="icon-list font-dark"></i>
                                         <span class="caption-subject bold uppercase"> Estados que conforman el Índice</span>
                                     </div>
-                                    <a href="/export/scores" target="_blank">
-                                        <button class="btn btn-circle blue btn-sm" type="button" style="float:right">
-                                        Exportar datos
-                                    </button></a>
                                 </div>
                                 <div class="portlet-body">
-                                    <div class="table-toolbar">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                            </div>
-                                            <div class="col-md-6">
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_{{category}}">
                                         <thead>
                                             <tr>
@@ -140,53 +134,110 @@
                             </div>
                             <!-- END EXAMPLE TABLE PORTLET-->
 
-				<div class="row">
-					<div id="timeline-container" style="">
-                        <div id="load" class="center"><img src="/static/assets/global/img/loading_blue_32x32.gif" />
-                            &nbsp;
-                            Generando gr&aacute;fica, por favor espere ...
+                            <div class="row">
+                                <!-- Timeline -->
+                                <div id="timeline-container" style="">
+                                    <div id="load" class="center"><img src="/static/assets/global/img/loading_blue_32x32.gif" />
+                                        &nbsp;
+                                        Generando gr&aacute;fica, por favor espere ...
+                                    </div>
+                                </div>
+                                <!-- Timeline -->
+                            </div>
+
+                            <div class="row">
+                                <!-- BEGIN STACK CHART CONTROLS PORTLET: POLARIDAD -->
+                                <div class="portlet light portlet-fit bordered">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class=" icon-layers font-green"></i>
+                                            <span class="caption-subject font-green bold uppercase">Polaridad por estados</span>
+                                        </div>
+                                        <div class="actions">
+                                            <a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
+                                                <i class="icon-cloud-upload"></i>
+                                            </a>
+                                            <a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
+                                                <i class="icon-wrench"></i>
+                                            </a>
+                                            <a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
+                                                <i class="icon-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="portlet-body">
+                                        <div id="chart_{{category}}" style="height:350px;"> </div>
+                                        <div class="btn-toolbar margin-top-20 margin-bottom-20"></div>
+                                    </div>
+                                </div>
+                                <!-- END STACK CHART CONTROLS PORTLET: POLARIDAD -->
+                            </div>
+
+                            <div class="row">
+                                <b>Notas:</b><br/>
+                                1. La categoría “Servicios” incluye: salud, recolección de basura, servicio de agua y transporte público.
+                                <br/>2. La categoría “Obra Pública” incluye: Pavimentación y construcción de obras públicas en general
+                                <br/>3. La categoría “Gobierno” incluye: frases o menciones en donde se incluye la palabra “Gobierno”
+                                <hr><br/>
+                                Para conocer más acerca de la metodología, favor de visitar la página:.
+                                      <a href="http://www.gcn-p.com/metodologia/">http://www.gcn-p.com/metodologia/</a>
+                            </div>
+
+                        </div>
+                        <div class="tab-pane" id="export">
+
+                            <div class="portlet light bordered">
+                              <div class="portlet-title">
+                                  <div class="caption">
+                                        <h3 style="text-align: center;">
+                                            Exportar datos sobre desempe&ntilde;o y ranking de estados - Medios Sociales
+                                        </h3>
+                                        <p>
+                                            Seleccione el rango de fechas sobre las cuales dese&eacute;
+                                            extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
+                                            un archivo en formato legible para MS-Excel con la informaci&oacute;n solicitada.
+                                        </p>
+                                  </div>
+                              </div>
+                              <div class="portlet-body">
+                                    {% from "_formhelpers.html" import render_field %}
+                                  <form id="exportForm" action="{{ url_for('export_performance_medios_sociales') }}" method="post">
+                                      {{ form.inicio_periodo() }}
+                                      {{ form.fin_periodo() }}
+                                    <div class="row">
+                                        <dl>
+                                        <!-- BEGIN STATES SELECTOR -->
+                                        <div class="col-md-3">
+                                            {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                                        </div>
+                                        <!-- END STATES SELECTOR -->
+                                        <!-- BEGIN CATS SELECTOR -->
+                                        <div class="col-md-3">
+                                            {{ render_field(form.categoria, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                                        </div>
+                                        <!-- END CATS SELECTOR -->
+                                        <div class="col-md-3">
+                                            <i class="glyphicon glyphicon-calendar"></i>
+                                            {{ render_field(form.periodo, class="form-control input-md") }}
+                                        </div>
+                                        </dl>
+
+                                        <div class="col-md-3">
+                                            <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Export to Excel">
+                                              <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Exportar a Excel
+                                            </a>
+                                        </div>
+                                    </div>
+                                    </form>
+                              </div>
+                            </div>
+
                         </div>
                     </div>
-				</div>
-
-			<br/>
-        </div> <!-- col-md-12 -->
-        </div> <!-- row -->
-		<div class="row">
-		<!-- BEGIN STACK CHART CONTROLS PORTLET: POLARIDAD -->
-                            <div class="portlet light portlet-fit bordered">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class=" icon-layers font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">Polaridad por estados</span>
-                                    </div>
-                                    <div class="actions">
-                                        <a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
-                                            <i class="icon-cloud-upload"></i>
-                                        </a>
-                                        <a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
-                                            <i class="icon-wrench"></i>
-                                        </a>
-                                        <a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
-                                            <i class="icon-trash"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div id="chart_{{category}}" style="height:350px;"> </div>
-                                    <div class="btn-toolbar margin-top-20 margin-bottom-20"></div>
-                                </div>
-                            </div>
-        <!-- END STACK CHART CONTROLS PORTLET: POLARIDAD -->
+                </div>
+                <!-- End Tabs -->
+            </div>
         </div>
-
-    <b>Notas:</b><br/>
-    1. La categoría “Servicios” incluye: salud, recolección de basura, servicio de agua y transporte público.
-    <br/>2. La categoría “Obra Pública” incluye: Pavimentación y construcción de obras públicas en general
-    <br/>3. La categoría “Gobierno” incluye: frases o menciones en donde se incluye la palabra “Gobierno”
-    <hr><br/>
-    Para conocer más acerca de la metodología, favor de visitar la página:.
-          <a href="http://www.gcn-p.com/metodologia/">http://www.gcn-p.com/metodologia/</a>
 </div>
 {% endblock %}
 {% block scripts %}
@@ -319,6 +370,75 @@ jQuery(document).ready(function() {
 
     $("#search-button").on("click", function() {
         $("#frmCategorias").submit();
+    });
+
+    $("#btnSubmit").on('click', function() {
+        $("#exportForm").submit();
+    });
+
+    $("#periodo").daterangepicker({
+        "locale": {
+            "format": "YYYY-MM-DD",
+            "separator": " - ",
+            "applyLabel": "Seleccionar",
+            "cancelLabel": "Cancelar",
+            "fromLabel": "Desde",
+            "toLabel": "Hasta",
+            "customRangeLabel": "Custom",
+            "weekLabel": "Sem",
+            "daysOfWeek": [
+                "Dom",
+                "Lun",
+                "Mar",
+                "Mie",
+                "Jue",
+                "Vie",
+                "Sab"
+            ],
+            "monthNames": [
+                "Enero",
+                "Febrero",
+                "Marzo",
+                "Abril",
+                "Mayo",
+                "Junio",
+                "Julio",
+                "Agosto",
+                "Septiembre",
+                "Octubre",
+                "Noviembre",
+                "Deciembre"
+            ],
+            "firstDay": 1
+        },
+        "autoApply": true,
+        "showDropdowns": true,
+        "startDate": moment($("#inicio_periodo").val()).format('MM/DD/YYYY'),
+        "endDate": moment($("#fin_periodo").val()).format('MM/DD/YYYY'),
+        "maxDate": moment().subtract(moment().day(), 'days').format('MM/DD/YYYY'),
+        "opens": "left",
+        "pulls": "up",
+        "dateFormat": "dd/mm/yyyy"
+    });
+
+    $("#periodo").on('apply.daterangepicker', function(ev, picker) {
+        var selected_start = moment(picker.startDate);
+        var actual_start = selected_start;
+        if(selected_start.day() == 0) { //sunday selected, pick last monday as start date
+            actual_start = selected_start.subtract(6, 'days');
+        } else {
+            actual_start = selected_start.subtract(selected_start.day() - 1, 'days');
+        }
+        picker.setStartDate(actual_start);
+        $("#inicio_periodo").val(actual_start.format("MM/DD/YYYY"));
+
+        var selected_end = moment(picker.endDate);
+        var actual_end = selected_end;
+        if(selected_end.day() != 0) { // other than sunday selected, pick next sunday as end date
+            actual_end = selected_end.add(7 - selected_end.day(), 'days')
+        }
+        picker.setEndDate(actual_end);
+        $("#fin_periodo").val(actual_end.format("MM/DD/YYYY"));
     });
 
     ChartsFlotcharts.init(), ChartsFlotcharts.initCharts()

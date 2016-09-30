@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+        <link href="/static/assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+<! -- Navigation submenu -->
+{% block estados_nav_options %}
+        <li>
+            <a href="{{ url_for('ranking') }}">
+                <button class=" btn btn-default"> <i class="icon-list"></i> Desempe&ntilde;o Combinado </button>
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('score') }}">
+                <button class=" btn btn-default"><i class="icon-list"></i> Desempe&ntilde;o Social </button>
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('noticias') }}">
+                <button class=" btn btn-default active"><i class="icon-list"></i> Desempe&ntilde;o Noticias </button>
+            </a>
+        </li>
+{% endblock %}
+<! -- Navigation submenu -->
+
+{% block content %}
+<div class="page-content">
+
+		<div class="row">
+		<!-- BEGIN STATES SELECTOR -->
+		</div>
+		<!-- END SELECTORS -->
+
+		<!-- BEGIN STACK CHART CONTROLS PORTLET-->
+		<div class="row">
+            <div class="col-md-12">
+                <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                <div class="portlet light bordered">
+                  <div class="portlet-title">
+                      <div class="caption font-dark">
+                            <h3 style="text-align: center;">
+                                Exportar datos sobre desempe&ntilde;o y ranking de estados - Noticias
+                            </h3>
+                            <p>
+                                Seleccione el rango de fechas sobre las cuales dese&eacute;
+                                extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
+                                un archivo en formato legible para MS-Excel con la informaci&oacute;n solicitada.
+                            </p>
+                      </div>
+                  </div>
+                  <div class="portlet-body">
+                        {% from "_formhelpers.html" import render_field %}
+                      <form id="exportForm" action="{{ url_for('export_performance_noticias') }}" method="post">
+                          {{ form.inicio_periodo() }}
+                          {{ form.fin_periodo() }}
+                        <div class="row">
+                            <dl>
+                            <!-- BEGIN STATES SELECTOR -->
+                            <div class="col-md-3">
+                                {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                            </div>
+                            <!-- END STATES SELECTOR -->
+                            <!-- BEGIN CATS SELECTOR -->
+                            <div class="col-md-3">
+                                {{ render_field(form.categoria, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                            </div>
+                            <!-- END CATS SELECTOR -->
+                            <div class="col-md-3">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                {{ render_field(form.periodo, class="form-control input-md") }}
+                            </div>
+                            </dl>
+
+                            <div class="col-md-3">
+                                <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Export to Excel">
+                                  <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Exportar a Excel
+                                </a>
+                            </div>
+                        </div>
+                        </form>
+                  </div>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+        <script src="/static/assets/global/scripts/datatable.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.resize.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.pie.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.stack.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.crosshair.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+        <script src="/static/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-daterangepicker/moment.min.js" type="text/javascript"></script>
+	<script src="/static/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js" type="text/javascript"></script>
+  <!-- END PAGE LEVEL PLUGINS -->
+        <!-- BEGIN PAGE LEVEL SCRIPTS -->
+	<script src="/static/assets/pages/scripts/components-select2.js" type="text/javascript"></script>
+	<!-- END PAGE LEVEL SCRIPTS -->
+	<script  type="text/javascript">
+	jQuery(document).ready(function() {
+        removeNavOpenState();
+        setNavOpenStateOn($("#menu_opt_estados"));
+
+        $("#btnSubmit").on('click', function() {
+            $("#exportForm").submit();
+        });
+
+		$("#periodo").daterangepicker({
+            "locale": {
+                "format": "YYYY-MM-DD",
+                "separator": " - ",
+                "applyLabel": "Seleccionar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Custom",
+                "weekLabel": "Sem",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mie",
+                    "Jue",
+                    "Vie",
+                    "Sab"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Deciembre"
+                ],
+                "firstDay": 1
+            },
+            "autoApply": true,
+            "showDropdowns": true,
+            "startDate": moment($("#inicio_periodo").val()).format('MM/DD/YYYY'),
+            "endDate": moment($("#fin_periodo").val()).format('MM/DD/YYYY'),
+            "maxDate": moment().subtract(moment().day(), 'days').format('MM/DD/YYYY'),
+            "opens": "left",
+            "pulls": "up",
+            "dateFormat": "dd/mm/yyyy"
+        });
+
+        $("#periodo").on('apply.daterangepicker', function(ev, picker) {
+            var selected_start = moment(picker.startDate);
+            var actual_start = selected_start;
+            if(selected_start.day() == 0) { //sunday selected, pick last monday as start date
+                actual_start = selected_start.subtract(6, 'days');
+            } else {
+                actual_start = selected_start.subtract(selected_start.day() - 1, 'days');
+            }
+            picker.setStartDate(actual_start);
+            $("#inicio_periodo").val(actual_start.format("MM/DD/YYYY"));
+
+            var selected_end = moment(picker.endDate);
+            var actual_end = selected_end;
+            if(selected_end.day() != 0) { // other than sunday selected, pick next sunday as end date
+                actual_end = selected_end.add(7 - selected_end.day(), 'days')
+            }
+            picker.setEndDate(actual_end);
+            $("#fin_periodo").val(actual_end.format("MM/DD/YYYY"));
+        });
+    });
+	</script>
+
+{% endblock %}
+

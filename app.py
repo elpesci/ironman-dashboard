@@ -19,6 +19,7 @@ from collections import defaultdict
 import operator
 from sortedcontainers import SortedDict
 from utils.Utilities import Constants
+from utils.helpers import StatesPerformanceExportHelper
 
 from models import *
 
@@ -162,12 +163,13 @@ def score(tpars=None):
     else:
         rsearch = tpars
 
+    export_form = ExportStatePerformanceForm(request.form)
+
     try:
-        reader = csv.reader(open("./utils/formato_estados.csv"))
-        _ = reader.next()
-        estados = dict([(row[0], row[1]) for row in reader])
+        estados = dict(Constants.states_dict())
         estados = estados.keys()
         estados.sort()
+        temas = dict(Constants.state_performance_categories_dict())
 
         if request.method == 'POST':
             try:
@@ -180,15 +182,12 @@ def score(tpars=None):
         data = list(get_ranking_social_values_by_category(tema))
 
         data_sentiments_revisited = list(get_polarizacion_rows_by_category(tema))
-
-
-        temas = Constants.ranking_categories()
         error = ''
 
         return render_template("index.html", estados=estados, rsearch=rsearch, \
                                category=tema, categories=temas, \
                                rank_score_values=data, \
-                               sentiments_rev=data_sentiments_revisited)
+                               sentiments_rev=data_sentiments_revisited, form=export_form)
 
     except Exception as e:
         #flash(e)
@@ -254,6 +253,7 @@ def ranking(pars=None):
     tema_default = Constants.general_ranking_category()
     tema = ''
     error = ''
+    export_form = ExportStatePerformanceForm(request.form)
 
     try:
         if request.method == 'POST':
@@ -283,6 +283,7 @@ def ranking(pars=None):
         return render_template("ranking_combinado.html", rankings=data, \
                                tema=tema, estado=estado, topic=tema.lower(), \
                                temas=temas, estados=estados, ndate=ndate, sdate=sdate, \
+                               form=export_form,
                                int=int, error=error)
     except Exception as e:
         #flash(e)
@@ -297,14 +298,12 @@ def noticias(pars=None):
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
 
-    temas = Constants.ranking_categories()
     error = ''
+    export_form = ExportStatePerformanceForm(request.form)
 
     try:
-        reader = csv.reader(open("./utils/formato_estados.csv"))
-        _ = reader.next()
-        estados = [(row[0],row[1]) for row in reader]
-        estados.sort()
+        estados = SortedDict(Constants.states_dict())
+        temas = dict(Constants.state_performance_categories_dict())
 
         if request.method == 'POST':
             try:
@@ -322,7 +321,7 @@ def noticias(pars=None):
         sdate = sdate.strftime("%Y-%m-%d")
 
         return render_template("noticias.html", rankings=data,\
-            tema=tema, topic=tema.lower(), temas=temas, estados=estados, sdate=sdate, ndate=ndate)
+            tema=tema, topic=tema.lower(), temas=temas, estados=estados, sdate=sdate, ndate=ndate, form=export_form)
 
     except Exception as e:
         # flash(e)
@@ -674,7 +673,81 @@ def ppublicas(pars=None,dfrom=None,dto=None):
             category_label = Utilities.get_category_label(tema),
             form=export_form)
 
+# Metodos para exportacion estados
+@app.route("/export/performance/joint", methods=['GET', 'POST'])
+def export_performace_combinado():
+    export_form = ExportStatePerformanceForm(request.form)
 
+    try:
+        if request.method == 'POST' and export_form.validate():
+            export_helper = StatesPerformanceExportHelper(export_form)
+
+            data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_combinado_table_name())
+
+            output = make_response(export_helper.generate_results_csv_file(data_to_export))
+
+            output.headers["Content-Disposition"] = "attachment; filename=PerformanceCombinado-Estado-{0}-{1}.xls".format(
+                Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+            return output  # returning the attachment
+
+        return render_template("performance_combinado_filters.html", form = export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
+@app.route("/export/performance/news", methods=['GET', 'POST'])
+def export_performance_noticias():
+    export_form = ExportStatePerformanceForm(request.form)
+
+    try:
+        if request.method == 'POST' and export_form.validate():
+            # Getting export filters and data to export
+            export_helper = StatesPerformanceExportHelper(export_form)
+
+            data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_noticias_table_name())
+
+            output = make_response(export_helper.generate_results_csv_file(data_to_export))
+
+            output.headers["Content-Disposition"] = "attachment; filename=PerformanceNoticias-Estado-{0}-{1}.xls".format(
+                Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+            return output  # returning the attachment
+
+        return render_template("performance_noticias_filters.html", form=export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
+@app.route("/export/performance/socialmedia", methods=['GET', 'POST'])
+def export_performance_medios_sociales():
+    export_form = ExportStatePerformanceForm(request.form)
+
+    try:
+        if request.method == 'POST' and export_form.validate():
+            export_helper = StatesPerformanceExportHelper(export_form)
+
+            data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_social_table_name())
+
+            output = make_response(export_helper.generate_results_csv_file(data_to_export))
+
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            output.headers["Content-Disposition"] = "attachment; filename=PerformanceMediosSociales-Estado-{0}-{1}.xls".format(
+                Utilities.get_state_label(export_helper.get_filtering_state()),
+                str(export_helper.get_filtering_category()).replace('.', '_')
+            )
+
+            return output
+
+        return render_template("performance_social_net_filters.html", form=export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
 
 ######################################
 ################# API ################
@@ -778,8 +851,8 @@ def export_ppublicas():
             cw.writerows(data_to_export)
 
             output = make_response(si.getvalue())
-            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.csv".format(filtering_state, str(filtering_category).replace('.', '_'))
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, str(filtering_category).replace('.', '_'))
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"
 
             return output    # returning the attachment
 
