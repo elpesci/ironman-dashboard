@@ -28,8 +28,11 @@ class ExportPoliticasPublicasForm(Form):
     periodo = StringField(validators=[DataRequired(message='Por favor, indique período')])
 
 class ExportStatePerformanceForm(Form):
+    estados = Constants.states_dict()
+    estados.insert(0, ['pais', 'País'])
+
     estado = SelectField(u'Estado',
-                         choices = Constants.states_dict(),
+                         choices = estados,
                          validators = [DataRequired(message='Por favor, seleccione estado')])
     categoria = SelectField(u'Categor&iacute;a',
                             choices = Utilities.full_state_performance_categories_dict(),

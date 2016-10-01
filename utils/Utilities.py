@@ -153,6 +153,9 @@ class Utilities:
         states_dict = dict(Constants.states_dict())
         state_label = ""
 
+        if state_key == 'pais':
+            return 'País'
+
         for item in states_dict.keys():
             if item == state_key:
                 state_label = states_dict[state_key]

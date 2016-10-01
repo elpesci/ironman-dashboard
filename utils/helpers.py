@@ -40,9 +40,15 @@ FROM
     {0} as act
 INNER JOIN
     tbl_id as wid on CAST(act.id as text) = CAST(wid.id as text)
-WHERE	(act.estado = (select nombre from "tbl_catEstado" where clave = '{1}')
-    OR
-    act.estado = (select alias from "tbl_catEstado" where clave = '{1}'))
+WHERE
+	CASE
+	    WHEN '{1}' = 'pais' THEN
+	        act.estado = 'pais'
+	    ELSE
+	        (act.estado = (select nombre from "tbl_catEstado" where clave = '{1}')
+            OR
+            act.estado = (select alias from "tbl_catEstado" where clave = '{1}'))
+	END
 AND
     CAST(act.id as int) >= CAST('{2}' as int)
 AND
