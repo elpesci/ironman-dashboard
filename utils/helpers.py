@@ -1,22 +1,23 @@
 from DatabaseManager import *
 from Utilities import Utilities
+from data_utils import *
 import StringIO, csv
 
-class StatesPerformanceExportHelper:
+class BaseExportHelper:
     def __init__(self, export_form):
-        self.export_form = export_form
+        self.__export_form = export_form
 
     def get_filtering_state(self):
-        return self.export_form.data['estado']
+        return self.__export_form.data['estado']
 
     def get_filtering_category(self):
-        return self.export_form.data['categoria']
+        return self.__export_form.data['categoria']
 
     def get_period_start_date(self):
-        return self.export_form['periodo'].data.split("-")[0].strip()
+        return self.__export_form['periodo'].data.split("-")[0].strip()
 
     def get_period_end_date(self):
-        return self.export_form['periodo'].data.split("-")[1].strip()
+        return self.__export_form['periodo'].data.split("-")[1].strip()
 
     def get_period_start_week_id(self):
         sd = Utilities.datepickerstring_to_date(self.get_period_start_date())
@@ -29,6 +30,22 @@ class StatesPerformanceExportHelper:
         actual_end_date = Utilities.next_sunday_date(ed)
 
         return "{0}{1}".format(actual_end_date.year, actual_end_date.isocalendar()[1])
+
+    def generate_results_csv_file(self, data_to_export, file_headers):
+        # Building exportable file
+        csv_file = StringIO.StringIO()
+        cw = csv.writer(csv_file)
+
+        cw.writerows([file_headers])
+        cw.writerows(data_to_export)
+
+        # Returning the attachment file
+        return csv_file.getvalue()
+
+
+class StatesPerformanceExportHelper(BaseExportHelper):
+    def __init__(self, export_form):
+        BaseExportHelper.__init__(self, export_form)
 
     def get_performance_data_export_from(self, from_table_name):
         query = """SELECT	act.estado,
@@ -62,15 +79,25 @@ AND
 
         return rows
 
-    def generate_results_csv_file(self, data_to_export):
-        # Building exportable file
+    def get_results_file(self, data_to_export):
         headers = Utilities.get_export_states_performance_csv_column_header(self.get_filtering_category())
 
-        csv_file = StringIO.StringIO()
-        cw = csv.writer(csv_file)
+        return self.generate_results_csv_file(data_to_export, headers)
 
-        cw.writerows([headers])
-        cw.writerows(data_to_export)
 
-        # Returning the attachment file
-        return csv_file.getvalue()
+class PoliticasPublicasExportHelper(BaseExportHelper):
+    def __init__(self, export_form):
+        BaseExportHelper.__init__(self, export_form)
+
+    def get_export_data(self):
+
+        data = filter_data_politicas_publicas_export(self.get_filtering_state(),
+                                                     self.get_filtering_category(),
+                                                     self.get_period_start_date(),
+                                                     self.get_period_end_date())
+        return data
+
+    def get_results_file(self, data_to_export):
+        headers = Utilities.get_exportpp_csv_columns_header(self.get_filtering_category())
+
+        return self.generate_results_csv_file(data_to_export, headers)

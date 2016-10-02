@@ -173,7 +173,7 @@ class Utilities:
             score_header_label = " ".join([score_header_label, cat_label])
             rank_header_label = " ".join([rank_header_label, cat_label])
 
-        headers = ("Estado", "Fecha", score_header_label, rank_header_label)
+        headers = ("Estado", "Fecha", rank_header_label, score_header_label)
 
         return headers
 

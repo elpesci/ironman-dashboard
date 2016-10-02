@@ -23,9 +23,16 @@ class PaymentForm(Form):
     expiration = StringField()
 
 class ExportPoliticasPublicasForm(Form):
-    estado = SelectField(u'Estado', choices=Constants.states_dict(), validators=[DataRequired(message='Por favor, seleccione estado')])
-    categoria = SelectField(u'Categor&iacute;a',  choices=Constants.categories_dict(), validators=[DataRequired(message='Por favor, seleccione categoría')])
-    periodo = StringField(validators=[DataRequired(message='Por favor, indique período')])
+    estados = Constants.states_dict()
+    estados.insert(0, ['pais', 'País'])
+
+    estado = SelectField(u'Estado',
+                         choices = estados,
+                         validators = [DataRequired(message='Por favor, seleccione estado')])
+    categoria = SelectField(u'Categor&iacute;a',
+                            choices = Constants.categories_dict(),
+                            validators = [DataRequired(message='Por favor, seleccione categoría')])
+    periodo = StringField(validators = [DataRequired(message='Por favor, indique período')])
 
 class ExportStatePerformanceForm(Form):
     estados = Constants.states_dict()

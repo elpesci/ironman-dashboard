@@ -681,7 +681,14 @@ def filter_data_politicas_publicas_export(estado=None, categoria=None, start_dat
 	tbl4."rank{1}" as "rank_{2}",
 	tbl4."score{1}" as "score_{2}"
 from	public.tbl4 as tbl4
-where	estado = '{0}'
+where	CASE
+	    WHEN '{0}' = 'pais' THEN
+	        estado = 'pais'
+	    ELSE
+	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
+            OR
+            estado = (select alias from "tbl_catEstado" where clave = '{0}'))
+	    END
 and	date_created >= '{3}'
 and	date_created <= '{4}'
 order by
