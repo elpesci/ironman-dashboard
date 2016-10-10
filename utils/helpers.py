@@ -2,6 +2,7 @@ from DatabaseManager import *
 from Utilities import Utilities
 from data_utils import *
 import StringIO, csv
+import datetime
 
 class BaseExportHelper:
     def __init__(self, export_form):
@@ -99,5 +100,35 @@ class PoliticasPublicasExportHelper(BaseExportHelper):
 
     def get_results_file(self, data_to_export):
         headers = Utilities.get_exportpp_csv_columns_header(self.get_filtering_category())
+
+        return self.generate_results_csv_file(data_to_export, headers)
+
+
+class S_and_H_ExportHelper(BaseExportHelper):
+    def __init__(self, export_form):
+        BaseExportHelper.__init__(self, export_form)
+
+    def get_export_data(self):
+
+        period_start = datetime.datetime.strptime(self.get_period_start_date(), "%m/%d/%Y").strftime("%Y-%m-%d")
+        period_end = datetime.datetime.strptime(self.get_period_end_date(), "%m/%d/%Y").strftime("%Y-%m-%d")
+
+        data = filter_data_s_and_h_export(self.get_filtering_state(),
+                                          None,
+                                          period_start,
+                                          period_end)
+        return data
+
+    def get_results_file(self, data_to_export):
+        headers = ("Estado",
+                   "InicioPeriodo",
+                   "FinPeriodo",
+                   "Score_Presidente",
+                   "Score_Gobernador",
+                   "Score_Gobierno",
+                   "Score_DiputadosSenadores",
+                   "Score_Seguridad",
+                   "Score_Servicios",
+                   "Score_Economia")
 
         return self.generate_results_csv_file(data_to_export, headers)

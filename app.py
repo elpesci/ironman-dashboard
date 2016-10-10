@@ -21,6 +21,7 @@ from sortedcontainers import SortedDict
 from utils.Utilities import Constants
 from utils.helpers import PoliticasPublicasExportHelper
 from utils.helpers import StatesPerformanceExportHelper
+from utils.helpers import S_and_H_ExportHelper
 
 from models import *
 
@@ -204,9 +205,10 @@ def index(pars=None):
     if not session.get("username",None):return redirect("/login")
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = [(row[0],row[1]) for row in reader]
+
+    export_form = ExportSandHForm(request.form)
+
+    estados = Constants.states_dict()
 
     destados = dict(estados)
     scores = []
@@ -239,7 +241,7 @@ def index(pars=None):
 
     return render_template("public.html", scores=scores, \
             estados=estados, ndate=ndate, sdate=sdate, destados=destados, \
-            proms=proms)
+            proms=proms, form=export_form)
 
 
 @app.route("/ranking", methods=['GET', 'POST'])
@@ -751,6 +753,33 @@ def export_performance_medios_sociales():
             return output
 
         return render_template("performance_social_net_filters.html", form=export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
+@app.route("/export/sandh", methods=['GET', 'POST'])
+def export_s_and_h():
+    if not session.has_key("username"):return redirect("/login")
+
+    export_form = ExportSandHForm(request.form)
+
+    try:
+        if request.method == 'POST' and export_form.validate():
+            export_helper = S_and_H_ExportHelper(export_form)
+
+            data_to_export = export_helper.get_export_data()
+
+            output = make_response(export_helper.get_results_file(data_to_export))
+
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            output.headers[
+                "Content-Disposition"] = "attachment; filename=S_and_H-Estado-{0}.xls".format(
+                Utilities.get_state_label(export_helper.get_filtering_state()))
+
+            return output
+
+        return render_template("s_and_h_export_filters.html", form=export_form)
 
     except Exception as e:
         error = e

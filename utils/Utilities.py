@@ -78,6 +78,18 @@ class Constants:
               ('transporte.publico', "Transporte público")]
         return cd
 
+    @staticmethod
+    def s_and_h_categories_dict():
+        cd = [('presidente', 'Presidente de la república'),
+              ('gobernador', 'Gobernadores'),
+              ('gobierno', 'Gobierno'),
+              ('legislativo', 'Diputados y Senadores'),
+              ('seguridad', 'Seguridad'),
+              ('servicios', 'Servicios'),
+              ('economia', 'Economía')]
+
+        return cd
+
 class Utilities:
 
     @staticmethod
