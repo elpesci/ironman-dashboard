@@ -50,6 +50,7 @@ class ExportStatePerformanceForm(Form):
 
 class ExportSandHForm(Form):
     estados = Constants.states_dict()
+    estados.insert(0, ['pais', 'País'])
 
     estado = SelectField(u'Estado',
                          choices = estados,

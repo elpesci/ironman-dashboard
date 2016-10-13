@@ -680,9 +680,14 @@ def filter_data_s_and_h_export(estado=None, categoria=None, start_date=None, end
 	avg(score_servicios) as score_servicios,
 	avg(score_economia) as score_economia
 from public.tbl4
-where estado = (select nombre from "tbl_catEstado" where clave = '{0}')
-	or
-	estado = (select alias from "tbl_catEstado" where clave = '{0}')
+where CASE
+	    WHEN '{0}' = 'pais' THEN
+	        estado = 'pais'
+	    ELSE
+	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
+            OR
+            estado = (select alias from "tbl_catEstado" where clave = '{0}'))
+	    END
 and date_created >= '{2}' and date_created <= '{3}'
 group by estado;""".format(estado, categoria, start_date, end_date)
 
