@@ -78,6 +78,18 @@ class Constants:
               ('transporte.publico', "Transporte público")]
         return cd
 
+    @staticmethod
+    def s_and_h_categories_dict():
+        cd = [('presidente', 'Presidente de la república'),
+              ('gobernador', 'Gobernadores'),
+              ('gobierno', 'Gobierno'),
+              ('legislativo', 'Diputados y Senadores'),
+              ('seguridad', 'Seguridad'),
+              ('servicios', 'Servicios'),
+              ('economia', 'Economía')]
+
+        return cd
+
 class Utilities:
 
     @staticmethod
@@ -153,6 +165,9 @@ class Utilities:
         states_dict = dict(Constants.states_dict())
         state_label = ""
 
+        if state_key == 'pais':
+            return 'País'
+
         for item in states_dict.keys():
             if item == state_key:
                 state_label = states_dict[state_key]
@@ -170,7 +185,7 @@ class Utilities:
             score_header_label = " ".join([score_header_label, cat_label])
             rank_header_label = " ".join([rank_header_label, cat_label])
 
-        headers = ("Estado", "Fecha", score_header_label, rank_header_label)
+        headers = ("Estado", "Fecha", rank_header_label, score_header_label)
 
         return headers
 

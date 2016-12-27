@@ -14,45 +14,40 @@
 {% block content %}
 <div class="page-content">
     <h3 style="text-align: center;">
-	    Exportar datos sobre desempe&ntilde;o y ranking de pol&iacute;ticas p&uacute;blicas
+	    Exportar datos sobre desempe&ntilde;o social de gobierno por estado
     </h3>
     <p>
-        Seleccione el estado, la categor&iacute;a y el rango de fechas sobre las cuales dese&eacute;
+        Seleccione el estado y el rango de fechas sobre las cuales dese&eacute;
         extraer informaci&oacute;n. De manera autom&aacute;tica, el sistema descargar&aacute;
         un archivo en un archivo de formato legible para MS-Excel con la informaci&oacute;n solicitada.
     </p>
+
+    <p>
+    La califcaci&oacute;n emitida para cada entidad federativa incluye las categorías: Presidente de la Rep&uacute;blica,
+    Gobernador, Diputados y Senadores, Seguridad, Economía, Servicios P&uacute;blicos y Gobierno en general.
+    </p>
     {% from "_formhelpers.html" import render_field %}
-    <form id="exportForm" action="{{ url_for('export_ppublicas') }}" method="post">
+    <form id="exportForm" action="{{ url_for('export_s_and_h') }}" method="post">
     <div class="row">
         <dl>
 		<!-- BEGIN STATES SELECTOR -->
-        <div class="col-md-3">
+        <div class="col-md-4">
             {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
         </div>
 		<!-- END STATES SELECTOR -->
-        <!-- BEGIN CATS SELECTOR -->
-        <div class="col-md-3">
-            {{ render_field(form.categoria, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
-        </div>
-        <!-- END CATS SELECTOR -->
-        <div class="col-md-3">
+        <div class="col-md-4">
             <i class="glyphicon glyphicon-calendar"></i>
             {{ render_field(form.periodo, class="form-control input-md") }}
         </div>
         </dl>
 
-        <div class="col-md-3">
-            <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Export to Excel">
+        <div class="col-md-4">
+            <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Exportar a Excel">
               <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Exportar a Excel
             </a>
         </div>
     </div>
     </form>
-    <div class="row">
-        <div class="col-lg-4" id="startDate"></div>
-        <div class="col-lg-4" id="endDate"></div>
-        <div class="col-lg-4" id="maxDate"></div>
-    </div>
 </div>
 {% block bootbox %}
 {{ super() }}

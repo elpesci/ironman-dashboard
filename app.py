@@ -19,7 +19,9 @@ from collections import defaultdict
 import operator
 from sortedcontainers import SortedDict
 from utils.Utilities import Constants
+from utils.helpers import PoliticasPublicasExportHelper
 from utils.helpers import StatesPerformanceExportHelper
+from utils.helpers import S_and_H_ExportHelper
 
 from models import *
 
@@ -203,9 +205,10 @@ def index(pars=None):
     if not session.get("username",None):return redirect("/login")
     if pars == "favicon.ico":
         return redirect(url_for('static', filename='favicon.ico'))
-    reader = csv.reader(open("./utils/formato_estados.csv"))
-    _ = reader.next()
-    estados = [(row[0],row[1]) for row in reader]
+
+    export_form = ExportSandHForm(request.form)
+
+    estados = Constants.states_dict()
 
     destados = dict(estados)
     scores = []
@@ -238,7 +241,7 @@ def index(pars=None):
 
     return render_template("public.html", scores=scores, \
             estados=estados, ndate=ndate, sdate=sdate, destados=destados, \
-            proms=proms)
+            proms=proms, form=export_form)
 
 
 @app.route("/ranking", methods=['GET', 'POST'])
@@ -676,6 +679,8 @@ def ppublicas(pars=None,dfrom=None,dto=None):
 # Metodos para exportacion estados
 @app.route("/export/performance/joint", methods=['GET', 'POST'])
 def export_performace_combinado():
+    if not session.has_key("username"):return redirect("/login")
+
     export_form = ExportStatePerformanceForm(request.form)
 
     try:
@@ -684,7 +689,7 @@ def export_performace_combinado():
 
             data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_combinado_table_name())
 
-            output = make_response(export_helper.generate_results_csv_file(data_to_export))
+            output = make_response(export_helper.get_results_file(data_to_export))
 
             output.headers["Content-Disposition"] = "attachment; filename=PerformanceCombinado-Estado-{0}-{1}.xls".format(
                 Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
@@ -700,6 +705,8 @@ def export_performace_combinado():
 
 @app.route("/export/performance/news", methods=['GET', 'POST'])
 def export_performance_noticias():
+    if not session.has_key("username"):return redirect("/login")
+
     export_form = ExportStatePerformanceForm(request.form)
 
     try:
@@ -709,7 +716,7 @@ def export_performance_noticias():
 
             data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_noticias_table_name())
 
-            output = make_response(export_helper.generate_results_csv_file(data_to_export))
+            output = make_response(export_helper.get_results_file(data_to_export))
 
             output.headers["Content-Disposition"] = "attachment; filename=PerformanceNoticias-Estado-{0}-{1}.xls".format(
                 Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
@@ -725,6 +732,8 @@ def export_performance_noticias():
 
 @app.route("/export/performance/socialmedia", methods=['GET', 'POST'])
 def export_performance_medios_sociales():
+    if not session.has_key("username"):return redirect("/login")
+
     export_form = ExportStatePerformanceForm(request.form)
 
     try:
@@ -733,7 +742,7 @@ def export_performance_medios_sociales():
 
             data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_social_table_name())
 
-            output = make_response(export_helper.generate_results_csv_file(data_to_export))
+            output = make_response(export_helper.get_results_file(data_to_export))
 
             output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             output.headers["Content-Disposition"] = "attachment; filename=PerformanceMediosSociales-Estado-{0}-{1}.xls".format(
@@ -744,6 +753,33 @@ def export_performance_medios_sociales():
             return output
 
         return render_template("performance_social_net_filters.html", form=export_form)
+
+    except Exception as e:
+        error = e
+        return render_template("mensaje_sistema.html", message=error)
+
+@app.route("/export/sandh", methods=['GET', 'POST'])
+def export_s_and_h():
+    if not session.has_key("username"):return redirect("/login")
+
+    export_form = ExportSandHForm(request.form)
+
+    try:
+        if request.method == 'POST' and export_form.validate():
+            export_helper = S_and_H_ExportHelper(export_form)
+
+            data_to_export = export_helper.get_export_data()
+
+            output = make_response(export_helper.get_results_file(data_to_export))
+
+            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            output.headers[
+                "Content-Disposition"] = "attachment; filename=S_and_H-Estado-{0}.xls".format(
+                Utilities.get_state_label(export_helper.get_filtering_state()))
+
+            return output
+
+        return render_template("s_and_h_export_filters.html", form=export_form)
 
     except Exception as e:
         error = e
@@ -837,20 +873,15 @@ def export_ppublicas():
 
     try:
         if request.method == 'POST' and export_form.validate():
-            filtering_state = Utilities.get_state_label(export_form.data['estado'])
-            filtering_category = export_form.data['categoria']
-            period_start_date = datepickerstring_to_date(export_form.data['periodo'].split("-")[0].strip())
-            period_end_date = datepickerstring_to_date(export_form.data['periodo'].split("-")[1].strip())
+            export_helper = PoliticasPublicasExportHelper(export_form)
 
-            data_to_export = filter_data_politicas_publicas_export(filtering_state, filtering_category, period_start_date, period_end_date)
+            data_to_export = export_helper.get_export_data()
 
-            headers = Utilities.get_exportpp_csv_columns_header(filtering_category)
-            si = StringIO.StringIO()
-            cw = csv.writer(si)
-            cw.writerows([headers])
-            cw.writerows(data_to_export)
+            filtering_state = Utilities.get_state_label(export_helper.get_filtering_state())
+            filtering_category = export_helper.get_filtering_category()
 
-            output = make_response(si.getvalue())
+            output = make_response(export_helper.get_results_file(data_to_export))
+
             output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, str(filtering_category).replace('.', '_'))
             output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"
 

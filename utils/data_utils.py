@@ -668,6 +668,35 @@ def export_data_pp(days_ago=30):
         data.append(row)
     return data
 
+def filter_data_s_and_h_export(estado=None, categoria=None, start_date=None, end_date=None):
+    data = []
+
+    query = """select	estado, '{2}' as inicio_periodo, '{3}' as fin_periodo,
+	avg(score_presidente) as score_presidente,
+	avg(score_gobernador) as score_gobernador,
+	avg(score_gobierno) as score_gobierno,
+	avg(score_legislativo) as score_legislativo,
+	avg(score_seguridad) as score_seguridad,
+	avg(score_servicios) as score_servicios,
+	avg(score_economia) as score_economia
+from public.tbl4
+where CASE
+	    WHEN '{0}' = 'pais' THEN
+	        estado = 'pais'
+	    ELSE
+	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
+            OR
+            estado = (select alias from "tbl_catEstado" where clave = '{0}'))
+	    END
+and date_created >= '{2}' and date_created <= '{3}'
+group by estado;""".format(estado, categoria, start_date, end_date)
+
+    pg = PGDatabaseManager()
+    for row in pg.get_rows(query):
+        data.append(row)
+
+    return data
+
 def filter_data_politicas_publicas_export(estado=None, categoria=None, start_date=None, end_date=None):
     data = []
 
@@ -681,7 +710,14 @@ def filter_data_politicas_publicas_export(estado=None, categoria=None, start_dat
 	tbl4."rank{1}" as "rank_{2}",
 	tbl4."score{1}" as "score_{2}"
 from	public.tbl4 as tbl4
-where	estado = '{0}'
+where	CASE
+	    WHEN '{0}' = 'pais' THEN
+	        estado = 'pais'
+	    ELSE
+	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
+            OR
+            estado = (select alias from "tbl_catEstado" where clave = '{0}'))
+	    END
 and	date_created >= '{3}'
 and	date_created <= '{4}'
 order by
