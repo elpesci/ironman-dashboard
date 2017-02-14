@@ -24,13 +24,19 @@ class BaseExportHelper:
         sd = Utilities.datepickerstring_to_date(self.get_period_start_date())
         actual_start_date = Utilities.last_monday_date(sd)
 
-        return "{0}{1}".format(actual_start_date.year, actual_start_date.isocalendar()[1])
+        actual_week = actual_start_date.isocalendar()[1]
+        str_actual_week = "00" + str(actual_week)
+
+        return "{0}{1}".format(actual_start_date.year, str_actual_week[-2:])
 
     def get_period_end_week_id(self):
         ed = Utilities.datepickerstring_to_date(self.get_period_end_date())
         actual_end_date = Utilities.next_sunday_date(ed)
 
-        return "{0}{1}".format(actual_end_date.year, actual_end_date.isocalendar()[1])
+        actual_week = actual_end_date.isocalendar()[1]
+        str_actual_week = "00" + str(actual_week)
+
+        return "{0}{1}".format(actual_end_date.year, str_actual_week[-2:])
 
     def generate_results_csv_file(self, data_to_export, file_headers):
         # Building exportable file
