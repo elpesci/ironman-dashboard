@@ -146,9 +146,8 @@
                     </p>
 
                     {% from "_formhelpers.html" import render_field %}
-                    <form id="exportForm" action="{{ url_for('export_s_and_h') }}" method="post">
+                    <form id="exportForm" action="{{ url_for('export_s_and_h_xlsx') }}" method="post">
                     <div class="row">
-                        <dl>
                         <!-- BEGIN STATES SELECTOR -->
                         <div class="col-md-4">
                             {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
@@ -158,7 +157,6 @@
                             <i class="glyphicon glyphicon-calendar"></i>
                             {{ render_field(form.periodo, class="form-control input-md") }}
                         </div>
-                        </dl>
 
                         <div class="col-md-4">
                             <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Exportar a Excel">
