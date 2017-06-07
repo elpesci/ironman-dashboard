@@ -37,6 +37,7 @@ class ExportPoliticasPublicasForm(Form):
 class ExportStatePerformanceForm(Form):
     estados = Constants.states_dict()
     estados.insert(0, ['pais', 'País'])
+    grouping = Constants.grouping_options_dict()
 
     estado = SelectField(u'Estado',
                          choices = estados,
@@ -47,6 +48,7 @@ class ExportStatePerformanceForm(Form):
     periodo = StringField(validators = [DataRequired(message='Por favor, indique período')])
     inicio_periodo = HiddenField(default = Utilities.last_monday_date(datetime.datetime.today() - datetime.timedelta(days=14)).strftime("%m/%d/%Y"))
     fin_periodo = HiddenField(default = Utilities.next_sunday_date(datetime.datetime.today() - datetime.timedelta(days=7)).strftime("%m/%d/%Y"))
+    agrupado = SelectField(u'Agrupado', choices=grouping, validators=[DataRequired(message='Por favor, seleccione como agrupar los resultaos')])
 
 class ExportSandHForm(Form):
     estados = Constants.states_dict()

@@ -90,6 +90,13 @@ class Constants:
 
         return cd
 
+    @staticmethod
+    def grouping_options_dict():
+        od = [('week', 'Semanal'), ('month', 'Mensual')]
+
+        return od
+
+
 class Utilities:
 
     @staticmethod
@@ -213,3 +220,12 @@ class Utilities:
     def datepickerstring_to_date(datepickerstring):
         converted = datetime.datetime.strptime(datepickerstring, "%m/%d/%Y").date()
         return converted
+
+    @staticmethod
+    def is_number(value):
+        try:
+            float(value)  # for int, long and float
+        except ValueError:
+            return False
+
+        return True
