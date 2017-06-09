@@ -727,14 +727,6 @@ def export_performance_noticias():
 
             return  attachment_output
 
-            #output = make_response(export_helper.get_results_file(data_to_export))
-
-            #output.headers["Content-Disposition"] = "attachment; filename=PerformanceNoticias-Estado-{0}-{1}.xls".format(
-            #    Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
-            #output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
-            #return output  # returning the attachment
-
         return render_template("performance_noticias_filters.html", form=export_form)
 
     except Exception as e:
@@ -761,16 +753,6 @@ def export_performance_medios_sociales():
                 Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
 
             return  attachment_output
-
-            #output = make_response(export_helper.get_results_file(data_to_export))
-
-            #output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            #output.headers["Content-Disposition"] = "attachment; filename=PerformanceMediosSociales-Estado-{0}-{1}.xls".format(
-            #    Utilities.get_state_label(export_helper.get_filtering_state()),
-            #    str(export_helper.get_filtering_category()).replace('.', '_')
-            #)
-
-            #return output
 
         return render_template("performance_social_net_filters.html", form=export_form)
 
