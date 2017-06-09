@@ -715,7 +715,7 @@ def filter_data_politicas_publicas_export(estado=None, categoria=None, start_dat
 from	public.tbl4 as tbl4
 where	CASE
 	    WHEN '{0}' = 'pais' THEN
-	        estado = 'pais'
+	        estado != 'pais'
 	    ELSE
 	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
             OR
@@ -723,8 +723,10 @@ where	CASE
 	    END
 and	date_created >= '{3}'
 and	date_created <= '{4}'
+group by
+	estado, date_created, rank_{2}, score_{2}
 order by
-	date_created asc;""".format(estado, tema, etiqueta, start_date, end_date)
+	estado, date_created asc;""".format(estado, tema, etiqueta, start_date, end_date)
 
     pg = PGDatabaseManager()
     for row in pg.get_rows(query):

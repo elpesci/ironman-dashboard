@@ -760,33 +760,6 @@ def export_performance_medios_sociales():
         error = e
         return render_template("mensaje_sistema.html", message=error)
 
-@app.route("/export/sandh", methods=['GET', 'POST'])
-def export_s_and_h():
-    if not session.has_key("username"):return redirect("/login")
-
-    export_form = ExportSandHForm(request.form)
-
-    try:
-        if request.method == 'POST' and export_form.validate():
-            export_helper = S_and_H_ExportHelper(export_form)
-
-            data_to_export = export_helper.get_export_data()
-
-            output = make_response(export_helper.get_results_file(data_to_export))
-
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            output.headers[
-                "Content-Disposition"] = "attachment; filename=S_and_H-Estado-{0}.xls".format(
-                Utilities.get_state_label(export_helper.get_filtering_state()))
-
-            return output
-
-        return render_template("s_and_h_export_filters.html", form=export_form)
-
-    except Exception as e:
-        error = e
-        return render_template("mensaje_sistema.html", message=error)
-
 @app.route("/export/sandh/excel", methods=['GET', 'POST'])
 def export_s_and_h_xlsx():
     if not session.has_key("username"):return redirect("/login")
@@ -904,17 +877,19 @@ def export_ppublicas():
         if request.method == 'POST' and export_form.validate():
             export_helper = PoliticasPublicasExportHelper(export_form)
 
-            data_to_export = export_helper.get_export_data()
-
             filtering_state = Utilities.get_state_label(export_helper.get_filtering_state())
             filtering_category = export_helper.get_filtering_category()
 
-            output = make_response(export_helper.get_results_file(data_to_export))
+            data_to_export = export_helper.get_export_data()
 
-            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, str(filtering_category).replace('.', '_'))
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"
+            attachment_output = excel.make_response_from_array(data_to_export, 'xlsx', status=200, file_name="Politicas-Publicas-{0}-{1}.xlsx".format(
+                filtering_state, str(filtering_category).replace('.', '_')))
 
-            return output    # returning the attachment
+            attachment_output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            attachment_output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xlsx".format(
+                filtering_state, str(filtering_category).replace('.', '_'))
+
+            return attachment_output
 
         return render_template("ppublicas_export_filters.html", form=export_form)
 

@@ -165,12 +165,19 @@ class PoliticasPublicasExportHelper(BaseExportHelper):
                                                      self.get_filtering_category(),
                                                      self.get_period_start_date(),
                                                      self.get_period_end_date())
+        data = self.__add_header_row(data)
+
         return data
 
-    def get_results_file(self, data_to_export):
-        headers = Utilities.get_exportpp_csv_columns_header(self.get_filtering_category())
+    def __add_header_row(self, data_to_export):
+        headers = ("Estado",
+                   "Fecha",
+                   "Rank_{0}".format(self.get_filtering_category()),
+                   "Score_{0}".format(self.get_filtering_category()))
 
-        return self.generate_results_csv_file(data_to_export, headers)
+        data_to_export.insert(0, headers)
+
+        return data_to_export
 
 
 class S_and_H_ExportHelper(BaseExportHelper):
@@ -191,20 +198,6 @@ class S_and_H_ExportHelper(BaseExportHelper):
         data = self.__add_header_row(data)
 
         return data
-
-    def get_results_file(self, data_to_export):
-        headers = ("Estado",
-                   "InicioPeriodo",
-                   "FinPeriodo",
-                   "Score_Presidente",
-                   "Score_Gobernador",
-                   "Score_Gobierno",
-                   "Score_DiputadosSenadores",
-                   "Score_Seguridad",
-                   "Score_Servicios",
-                   "Score_Economia")
-
-        return self.generate_results_csv_file(data_to_export, headers)
 
     def __add_header_row(self, data_to_export):
         headers = ("Estado",
