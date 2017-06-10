@@ -13,6 +13,7 @@ import json
 import os
 import datetime
 import glob
+import flask_excel as excel
 from dropbox_corr_links import get_corrs_from_api
 import StringIO
 from collections import defaultdict
@@ -689,13 +690,14 @@ def export_performace_combinado():
 
             data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_combinado_table_name())
 
-            output = make_response(export_helper.get_results_file(data_to_export))
+            attachment_output = excel.make_response_from_array(data_to_export, 'xlsx', status=200, file_name="PerformanceCombinado-Estado-{0}.xlsx".format(
+                Utilities.get_state_label(export_helper.get_filtering_state())))
 
-            output.headers["Content-Disposition"] = "attachment; filename=PerformanceCombinado-Estado-{0}-{1}.xls".format(
+            attachment_output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            attachment_output.headers["Content-Disposition"] = "attachment; filename=PerformanceCombinado-Estado-{0}-{1}.xls".format(
                 Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
-            return output  # returning the attachment
+            return  attachment_output
 
         return render_template("performance_combinado_filters.html", form = export_form)
 
@@ -716,13 +718,14 @@ def export_performance_noticias():
 
             data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_noticias_table_name())
 
-            output = make_response(export_helper.get_results_file(data_to_export))
+            attachment_output = excel.make_response_from_array(data_to_export, 'xlsx', status=200, file_name="PerformanceNoticias-Estado-{0}.xlsx".format(
+                Utilities.get_state_label(export_helper.get_filtering_state())))
 
-            output.headers["Content-Disposition"] = "attachment; filename=PerformanceNoticias-Estado-{0}-{1}.xls".format(
+            attachment_output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            attachment_output.headers["Content-Disposition"] = "attachment; filename=PerformanceNoticias-Estado-{0}-{1}.xls".format(
                 Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
-            return output  # returning the attachment
+            return  attachment_output
 
         return render_template("performance_noticias_filters.html", form=export_form)
 
@@ -742,15 +745,14 @@ def export_performance_medios_sociales():
 
             data_to_export = export_helper.get_performance_data_export_from(Constants.ranking_social_table_name())
 
-            output = make_response(export_helper.get_results_file(data_to_export))
+            attachment_output = excel.make_response_from_array(data_to_export, 'xlsx', status=200, file_name="PerformanceMediosSociales-Estado-{0}.xlsx".format(
+                Utilities.get_state_label(export_helper.get_filtering_state())))
 
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            output.headers["Content-Disposition"] = "attachment; filename=PerformanceMediosSociales-Estado-{0}-{1}.xls".format(
-                Utilities.get_state_label(export_helper.get_filtering_state()),
-                str(export_helper.get_filtering_category()).replace('.', '_')
-            )
+            attachment_output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            attachment_output.headers["Content-Disposition"] = "attachment; filename=PerformanceMediosSociales-Estado-{0}-{1}.xls".format(
+                Utilities.get_state_label(export_helper.get_filtering_state()), str(export_helper.get_filtering_category()).replace('.', '_'))
 
-            return output
+            return  attachment_output
 
         return render_template("performance_social_net_filters.html", form=export_form)
 
@@ -758,8 +760,8 @@ def export_performance_medios_sociales():
         error = e
         return render_template("mensaje_sistema.html", message=error)
 
-@app.route("/export/sandh", methods=['GET', 'POST'])
-def export_s_and_h():
+@app.route("/export/sandh/excel", methods=['GET', 'POST'])
+def export_s_and_h_xlsx():
     if not session.has_key("username"):return redirect("/login")
 
     export_form = ExportSandHForm(request.form)
@@ -770,14 +772,14 @@ def export_s_and_h():
 
             data_to_export = export_helper.get_export_data()
 
-            output = make_response(export_helper.get_results_file(data_to_export))
+            attachment_output = excel.make_response_from_array(data_to_export, 'xlsx', status=200, file_name="S_and_H-Estado-{0}.xlsx".format(
+                Utilities.get_state_label(export_helper.get_filtering_state())))
 
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            output.headers[
-                "Content-Disposition"] = "attachment; filename=S_and_H-Estado-{0}.xls".format(
+            attachment_output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            attachment_output.headers["Content-Disposition"] = "attachment; filename=S_and_H-Estado-{0}.xlsx".format(
                 Utilities.get_state_label(export_helper.get_filtering_state()))
 
-            return output
+            return attachment_output
 
         return render_template("s_and_h_export_filters.html", form=export_form)
 
@@ -875,17 +877,19 @@ def export_ppublicas():
         if request.method == 'POST' and export_form.validate():
             export_helper = PoliticasPublicasExportHelper(export_form)
 
-            data_to_export = export_helper.get_export_data()
-
             filtering_state = Utilities.get_state_label(export_helper.get_filtering_state())
             filtering_category = export_helper.get_filtering_category()
 
-            output = make_response(export_helper.get_results_file(data_to_export))
+            data_to_export = export_helper.get_export_data()
 
-            output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xls".format(filtering_state, str(filtering_category).replace('.', '_'))
-            output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"
+            attachment_output = excel.make_response_from_array(data_to_export, 'xlsx', status=200, file_name="Politicas-Publicas-{0}-{1}.xlsx".format(
+                filtering_state, str(filtering_category).replace('.', '_')))
 
-            return output    # returning the attachment
+            attachment_output.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            attachment_output.headers["Content-Disposition"] = "attachment; filename=Politicas-Publicas-{0}-{1}.xlsx".format(
+                filtering_state, str(filtering_category).replace('.', '_'))
+
+            return attachment_output
 
         return render_template("ppublicas_export_filters.html", form=export_form)
 

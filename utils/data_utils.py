@@ -680,16 +680,19 @@ def filter_data_s_and_h_export(estado=None, categoria=None, start_date=None, end
 	avg(score_servicios) as score_servicios,
 	avg(score_economia) as score_economia
 from public.tbl4
-where CASE
+where
+    date_created >= '{2}' and date_created <= '{3}'
+and
+    CASE
 	    WHEN '{0}' = 'pais' THEN
-	        estado = 'pais'
+	        estado != 'pais'
 	    ELSE
 	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
             OR
             estado = (select alias from "tbl_catEstado" where clave = '{0}'))
 	    END
-and date_created >= '{2}' and date_created <= '{3}'
-group by estado;""".format(estado, categoria, start_date, end_date)
+group by estado
+order by estado asc;""".format(estado, categoria, start_date, end_date)
 
     pg = PGDatabaseManager()
     for row in pg.get_rows(query):
@@ -712,7 +715,7 @@ def filter_data_politicas_publicas_export(estado=None, categoria=None, start_dat
 from	public.tbl4 as tbl4
 where	CASE
 	    WHEN '{0}' = 'pais' THEN
-	        estado = 'pais'
+	        estado != 'pais'
 	    ELSE
 	        (estado = (select nombre from "tbl_catEstado" where clave = '{0}')
             OR
@@ -720,8 +723,10 @@ where	CASE
 	    END
 and	date_created >= '{3}'
 and	date_created <= '{4}'
+group by
+	estado, date_created, "rank{1}", "score{1}"
 order by
-	date_created asc;""".format(estado, tema, etiqueta, start_date, end_date)
+	estado, date_created asc;""".format(estado, tema, etiqueta, start_date, end_date)
 
     pg = PGDatabaseManager()
     for row in pg.get_rows(query):

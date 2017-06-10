@@ -205,24 +205,25 @@
                                       {{ form.inicio_periodo() }}
                                       {{ form.fin_periodo() }}
                                     <div class="row">
-                                        <dl>
                                         <!-- BEGIN STATES SELECTOR -->
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             {{ render_field(form.estado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
                                         </div>
                                         <!-- END STATES SELECTOR -->
                                         <!-- BEGIN CATS SELECTOR -->
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             {{ render_field(form.categoria, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
                                         </div>
                                         <!-- END CATS SELECTOR -->
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <i class="glyphicon glyphicon-calendar"></i>
                                             {{ render_field(form.periodo, class="form-control input-md") }}
                                         </div>
-                                        </dl>
+                                        <div class="col-md-2">
+                                            {{ render_field(form.agrupado, class="form-control input-sm select2-multiple select2-hidden-accessible") }}
+                                        </div>
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <a id="btnSubmit" class="btn btn-primary btn-circle" href="javascript:void(0);" aria-label="Export to Excel">
                                               <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Exportar a Excel
                                             </a>
