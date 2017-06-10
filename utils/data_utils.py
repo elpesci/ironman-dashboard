@@ -724,7 +724,7 @@ where	CASE
 and	date_created >= '{3}'
 and	date_created <= '{4}'
 group by
-	estado, date_created, rank_{2}, score_{2}
+	estado, date_created, "rank{1}", "score{1}"
 order by
 	estado, date_created asc;""".format(estado, tema, etiqueta, start_date, end_date)
 
